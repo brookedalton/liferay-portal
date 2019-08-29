@@ -12,6 +12,10 @@ definition {
 
 		PageEditorConfiguration._toggleConfigurationFloatingToolbar();
 
+		AssertElementPresent(
+			key_fieldName = "${textConfigName}",
+			locator1 = "FormFields#TEXT_FIELD");
+
 		FormFields.editText(
 			fieldName = "${textConfigName}",
 			fieldValue = "${editableText}");
