@@ -1,4 +1,3 @@
-portal-acceptance='brookedalton'
 @component-name = "portal-wcm"
 definition {
 
@@ -82,7 +81,7 @@ definition {
 	@description = "This is a test for LPS-99543. User can change text fragment configuration."
 	@priority = "5"
 	test AddTextConfigurationFragmentToContentPage {
-		property portal.acceptance = "true";
+		property portal.acceptance = "brookedalton";
 
 		task ("Add a section fragment to the fragment collection via JSON") {
 			var htmlSnippet = FragmentsAPI.getFragmentFileContent(fileName = "text_configuration.html");
