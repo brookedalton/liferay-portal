@@ -12,6 +12,10 @@ definition {
 			LexiconEntry.gotoAddMenuItem(menuItem = "${pageTemplateType}");
 		}
 
+		if ("${pageTemplateType}" == "Content Page Template") {
+			PageTemplatesAdmin.gotoPageTemplate(pageTemplateName = "Blank");
+		}
+
 		PortletEntry.inputName(name = "${pageTemplateName}");
 
 		Button.clickSave();
