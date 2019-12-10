@@ -51,7 +51,7 @@ import org.osgi.service.component.annotations.Reference;
 	property = "item.selector.view.order:Integer=100",
 	service = ItemSelectorView.class
 )
-public class BookmarksItemSelectorView
+public class JournalItemSelectorView
 	implements ItemSelectorView<BookmarksItemSelectorCriterion> {
 
 	@Override
@@ -90,7 +90,7 @@ public class BookmarksItemSelectorView
 				new BookmarksItemSelectorViewDisplayContext(
 					BookmarksItemSelectorCriterion, this,
 					_itemSelectorReturnTypeResolverHandler,
-					itemSelectedEventName, search, portletURL, _bookmarksEntryLocalService);
+					itemSelectedEventName, search, portletURL);
 
 		servletRequest.setAttribute(
 			BookmarksItemSelectorWebKeys.
@@ -130,9 +130,6 @@ public class BookmarksItemSelectorView
 
 	private ItemSelectorReturnTypeResolverHandler
 		_itemSelectorReturnTypeResolverHandler;
-
-	@Reference
-	private BookmarksEntryLocalService _bookmarksEntryLocalService;
 
 	@Reference
 	private Language _language;

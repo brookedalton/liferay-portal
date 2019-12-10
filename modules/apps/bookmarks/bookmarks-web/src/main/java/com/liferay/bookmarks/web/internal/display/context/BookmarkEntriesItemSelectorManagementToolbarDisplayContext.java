@@ -22,7 +22,7 @@ import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author If it works - Brooke 
+ * @author
  */
 public class BookmarkEntriesItemSelectorManagementToolbarDisplayContext
 	extends SearchContainerManagementToolbarDisplayContext {

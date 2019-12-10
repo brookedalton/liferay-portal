@@ -15,7 +15,10 @@
 package com.liferay.bookmarks.web.internal.display.context;
 
 import com.liferay.bookmarks.model.BookmarksEntry;
+import com.liferay.bookmarks.model.BookmarksFolder;
 import com.liferay.bookmarks.service.BookmarksEntryServiceUtil;
+import com.liferay.bookmarks.model.BookmarksFolder;
+import com.liferay.bookmarks.model.BookmarksFolderConstants;
 import com.liferay.bookmarks.web.internal.item.selector.BookmarksEntryItemSelectorView;
 import com.liferay.bookmarks.web.internal.util.BookmarksUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
@@ -27,6 +30,8 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 
 import java.util.List;
 import java.util.Locale;
@@ -88,7 +93,7 @@ public class BookmarkEntriesItemSelectorDisplayContext {
 		return portletURL;
 	}
 
-	public SearchContainer getSearchContainer() throws PortletException {
+	public SearchContainer getSearchContainer() throws PortalException, PortletException {
 		if (_entriesSearchContainer != null) {
 			return _entriesSearchContainer;
 		}
@@ -102,36 +107,35 @@ public class BookmarkEntriesItemSelectorDisplayContext {
 				_portletRequest, getPortletURL(), null,
 				"no-entries-were-found");
 
-		String orderByCol = ParamUtil.getString(
-			_httpServletRequest, "orderByCol", "title");
-
-		entriesSearchContainer.setOrderByCol(orderByCol);
-
-		String orderByType = ParamUtil.getString(
-			_httpServletRequest, "orderByType", "asc");
-
-		entriesSearchContainer.setOrderByType(orderByType);
-
-		entriesSearchContainer.setOrderByComparator(
-			BookmarksUtil.getOrderByComparator(
-				entriesSearchContainer.getOrderByCol(),
-				entriesSearchContainer.getOrderByType()));
-
-		entriesSearchContainer.setTotal(
-			BookmarksEntryServiceUtil.getGroupEntriesCount(
-				themeDisplay.getScopeGroupId(),
-				WorkflowConstants.STATUS_APPROVED));
+//		String orderByCol = ParamUtil.getString(
+//			_httpServletRequest, "orderByCol", "title");
+//
+//		entriesSearchContainer.setOrderByCol(orderByCol);
+//
+//		String orderByType = ParamUtil.getString(
+//			_httpServletRequest, "orderByType", "asc");
+//
+//		entriesSearchContainer.setOrderByType(orderByType);
+//
+//		entriesSearchContainer.setOrderByComparator(
+//			BookmarksUtil.getOrderByComparator(
+//				entriesSearchContainer.getOrderByCol(),
+//				entriesSearchContainer.getOrderByType()));
+//
+//		entriesSearchContainer.setTotal(
+//			BookmarksEntryServiceUtil.getGroupEntriesCount(
+//				themeDisplay.getScopeGroupId(),
+//				WorkflowConstants.STATUS_APPROVED));
 
 		List<BookmarksEntry> entriesResults = BookmarksEntryServiceUtil.getGroupEntries(
-			themeDisplay.getScopeGroupId(), WorkflowConstants.STATUS_APPROVED,
-			entriesSearchContainer.getStart(), entriesSearchContainer.getEnd(),
-			entriesSearchContainer.getOrderByComparator());
+					themeDisplay.getScopeGroupId(),
+					entriesSearchContainer.getStart(), entriesSearchContainer.getEnd());
 
-		entriesSearchContainer.setResults(entriesResults);
+			entriesSearchContainer.setResults(entriesResults);
 
-		_entriesSearchContainer = entriesSearchContainer;
+			_entriesSearchContainer = entriesSearchContainer;
 
-		return _entriesSearchContainer;
+			return _entriesSearchContainer;
 	}
 
 	private String _getTitle(Locale locale) {
