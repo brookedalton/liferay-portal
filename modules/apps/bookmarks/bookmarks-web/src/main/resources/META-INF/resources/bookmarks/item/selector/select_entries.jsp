@@ -36,7 +36,6 @@ BookmarkEntriesItemSelectorDisplayContext bookmarkEntriesItemSelectorDisplayCont
 			keyProperty="entryId"
 			modelVar="entry"
 		>
-		>
 
 			<%
 			row.setCssClass("entries");
@@ -103,7 +102,7 @@ BookmarkEntriesItemSelectorDisplayContext bookmarkEntriesItemSelectorDisplayCont
 					AssetEntry assetEntry = AssetEntryLocalServiceUtil.getEntry(BookmarksEntry.class.getName(), entry.getEntryId());
 					%>
 
-					<liferay-ui:search-container-column-text
+					<%--<liferay-ui:search-container-column-text
 						cssClass="table-column-text-end"
 						name="views"
 						value="<%= String.valueOf(assetEntry.getViewCount()) %>"
@@ -111,7 +110,7 @@ BookmarkEntriesItemSelectorDisplayContext bookmarkEntriesItemSelectorDisplayCont
 
 					<liferay-ui:search-container-column-status
 						name="status"
-					/>
+					/>--%>
 				</c:otherwise>
 			</c:choose>
 		</liferay-ui:search-container-row>

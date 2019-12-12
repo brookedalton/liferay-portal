@@ -22,7 +22,11 @@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %>
 
 <%@ page import="com.liferay.bookmarks.model.BookmarksEntry" %><%@
-page import="com.liferay.bookmarks.web.internal.util.BookmarksEntryUtil" %><%@
+page import="com.liferay.bookmarks.service.persistence.BookmarksEntryUtil;" %><%@
+page import="com.liferay.bookmarks.constants.BookmarksWebKeys" %><%@
+page import="com.liferay.petra.string.StringPool" %><%@
+page import="com.liferay.portal.kernel.workflow.WorkflowConstants" %><%@
+page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.Validator" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %>

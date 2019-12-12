@@ -16,18 +16,24 @@ package com.liferay.bookmarks.web.internal.display.context;
 
 import com.liferay.bookmarks.model.BookmarksEntry;
 import com.liferay.bookmarks.model.BookmarksFolder;
-import com.liferay.bookmarks.service.BookmarksEntryServiceUtil;
-import com.liferay.bookmarks.model.BookmarksFolder;
 import com.liferay.bookmarks.model.BookmarksFolderConstants;
+import com.liferay.bookmarks.web.internal.portlet.util.BookmarksUtil;
+import com.liferay.bookmarks.service.BookmarksEntryServiceUtil;
+import com.liferay.bookmarks.service.BookmarksFolderLocalServiceUtil;
+import com.liferay.bookmarks.util.comparator.EntryModifiedDateComparator;
+import com.liferay.bookmarks.util.comparator.EntryNameComparator;
+import com.liferay.bookmarks.util.comparator.EntryURLComparator;
 import com.liferay.bookmarks.web.internal.item.selector.BookmarksEntryItemSelectorView;
-import com.liferay.bookmarks.web.internal.util.BookmarksUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
+import com.liferay.portal.kernel.bean.BeanParamUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -35,6 +41,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -93,49 +100,55 @@ public class BookmarkEntriesItemSelectorDisplayContext {
 		return portletURL;
 	}
 
-	public SearchContainer getSearchContainer() throws PortalException, PortletException {
+	public SearchContainer getSearchContainer() throws PortletException, PortalException {
 		if (_entriesSearchContainer != null) {
 			return _entriesSearchContainer;
 		}
 
 		ThemeDisplay themeDisplay =
-			(ThemeDisplay)_httpServletRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
+				(ThemeDisplay)_httpServletRequest.getAttribute(
+						WebKeys.THEME_DISPLAY);
 
 		SearchContainer<BookmarksEntry> entriesSearchContainer =
-			new SearchContainer<>(
-				_portletRequest, getPortletURL(), null,
-				"no-entries-were-found");
+				new SearchContainer<>(
+						_portletRequest, getPortletURL(), null,
+						"no-entries-were-found");
 
-//		String orderByCol = ParamUtil.getString(
-//			_httpServletRequest, "orderByCol", "title");
-//
-//		entriesSearchContainer.setOrderByCol(orderByCol);
-//
-//		String orderByType = ParamUtil.getString(
-//			_httpServletRequest, "orderByType", "asc");
-//
-//		entriesSearchContainer.setOrderByType(orderByType);
-//
-//		entriesSearchContainer.setOrderByComparator(
-//			BookmarksUtil.getOrderByComparator(
-//				entriesSearchContainer.getOrderByCol(),
-//				entriesSearchContainer.getOrderByType()));
-//
-//		entriesSearchContainer.setTotal(
-//			BookmarksEntryServiceUtil.getGroupEntriesCount(
-//				themeDisplay.getScopeGroupId(),
-//				WorkflowConstants.STATUS_APPROVED));
+		String orderByColName = ParamUtil.getString(
+				_httpServletRequest, "orderByCol", "name");
 
-		List<BookmarksEntry> entriesResults = BookmarksEntryServiceUtil.getGroupEntries(
-					themeDisplay.getScopeGroupId(),
-					entriesSearchContainer.getStart(), entriesSearchContainer.getEnd());
+		entriesSearchContainer.setOrderByCol(orderByColName);
 
-			entriesSearchContainer.setResults(entriesResults);
+		String orderByColUrl = ParamUtil.getString(
+				_httpServletRequest, "orderByCol", "url");
 
-			_entriesSearchContainer = entriesSearchContainer;
+		entriesSearchContainer.setOrderByCol(orderByColUrl);
 
-			return _entriesSearchContainer;
+		String orderByType = ParamUtil.getString(
+				_httpServletRequest, "orderByType", "asc");
+
+		entriesSearchContainer.setOrderByType(orderByType);
+
+		entriesSearchContainer.setOrderByComparator(
+				BookmarksUtil.getEntryOrderByComparator(
+						entriesSearchContainer.getOrderByCol(),
+						entriesSearchContainer.getOrderByType()));
+
+		entriesSearchContainer.setTotal(
+				BookmarksEntryServiceUtil.getGroupEntriesCount(
+						themeDisplay.getScopeGroupId()));
+
+		List<BookmarksEntry> entriesResults = BookmarksEntryServiceUtil.getEntries(
+				themeDisplay.getScopeGroupId(), 0,
+				entriesSearchContainer.getStart(), entriesSearchContainer.getEnd(),
+				entriesSearchContainer.getOrderByComparator());
+
+		entriesSearchContainer.setResults(entriesResults);
+
+		_entriesSearchContainer = entriesSearchContainer;
+
+		return _entriesSearchContainer;
+
 	}
 
 	private String _getTitle(Locale locale) {
@@ -150,5 +163,4 @@ public class BookmarkEntriesItemSelectorDisplayContext {
 	private final PortletRequest _portletRequest;
 	private final PortletResponse _portletResponse;
 	private final PortletURL _portletURL;
-
 }

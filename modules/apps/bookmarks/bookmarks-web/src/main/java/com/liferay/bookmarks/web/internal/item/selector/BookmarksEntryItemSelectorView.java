@@ -77,7 +77,7 @@ public class BookmarksEntryItemSelectorView
 
 	@Override
 	public String getTitle(Locale locale) {
-		return _language.get(locale, "bookmarks");
+		return _language.get(locale, "Bookmarks");
 	}
 
 	@Override
