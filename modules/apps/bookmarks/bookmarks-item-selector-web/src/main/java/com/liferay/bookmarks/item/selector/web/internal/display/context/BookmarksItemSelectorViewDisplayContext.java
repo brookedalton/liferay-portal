@@ -59,10 +59,6 @@ public class BookmarksItemSelectorViewDisplayContext {
 		_bookmarksEntryLocalService = bookmarksEntryLocalService;
 	}
 
-//	public BookmarksEntry fetchBookmarksEntry(long entryId) {
-//		return _bookmarksEntryLocalService.fetchBookmarksEntry(entryId);
-//	}
-
 	public BookmarksItemSelectorCriterion getBookmarksItemSelectorCriterion() {
 		return _bookmarksItemSelectorCriterion;
 	}
@@ -78,11 +74,6 @@ public class BookmarksItemSelectorViewDisplayContext {
 						FileEntry.class);
 	}
 
-//	public BookmarksEntry fetchBookmarksEntry() {
-//		return BookmarksEntryLocalServiceUtil.fetchBookmarksEntry(
-//				_bookmarksItemSelectorCriterion.getEntryId());
-//	}
-
 	public PortletURL getPortletURL(
 			HttpServletRequest httpServletRequest,
 			LiferayPortletResponse liferayPortletResponse)
@@ -91,9 +82,6 @@ public class BookmarksItemSelectorViewDisplayContext {
 		PortletURL portletURL = PortletURLUtil.clone(
 				_portletURL, liferayPortletResponse);
 
-//		portletURL.setParameter(
-//				"resourcePrimKey",
-//				String.valueOf(_bookmarksItemSelectorCriterion.getEntryId()));
 		portletURL.setParameter(
 				"selectedTab",
 				String.valueOf(getTitle(httpServletRequest.getLocale())));
@@ -105,23 +93,6 @@ public class BookmarksItemSelectorViewDisplayContext {
 		return _bookmarksItemSelectorView.getTitle(locale);
 	}
 
-//	public PortletURL getUploadURL(
-//			LiferayPortletResponse liferayPortletResponse) {
-//
-//		PortletURL portletURL = liferayPortletResponse.createActionURL(
-//				BookmarksPortletKeys.BOOKMARKS);
-//
-//		portletURL.setParameter(
-//				ActionRequest.ACTION_NAME, "/journal/upload_image");
-//		portletURL.setParameter(
-//				"folderId",
-//				String.valueOf(_bookmarksItemSelectorCriterion.getFolderId()));
-//		portletURL.setParameter(
-//				"EntryId",
-//				String.valueOf(_bookmarksItemSelectorCriterion.getEntryIdKey()));
-//
-//		return portletURL;
-//	}
 
 	public boolean isSearch() {
 		return _search;
