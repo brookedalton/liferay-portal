@@ -401,9 +401,8 @@ ${line.separator}CATALINA_OPTS="${CATALINA_OPTS} -Djavax.net.ssl.trustStore=${el
 					<available file="${elasticsearch.dir}/${elasticsearch.ltr.zip.name}" />
 				</not>
 				<then>
-					<mirrors-get
+					<get
 						dest="${elasticsearch.dir}/${elasticsearch.ltr.zip.name}"
-						skipChecksum="true"
 						src="${elasticsearch.ltr.url}"
 					/>
 				</then>
@@ -551,9 +550,8 @@ ${line.separator}CATALINA_OPTS="${CATALINA_OPTS} -Djavax.net.ssl.trustStore=${el
 						<os family="unix" />
 					</and>
 					<then>
-						<mirrors-get
+						<get
 							dest="${app.server.parent.dir}/${elasticsearch.tar.name.linux}"
-							skipChecksum="true"
 							src="${elasticsearch.tar.url.linux}"
 						/>
 						<untar
@@ -695,9 +693,8 @@ ${line.separator}CATALINA_OPTS="${CATALINA_OPTS} -Djavax.net.ssl.trustStore=${el
 					<available file="${liferay.home}/${elasticsearch.ltr-linear-regression-model.zip.name}" />
 				</not>
 				<then>
-					<mirrors-get
+					<get
 						dest="${liferay.home}/${elasticsearch.ltr-linear-regression-model.zip.name}"
-						skipChecksum="true"
 						src="${elasticsearch.ltr-linear-regression-model.zip.url}"
 					/>
 				</then>
@@ -821,18 +818,13 @@ xpack.monitoring.collection.enabled: true</echo>
 	<target name="start-elasticsearch">
 		<lstopwatch action="start" name="start.elasticsearch" />
 
-		<get-testcase-property property.name="remote.elasticsearch.ltr.enabled" />
-
-		<if>
-			<equals arg1="${remote.elasticsearch.ltr.enabled}" arg2="true" />
-			<then>
-				<configure-elasticsearch7-test-properties />
-			</then>
-		</if>
+		<configure-elasticsearch7-test-properties />
 
 		<unzip-elasticsearch />
 
 		<prepare-elasticsearch-analyzers />
+
+		<get-testcase-property property.name="remote.elasticsearch.ltr.enabled" />
 
 		<if>
 			<equals arg1="${remote.elasticsearch.ltr.enabled}" arg2="true" />
