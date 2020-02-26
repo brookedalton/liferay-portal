@@ -66,7 +66,7 @@ definition {
 
 		selenium.mouseMoveAt("${locator2}", "0,50");
 
-		selenium.mouseMoveAt("${locator2}", "0,-20");
+		selenium.mouseMoveAt("${locator2}", "-10,-40");
 
 		selenium.mouseRelease("${locator2}");
 
