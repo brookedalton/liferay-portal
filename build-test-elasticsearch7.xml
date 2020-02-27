@@ -509,7 +509,11 @@ ${line.separator}CATALINA_OPTS="${CATALINA_OPTS} -Djavax.net.ssl.trustStore=${el
 	<macrodef name="start-ccr-trial">
 		<sequential>
 			<exec executable="curl" outputproperty="curl.output.trial.remote.cluster">
-				<arg line="-X POST &quot;http://localhost:9200/_license/start_trial?acknowledge=true&quot; -H &apos;Content-Type:application/json&apos;" />
+				<arg value="-X" />
+				<arg value="POST" />
+				<arg value="http://localhost:9200/_license/start_trial?acknowledge=true" />
+				<arg value="-H" />
+				<arg value="Content-Type:application/json" />
 			</exec>
 
 			<echo>${curl.output.trial.remote.cluster}</echo>
@@ -525,7 +529,11 @@ ${line.separator}CATALINA_OPTS="${CATALINA_OPTS} -Djavax.net.ssl.trustStore=${el
 			</if>
 
 			<exec executable="curl" outputproperty="curl.output.trial.local.cluster">
-				<arg line="-X POST &quot;http://localhost:9202/_license/start_trial?acknowledge=true&quot; -H &apos;Content-Type:application/json&apos;" />
+				<arg value="-X" />
+				<arg value="POST" />
+				<arg value="http://localhost:9202/_license/start_trial?acknowledge=true" />
+				<arg value="-H" />
+				<arg value="Content-Type:application/json" />
 			</exec>
 
 			<echo>${curl.output.trial.local.cluster}</echo>
