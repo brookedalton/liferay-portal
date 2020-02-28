@@ -854,9 +854,9 @@ xpack.monitoring.collection.enabled: true</echo>
 			<![CDATA[
 				{
 					"persistent": {
-						"cluster": { 
+						"cluster": {
 							"remote": {
-								"leader": { 
+								"leader": {
 									"seeds": [
 										"127.0.0.1:9300"
 									]
@@ -985,8 +985,31 @@ xpack.monitoring.collection.enabled: true</echo>
 			<equals arg1="${remote.elasticsearch.enabled}" arg2="true" />
 		</condition>
 
+		<property name="elasticsearch.print.query">
+			<![CDATA[
+				{
+					"query": {
+						"bool": {
+							"must": [
+								{ "match": { "userName": "test test" } }
+							],
+							"must_not": [
+								{ "match": { "hidden": "true" } },
+								{ "match": { "entryClassName": "com.liferay.portal.kernel.model.Layout" } },
+								{ "match": { "entryClassName": "com.liferay.calendar.model.Calendar" } }
+							]
+						}
+					}
+				}
+			]]>
+		</property>
+
 		<exec executable="curl" outputproperty="curl.output.elasticsearch.indices">
-			<arg line="&apos;localhost:${elasticsearch.port}/liferay-${companyId}/_search?pretty&apos; -H &apos;Content-Type: application/json&apos; -d&apos;{&quot;query&quot;: {&quot;bool&quot;: {&quot;must&quot;: [{ &quot;match&quot;: { &quot;userName&quot;: &quot;test test&quot; } }],&quot;must_not&quot;: [{ &quot;match&quot;: { &quot;hidden&quot;: &quot;true&quot; } }, { &quot;match&quot;: { &quot;entryClassName&quot;: &quot;com.liferay.portal.kernel.model.Layout&quot; } }, { &quot;match&quot;: { &quot;entryClassName&quot;: &quot;com.liferay.calendar.model.Calendar&quot; } }]}}}&apos;" />
+			<arg value="localhost:${elasticsearch.port}/liferay-${companyId}/_search?pretty" />
+			<arg value="-H" />
+			<arg value="Content-Type: application/json" />
+			<arg value="-d" />
+			<arg value="${elasticsearch.print.query}" />
 		</exec>
 
 		<echo></echo>
