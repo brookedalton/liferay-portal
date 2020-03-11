@@ -24,15 +24,11 @@ import com.liferay.portal.kernel.model.UserGroupGroupRole;
 import com.liferay.portal.kernel.model.UserGroupRole;
 import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
-import com.liferay.portal.kernel.search.BooleanQuery;
 import com.liferay.portal.kernel.search.Field;
-import com.liferay.portal.kernel.search.ParseException;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
-import com.liferay.portal.kernel.search.filter.QueryFilter;
 import com.liferay.portal.kernel.search.filter.TermFilter;
 import com.liferay.portal.kernel.search.filter.TermsFilter;
-import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.UserGroupGroupRoleLocalService;
@@ -42,7 +38,6 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
@@ -105,15 +100,11 @@ public class KaleoTaskInstanceTokenModelPreFilterContributor
 			booleanFilter.add(innerBooleanFilter, BooleanClauseOccur.MUST);
 		}
 
-		appendAssetTitleTerm(
-			booleanFilter, kaleoTaskInstanceTokenQuery, searchContext);
-		appendAssetTypeTerm(booleanFilter, kaleoTaskInstanceTokenQuery);
 		appendCompletedTerm(booleanFilter, kaleoTaskInstanceTokenQuery);
 		appendKaleoDefinitionIdTerm(booleanFilter, kaleoTaskInstanceTokenQuery);
 		appendKaleoInstanceIdsTerm(booleanFilter, kaleoTaskInstanceTokenQuery);
 		appendRoleIdsTerm(booleanFilter, kaleoTaskInstanceTokenQuery);
 		appendSearchByUserRolesTerm(booleanFilter, kaleoTaskInstanceTokenQuery);
-		appendTaskNameTerm(booleanFilter, kaleoTaskInstanceTokenQuery);
 
 		if (appendSearchCriteria(kaleoTaskInstanceTokenQuery)) {
 			appendAssetPrimaryKeyTerm(
@@ -136,58 +127,6 @@ public class KaleoTaskInstanceTokenModelPreFilterContributor
 		for (Long assetPrimaryKey : assetPrimaryKeys) {
 			booleanFilter.addTerm(Field.CLASS_PK, assetPrimaryKey);
 		}
-	}
-
-	protected void appendAssetTitleTerm(
-		BooleanFilter booleanFilter,
-		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery,
-		SearchContext searchContext) {
-
-		String assetTitle = kaleoTaskInstanceTokenQuery.getAssetTitle();
-
-		if (Validator.isNull(assetTitle)) {
-			return;
-		}
-
-		String assetTitleLocalizedName = LocalizationUtil.getLocalizedName(
-			KaleoTaskInstanceTokenField.ASSET_TITLE,
-			searchContext.getLanguageId());
-
-		BooleanQuery booleanQuery = new BooleanQueryImpl();
-
-		try {
-			booleanQuery.addTerm(assetTitleLocalizedName, assetTitle);
-		}
-		catch (ParseException parseException) {
-			throw new RuntimeException(parseException);
-		}
-
-		booleanFilter.add(new QueryFilter(booleanQuery));
-	}
-
-	protected void appendAssetTypeTerm(
-		BooleanFilter booleanFilter,
-		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery) {
-
-		String[] assetTypes = kaleoTaskInstanceTokenQuery.getAssetTypes();
-
-		if (ListUtil.isNull(ListUtil.fromArray(assetTypes))) {
-			return;
-		}
-
-		BooleanQuery booleanQuery = new BooleanQueryImpl();
-
-		for (String assetType : assetTypes) {
-			try {
-				booleanQuery.addTerm(
-					KaleoTaskInstanceTokenField.CLASS_NAME, assetType);
-			}
-			catch (ParseException parseException) {
-				throw new RuntimeException(parseException);
-			}
-		}
-
-		booleanFilter.add(new QueryFilter(booleanQuery));
 	}
 
 	protected void appendAssigneeClassIdsNameTerm(
@@ -454,31 +393,6 @@ public class KaleoTaskInstanceTokenModelPreFilterContributor
 		}
 
 		return false;
-	}
-
-	protected void appendTaskNameTerm(
-		BooleanFilter booleanFilter,
-		KaleoTaskInstanceTokenQuery kaleoTaskInstanceTokenQuery) {
-
-		String[] taskNames = kaleoTaskInstanceTokenQuery.getTaskNames();
-
-		if (ListUtil.isNull(ListUtil.fromArray(taskNames))) {
-			return;
-		}
-
-		BooleanQuery booleanQuery = new BooleanQueryImpl();
-
-		for (String taskName : taskNames) {
-			try {
-				booleanQuery.addTerm(
-					KaleoTaskInstanceTokenField.TASK_NAME, taskName);
-			}
-			catch (ParseException parseException) {
-				throw new RuntimeException(parseException);
-			}
-		}
-
-		booleanFilter.add(new QueryFilter(booleanQuery));
 	}
 
 	protected BooleanFilter createRoleAssigneeClassPKBooleanFilter(
