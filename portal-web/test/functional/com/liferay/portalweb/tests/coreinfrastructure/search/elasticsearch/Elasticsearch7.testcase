@@ -297,6 +297,7 @@ definition {
 	}
 
 	test MultipleConnectionsSmokeTest {
+		property portal.acceptance = "brooke";
 		property portal.upstream = "quarantine";
 		property remote.elasticsearch.clusters.enabled = "true";
 		property remote.elasticsearch.enabled = "true";
