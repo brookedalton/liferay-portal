@@ -342,6 +342,8 @@ definition {
 			panel = "Control Panel",
 			portlet = "Search");
 
+		Pause(locator1 = "5000");
+
 		Refresh();
 
 		AssertTextEquals.assertPartialText(
