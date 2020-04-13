@@ -841,6 +841,12 @@ ${line.separator}CATALINA_OPTS="${CATALINA_OPTS} -Djavax.net.ssl.trustStore=${el
 xpack.monitoring.collection.enabled: true</echo>
 	</target>
 
+	<target name="configure-multiple-conections-portal-osgi-properties">
+		<echo append="true" file="${liferay.home}/osgi/configs/com.liferay.portal.search.elasticsearch7.configuration.ElasticsearchConnectionConfiguration-federated.config">${line.separator}active="true"
+connectionId="federated"
+networkHostAddresses=["http://localhost:9202"]</echo>
+	</target>
+
 	<target name="create-follower-indices">
 		<exec executable="curl" outputproperty="companyId">
 			<arg value="http://localhost:8080/api/jsonws/company/get-company-by-virtual-host/virtual-host/localhost" />

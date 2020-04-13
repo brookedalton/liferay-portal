@@ -325,13 +325,14 @@ definition {
 	}
 
 	test ConfigureMultipleElasticsearchConnections {
+		property portal.acceptance = "brooke";
 		property portal.upstream = "quarantine";
 		property remote.elasticsearch.clusters.enabled = "true";
 		property remote.elasticsearch.enabled = "true";
 
-		OSGiConfig.deployOSGiConfigs(
-			OSGiConfigFileName = "com.liferay.portal.search.elasticsearch7.configuration.ElasticsearchConnectionConfiguration-default_federated.config",
-			OSGiConfigs = "active=&quot;true&quot;,connectionId=&quot;federated&quot;,networkHostAddresses=[&quot;http://localhost:9202&quot;]");
+		AntCommand(
+			locator1 = "build-test-elasticsearch7.xml",
+			value1 = "configure-multiple-conections-portal-osgi-properties");
 
 		JSONGroup.addGroup(groupName = "Test Site Name");
 
