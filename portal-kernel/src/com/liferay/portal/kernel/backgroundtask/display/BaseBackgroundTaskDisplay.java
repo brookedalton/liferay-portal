@@ -154,7 +154,7 @@ public abstract class BaseBackgroundTaskDisplay
 		String attributeKey) {
 
 		if (!hasBackgroundTaskStatus()) {
-			return StringPool.BLANK;
+			return StringPool.NULL;
 		}
 
 		return GetterUtil.getString(
