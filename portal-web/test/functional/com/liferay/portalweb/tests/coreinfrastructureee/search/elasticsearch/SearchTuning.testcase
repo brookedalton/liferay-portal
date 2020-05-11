@@ -139,6 +139,8 @@ definition {
 	}
 
 	test AssertResultRankingsAssetDetails {
+		property portal.acceptance = "brooke";
+
 		JSONMBMessage.addMessage(
 			groupName = "Guest",
 			threadBody = "banana, red apple, blueberry!",
