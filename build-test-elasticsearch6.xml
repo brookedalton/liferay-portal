@@ -919,7 +919,7 @@ xpack.monitoring.collection.enabled: true</echo>
 
 		<configure-elasticsearch-properties />
 
-		<get-testcase-property property.name="elastic.xpack.pki.authentication.enabled" />
+		<!-- <get-testcase-property property.name="elastic.xpack.pki.authentication.enabled" /> -->
 
 		<if>
 			<equals arg1="${elastic.xpack.enabled}" arg2="true" />
@@ -958,7 +958,7 @@ xpack.monitoring.collection.enabled: true</echo>
 
 				<start-x-pack-trial />
 
-				<get-testcase-property property.name="elastic.xpack.pki.authentication.enabled" />
+				<!-- <get-testcase-property property.name="elastic.xpack.pki.authentication.enabled" /> -->
 
 				<if>
 					<equals arg1="${elastic.xpack.pki.authentication.enabled}" arg2="true" />
@@ -1091,7 +1091,7 @@ xpack.monitoring.collection.enabled: true</echo>
 			</fileset>
 		</chmod>
 
-		<get-testcase-property property.name="elastic.xpack.enabled" />
+		<!-- <get-testcase-property property.name="elastic.xpack.enabled" /> -->
 
 		<if>
 			<equals arg1="${elastic.xpack.enabled}" arg2="true" />
@@ -1182,8 +1182,9 @@ xpack.monitoring.collection.enabled: true</echo>
 			<print-file file.name="${elasticsearch.dir}-${elasticsearch.node.number}/logs/LiferayElasticsearchCluster.log" />
 		</antelope:repeat>
 
-		<get-testcase-property property.name="elastic.xpack.enabled" />
-		<get-testcase-property property.name="elastic.xpack.pki.authentication.enabled" />
+		<!-- <get-testcase-property property.name="elastic.xpack.enabled" /> -->
+
+		<!-- <get-testcase-property property.name="elastic.xpack.pki.authentication.enabled" /> -->
 
 		<if>
 			<equals arg1="${elastic.xpack.enabled}" arg2="true" />
@@ -1224,5 +1225,35 @@ xpack.monitoring.collection.enabled: true</echo>
 				</exec>
 			</then>
 		</if>
+	</target>
+
+	<target name="verify-pki-authentication">
+		<sequential>
+			<exec dir="${elasticsearch.dir}-1/config/certs" executable="curl" outputproperty="curl.output">
+				<arg value="https://localhost:9200/_xpack/security/_authenticate?pretty" />
+				<arg value="--key" />
+				<arg value="localhost.key" />
+				<arg value="--cert" />
+				<arg value="localhost.crt" />
+				<arg value="--cacert" />
+				<arg value="ca.crt" />
+				<arg value="-v" />
+			</exec>
+
+			<echo>${curl.output}</echo>
+
+			<if>
+				<and>
+					<contains string="${curl.output}" substring="&quot;pki_dn&quot; : &quot;CN=liferay.com, DC=liferay, DC=com&quot;" />
+					<contains string="${curl.output}" substring="&quot;enabled&quot; : true" />
+				</and>
+				<then>
+					<echo>Elasticsearch started with X-Pack PKI Security.</echo>
+				</then>
+				<else>
+					<fail>Elasticsearch failed to start with X-Pack PKI Security.</fail>
+				</else>
+			</if>
+		</sequential>
 	</target>
 </project>
