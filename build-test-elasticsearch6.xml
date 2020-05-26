@@ -919,7 +919,7 @@ xpack.monitoring.collection.enabled: true</echo>
 
 		<configure-elasticsearch-properties />
 
-		<get-testcase-property property.name="elastic.xpack.enabled" />
+		<get-testcase-property property.name="elastic.xpack.pki.authentication.enabled" />
 
 		<if>
 			<equals arg1="${elastic.xpack.enabled}" arg2="true" />
@@ -957,6 +957,23 @@ xpack.monitoring.collection.enabled: true</echo>
 				<set-x-pack-user-passwords />
 
 				<start-x-pack-trial />
+
+				<get-testcase-property property.name="elastic.xpack.pki.authentication.enabled" />
+
+				<if>
+					<equals arg1="${elastic.xpack.pki.authentication.enabled}" arg2="true" />
+					<then>
+						<sleep seconds="10" />
+
+						<antcall target="stop-elasticsearch" />
+
+						<configure-elasticsearch-x-pack-pki-authentication-security-properties />
+
+						<antcall target="start-elasticsearch-node" />
+
+						<sleep seconds="10" />
+					</then>
+				</if>
 
 				<configure-portal-x-pack-osgi-properties />
 
