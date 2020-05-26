@@ -11,6 +11,34 @@ xpack.ml.enabled: false</echo>
 		</sequential>
 	</macrodef>
 
+	<macrodef name="configure-elasticsearch-x-pack-pki-authentication-security-properties">
+		<sequential>
+			<echo append="true" file="${elasticsearch.dir}-1/config/elasticsearch.yml">${line.separator}xpack.security.transport.ssl.client_authentication: required
+xpack.security.http.ssl.client_authentication: required
+xpack.security.authc:
+   realms:
+      pki:
+        type: pki
+        order: 0</echo>
+
+			<echo append="true" file="${elasticsearch.dir}-1/config/role_mapping.yml">${line.separator}superuser:
+  - "CN=liferay.com,DC=liferay,DC=com"
+kibana_system:
+  - "CN=kibana.liferay.com,DC=kibana,DC=liferay,DC=com"</echo>
+
+			<echo append="true" file="${elastic.kibana.dir}/config/kibana.yml">${line.separator}elasticsearch.ssl.alwaysPresentCertificate: true</echo>
+
+			<replace
+				file="${elastic.kibana.dir}/config/kibana.yml"
+			>
+				<replacetoken><![CDATA[elasticsearch.username: "kibana"]]></replacetoken>
+				<replacevalue><![CDATA[#elasticsearch.username: "kibana"]]></replacevalue>
+				<replacetoken><![CDATA[elasticsearch.password: "${elastic.xpack.kibana.user.password}"]]></replacetoken>
+				<replacevalue><![CDATA[#elasticsearch.password: "${elastic.xpack.kibana.user.password}"]]></replacevalue>
+			</replace>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="configure-elasticsearch-x-pack-security-properties">
 		<sequential>
 			<echo append="true" file="${elasticsearch.dir}/config/elasticsearch.yml">${line.separator}xpack.security.enabled: true
