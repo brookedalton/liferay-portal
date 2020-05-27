@@ -932,6 +932,39 @@ definition {
 	}
 
 	@priority = "5"
+	test XPackPKIAuthenticationTest {
+		property elastic.xpack.enabled = "true";
+		property elastic.xpack.pki.authentication.enabled = "true";
+		property osgi.app.includes = "portal-search-elasticsearch6-xpack-monitoring,portal-search-elasticsearch6-xpack-security";
+		property remote.elasticsearch.enabled = "true";
+		property test.name.skip.portal.instance = "Elasticsearch6EE#XPackPKIAuthenticationTes";
+
+		var curl = '''
+			https://localhost:9200/_xpack/security/_authenticate?pretty \
+				--key localhost.key --cert localhost.crt --cacert ca.crt -v
+		''';
+
+		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
+
+		AssertConsoleTextPresent(value1 = "&quot;pki_dn&quot; : &quot;CN=liferay.com,OU=Search,DC=liferay,DC=com&quot;");
+
+		JSONLayout.addPublicLayout(
+			groupName = "Guest",
+			layoutName = "X-Pack Monitoring Page");
+
+		JSONLayout.updateLayoutTemplateOfPublicLayout(
+			groupName = "Guest",
+			layoutName = "X-Pack Monitoring Page",
+			layoutTemplate = "1 Column");
+
+		Navigator.gotoPage(pageName = "X-Pack Monitoring Page");
+
+		Portlet.addPG(portletName = "X-Pack Monitoring");
+
+		XPackMonitoring.viewPG();
+	}
+
+	@priority = "5"
 	test XPackSmokeTest {
 		property elastic.xpack.enabled = "true";
 		property osgi.app.includes = "portal-search-elasticsearch6-xpack-monitoring,portal-search-elasticsearch6-xpack-security";
