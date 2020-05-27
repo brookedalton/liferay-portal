@@ -932,6 +932,45 @@ definition {
 	}
 
 	@priority = "5"
+	test XPackPKIAuthenticationTest {
+		property elastic.xpack.enabled = "true";
+		property elastic.xpack.pki.authentication.enabled = "true";
+		property osgi.app.includes = "portal-search-elasticsearch6-xpack-monitoring,portal-search-elasticsearch6-xpack-security";
+		property remote.elasticsearch.enabled = "true";
+		property test.name.skip.portal.instance = "Elasticsearch6EE#XPackPKIAuthenticationTes";
+
+		JSONWebcontent.addWebContent(
+			content = "WC Content",
+			groupName = "Guest",
+			title = "WC Title");
+
+		SearchPortlets.searchEmbedded(searchTerm = "WC Title");
+
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "WC Title",
+			searchAssetType = "Web Content Article");
+
+		AntCommand(
+			locator1 = "build-test-elasticsearch6.xml",
+			value1 = "verify-pki-authentication");
+
+		JSONLayout.addPublicLayout(
+			groupName = "Guest",
+			layoutName = "X-Pack Monitoring Page");
+
+		JSONLayout.updateLayoutTemplateOfPublicLayout(
+			groupName = "Guest",
+			layoutName = "X-Pack Monitoring Page",
+			layoutTemplate = "1 Column");
+
+		Navigator.gotoPage(pageName = "X-Pack Monitoring Page");
+
+		Portlet.addPG(portletName = "X-Pack Monitoring");
+
+		XPackMonitoring.viewPG();
+	}
+
+	@priority = "5"
 	test XPackSmokeTest {
 		property elastic.xpack.enabled = "true";
 		property osgi.app.includes = "portal-search-elasticsearch6-xpack-monitoring,portal-search-elasticsearch6-xpack-security";
