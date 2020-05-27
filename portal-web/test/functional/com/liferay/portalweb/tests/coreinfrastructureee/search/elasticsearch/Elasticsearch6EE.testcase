@@ -933,6 +933,7 @@ definition {
 
 	@priority = "5"
 	test XPackSmokeTest {
+		property portal.acceptance = "brooke";
 		property elastic.xpack.enabled = "true";
 		property osgi.app.includes = "portal-search-elasticsearch6-xpack-monitoring,portal-search-elasticsearch6-xpack-security";
 		property remote.elasticsearch.enabled = "true";
