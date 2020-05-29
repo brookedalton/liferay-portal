@@ -82,6 +82,32 @@ server.rewriteBasePath: false</echo>
 		</sequential>
 	</macrodef>
 
+	<macrodef name="configure-kibana-x-pack-pki-authentication-security-properties">
+		<sequential>
+			<echo append="true" file="${elastic.kibana.dir}/config/kibana.yml">${line.separator}elasticsearch.ssl.certificateAuthorities: [ "${elasticsearch.dir}-1/config/certs/ca.crt" ]
+elasticsearch.ssl.certificate: ${elasticsearch.dir}-1/config/certs/kibana.crt
+elasticsearch.ssl.key: ${elasticsearch.dir}-1/config/certs/kibana.key
+elasticsearch.ssl.verificationMode: certificate
+server.ssl.certificateAuthorities: [ "${elasticsearch.dir}-1/config/certs/ca.crt" ]
+server.ssl.certificate: ${elasticsearch.dir}-1/config/certs/kibana.crt
+server.ssl.enabled: true
+server.ssl.key: ${elasticsearch.dir}-1/config/certs/kibana.key
+xpack.security.encryptionKey: "xsomethingxatxleastx32xcharactersx"
+xpack.security.sessionTimeout: 600000
+elasticsearch.ssl.alwaysPresentCertificate: true</echo>
+
+			<echo append="true" file="${elasticsearch.dir}-1/config/role_mapping.yml">${line.separator}kibana_system:
+  - "CN=kibana.liferay.com,OU=Search,DC=kibana,DC=liferay,DC=com"</echo>
+
+			<replace
+				file="${elastic.kibana.dir}/config/kibana.yml"
+			>
+				<replacetoken><![CDATA[elasticsearch.url: "http://localhost:9200"]]></replacetoken>
+				<replacevalue><![CDATA[elasticsearch.url: "https://localhost:9200"]]></replacevalue>
+			</replace>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="configure-kibana-x-pack-security-properties">
 		<sequential>
 			<echo append="true" file="${elastic.kibana.dir}/config/kibana.yml">${line.separator}elasticsearch.password: "${elastic.xpack.kibana.user.password}"
@@ -1082,12 +1108,22 @@ xpack.monitoring.collection.enabled: true</echo>
 
 		<get-testcase-property property.name="elastic.xpack.enabled" />
 
+		<get-testcase-property property.name="elastic.xpack.pki.authentication.enabled" />
+
 		<if>
 			<equals arg1="${elastic.xpack.enabled}" arg2="true" />
 			<then>
 				<configure-kibana-properties />
 
-				<configure-kibana-x-pack-security-properties />
+				<if>
+					<equals arg1="${elastic.xpack.pki.authentication.enabled}" arg2="true" />
+					<then>
+						<configure-kibana-x-pack-pki-authentication-security-properties />
+					</then>
+					<else>
+						<configure-kibana-x-pack-security-properties />
+					</else>
+				</if>
 			</then>
 		</if>
 
