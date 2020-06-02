@@ -175,6 +175,8 @@ definition {
 			portletName = "Search Options",
 			portletOption = "Configuration");
 
+		WaitForLiferayEvent.initializeLiferayEventLog();
+
 		SelectFrame(locator1 = "IFrame#CONFIGURATION");
 
 		if ("${allowEmptySearches}" == "true") {
