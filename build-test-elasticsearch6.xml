@@ -138,6 +138,32 @@ xpack.security.sessionTimeout: 600000</echo>
 		</sequential>
 	</macrodef>
 
+	<macrodef name="configure-portal-x-pack-osgi-pki-authentication-properties">
+		<sequential>
+			<propertyregex
+				defaultValue="${elastic.xpack.elastic.user.password}"
+				input="${elastic.xpack.elastic.user.password}"
+				override="true"
+				property="osgi.config.elastic.user.password"
+				regexp="="
+				replace="\\\\="
+			/>
+
+			<echo append="true" file="${liferay.home}/osgi/configs/com.liferay.portal.search.elasticsearch6.xpack.monitoring.web.internal.configuration.XPackMonitoringConfiguration.config">kibanaPassword="${osgi.config.elastic.user.password}"
+kibanaURL="https://localhost:5601"
+proxyServletLogEnable="true"</echo>
+
+			<echo append="true" file="${liferay.home}/osgi/configs/com.liferay.portal.search.elasticsearch6.xpack.security.internal.configuration.XPackSecurityConfiguration.config">certificateFormat="PEM"
+username=""
+password=""
+requiresAuthentication="false"
+sslCertificateAuthoritiesPaths="${elasticsearch.dir}-1/config/certs/ca.crt"
+sslCertificatePath="${elasticsearch.dir}-1/config/certs/localhost.crt"
+sslKeyPath="${elasticsearch.dir}-1/config/certs/localhost.key"
+transportSSLEnabled="true"</echo>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="configure-portal-x-pack-osgi-properties">
 		<sequential>
 			<propertyregex
@@ -987,10 +1013,13 @@ xpack.monitoring.collection.enabled: true</echo>
 						<antcall target="start-elasticsearch-node" />
 
 						<sleep seconds="10" />
-					</then>
-				</if>
 
-				<configure-portal-x-pack-osgi-properties />
+						<configure-portal-x-pack-osgi-pki-authentication-properties />
+					</then>
+					<else>
+						<configure-portal-x-pack-osgi-properties />
+					</else>
+				</if>
 
 				<configure-portal-x-pack-security-truststore />
 
