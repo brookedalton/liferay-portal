@@ -955,14 +955,15 @@ definition {
 
 		XPackMonitoring.viewPG();
 
-		var curl = '''
-			https://localhost:9200/_xpack/security/_authenticate?pretty \
-				--key localhost.key --cert localhost.crt --cacert ca.crt -v
-		''';
+		// var curl = '''
+		// 	https://localhost:9200/_xpack/security/_authenticate?pretty \
+		// 		--key localhost.key --cert localhost.crt --cacert ca.crt -v
+		// ''';
 
-		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
+		// com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
 
-		AssertConsoleTextPresent(value1 = "&quot;pki_dn&quot; : &quot;CN=liferay.com,OU=Search,DC=liferay,DC=com&quot;");
+		// AssertConsoleTextPresent(value1 = "&quot;pki_dn&quot; : &quot;CN=liferay.com,OU=Search,DC=liferay,DC=com&quot;");
+
 	}
 
 	@priority = "5"
