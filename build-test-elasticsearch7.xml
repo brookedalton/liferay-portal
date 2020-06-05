@@ -1627,12 +1627,21 @@ xpack.monitoring.collection.enabled: true</echo>
 
 		<get-testcase-property property.name="elastic.xpack.enabled" />
 
+		<get-testcase-property property.name="elastic.xpack.pki.authentication.enabled" />
+
 		<if>
 			<equals arg1="${elastic.xpack.enabled}" arg2="true" />
 			<then>
-				<print-file file.name="${elastic.kibana.dir}/bin/kibana.log" />
-
-				<antcall target="stop-kibana" />
+				<if>
+					<equals arg1="${elastic.xpack.pki.authentication.enabled}" arg2="true" />
+					<then>
+						<echo>Stopping elasticsearch</echo>
+					</then>
+					<else>
+						<print-file file.name="${elastic.kibana.dir}/bin/kibana.log" />
+						<antcall target="stop-kibana" />
+					</else>
+				</if>
 			</then>
 		</if>
 	</target>
