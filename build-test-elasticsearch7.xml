@@ -11,6 +11,23 @@ xpack.ml.enabled: false</echo>
 		</sequential>
 	</macrodef>
 
+	<macrodef name="configure-elasticsearch-x-pack-pki-authentication-security-properties">
+		<sequential>
+			<echo append="true" file="${elasticsearch.dir}-1/config/elasticsearch.yml">${line.separator}xpack.security.transport.ssl.client_authentication: required
+xpack.security.http.ssl.client_authentication: required
+xpack:
+  security:
+    authc:
+      realms:
+        pki:
+          pki1:
+            order: 0</echo>
+
+			<echo append="true" file="${elasticsearch.dir}-1/config/role_mapping.yml">${line.separator}superuser:
+  - "CN=liferay.com,OU=Search,DC=liferay,DC=com"</echo>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="configure-elasticsearch-x-pack-security-properties">
 		<sequential>
 			<echo append="true" file="${elasticsearch.dir}/config/elasticsearch.yml">${line.separator}xpack.security.enabled: true
