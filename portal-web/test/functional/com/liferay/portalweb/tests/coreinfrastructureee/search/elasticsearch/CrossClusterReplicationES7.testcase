@@ -140,6 +140,7 @@ definition {
 
 	@priority = "3"
 	test CleanAndReindexWorkflowMetricsInstances {
+		property portal.acceptance = "brooke";
 		property test.name.skip.portal.instance = "CrossClusterReplicationES7#CleanAndReindexWorkflowMetricsInstances";
 
 		CrossClusterReplication.setupCrossClusterReplication();
@@ -165,6 +166,7 @@ definition {
 
 	@priority = "3"
 	test CleanAndReindexWorkflowMetricsNodes {
+		property portal.acceptance = "brooke";
 		property test.name.skip.portal.instance = "CrossClusterReplicationES7#CleanAndReindexWorkflowMetricsNodes";
 
 		CrossClusterReplication.setupCrossClusterReplication();
@@ -199,6 +201,7 @@ definition {
 
 	@priority = "3"
 	test CleanAndReindexWorkflowMetricsProcesses {
+		property portal.acceptance = "brooke";
 		property test.name.skip.portal.instance = "CrossClusterReplicationES7#CleanAndReindexWorkflowMetricsProcesses";
 
 		CrossClusterReplication.setupCrossClusterReplication();
@@ -221,6 +224,7 @@ definition {
 
 	@priority = "3"
 	test CleanAndReindexWorkflowMetricsSLAInstanceResults {
+		property portal.acceptance = "brooke";
 		property test.name.skip.portal.instance = "CrossClusterReplicationES7#CleanAndReindexWorkflowMetricsSLAInstanceResults";
 
 		CrossClusterReplication.setupCrossClusterReplication();
@@ -243,6 +247,7 @@ definition {
 
 	@priority = "3"
 	test CleanAndReindexWorkflowMetricsSLATaskResults {
+		property portal.acceptance = "brooke";
 		property test.name.skip.portal.instance = "CrossClusterReplicationES7#CleanAndReindexWorkflowMetricsSLATaskResults";
 
 		CrossClusterReplication.setupCrossClusterReplication();
@@ -268,6 +273,7 @@ definition {
 
 	@priority = "3"
 	test CleanAndReindexWorkflowMetricsTasks {
+		property portal.acceptance = "brooke";
 		property test.name.skip.portal.instance = "CrossClusterReplicationES7#CleanAndReindexWorkflowMetricsTasks";
 
 		CrossClusterReplication.setupCrossClusterReplication();
@@ -310,6 +316,7 @@ definition {
 
 	@priority = "3"
 	test CleanAndReindexWorkflowMetricsTransitions {
+		property portal.acceptance = "brooke";
 		property test.name.skip.portal.instance = "CrossClusterReplicationES7#CleanAndReindexWorkflowMetricsTransitions";
 
 		CrossClusterReplication.setupCrossClusterReplication();
