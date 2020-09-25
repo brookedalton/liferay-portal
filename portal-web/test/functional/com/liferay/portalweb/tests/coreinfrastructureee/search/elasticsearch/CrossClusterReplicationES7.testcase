@@ -420,6 +420,7 @@ definition {
 
 	@priority = "3"
 	test HotDeployApp {
+		property portal.acceptance = "brooke";
 		property hot.deploy.osgi.app.includes = "portal-search-elasticsearch-cross-cluster-replication";
 		property test.assert.warning.exceptions = "true";
 		property test.name.skip.portal.instance = "CrossClusterReplicationES7#HotDeployApp";
