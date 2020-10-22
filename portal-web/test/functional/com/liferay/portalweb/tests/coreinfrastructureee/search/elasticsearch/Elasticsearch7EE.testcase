@@ -979,6 +979,7 @@ definition {
 
 	@priority = "5"
 	test XPackSmokeTest {
+		property portal.acceptance = "brooke";
 		property elastic.xpack.enabled = "true";
 		property osgi.app.includes = "portal-search-elasticsearch-monitoring";
 		property portal.upstream = "quarantine";
