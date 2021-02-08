@@ -1,0 +1,20 @@
+{
+	"dynamic_templates": [
+		{
+			"template_LPS127476" : {
+				"mapping" : {
+					"store" : true,
+					"type" : "text"
+				},
+				"match" : "*",
+				"match_mapping_type" : "string",
+			}
+		}
+	],
+	"properties": {
+		"testLPS127476": {
+			"store": true,
+			"type": "text"
+		}
+	}
+}
