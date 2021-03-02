@@ -4144,12 +4144,24 @@ go</echo>
 	<macrodef name="set-up-search-engine">
 		<sequential>
 			<get-testcase-property property.name="remote.elasticsearch.enabled" />
+			<propertycopy from="search.engine[${env.CI_TEST_SUITE}]" name="suite.search.engine" silent="true" />
 
 			<if>
-				<equals arg1="${remote.elasticsearch.enabled}" arg2="true" />
+				<equals arg1="${suite.search.engine}" arg2="remote-elasticsearch7-jdk11" />
 				<then>
-					<ant antfile="build-test-elasticsearch7.xml" target="start-elasticsearch" />
+					<ant antfile="build-test-elasticsearch7.xml" target="start-elasticsearch">
+						<property name="jdk.version" value="openjdk11" />
+					</ant>
 				</then>
+				<elseif>
+					<or>
+						<equals arg1="${remote.elasticsearch.enabled}" arg2="true" />
+						<equals arg1="${suite.search.engine}" arg2="remote-elasticsearch7" />
+					</or>
+					<then>
+						<ant antfile="build-test-elasticsearch7.xml" target="start-elasticsearch" />
+					</then>
+				</elseif>
 			</if>
 
 			<get-testcase-property property.name="delete.sidecar.bundle" />
@@ -5436,9 +5448,13 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 	<macrodef name="stop-remote-search-engine">
 		<sequential>
 			<get-testcase-property property.name="remote.elasticsearch.enabled" />
+			<propertycopy from="search.engine[${env.CI_TEST_SUITE}]" name="suite.search.engine" silent="true" />
 
 			<if>
-				<istrue value="${remote.elasticsearch.enabled}" />
+				<or>
+					<equals arg1="${suite.search.engine}" arg2="remote-elasticsearch7" />
+					<istrue value="${remote.elasticsearch.enabled}" />
+				</or>
 				<then>
 					<get-testcase-property property.name="elasticsearch.cluster.size" />
 					<get-testcase-property property.name="elasticsearch.multiple.connections" />
