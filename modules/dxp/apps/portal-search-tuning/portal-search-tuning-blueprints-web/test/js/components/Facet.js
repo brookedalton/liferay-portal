@@ -13,7 +13,7 @@ import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
 import Facet from '../../../src/main/resources/META-INF/resources/js/components/Facet';
-import {RESOURCE, SELECTED_FACETS} from '../mocks/data';
+import {RESOURCE} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
@@ -28,32 +28,39 @@ function renderFacets(props) {
 	);
 }
 
+const SAMPLE_FACET = 'tag';
+
 describe('BlueprintsSearch', () => {
 	it('renders the facet labels', () => {
 		const {getByText} = renderFacets();
 
-		RESOURCE.facets.map((item) => getByText(item.facetLabel));
+		Object.keys(RESOURCE.facets).map((item) =>
+			getByText(RESOURCE.facets[item].label)
+		);
 	});
 
 	it('renders the facets populated', () => {
 		const {getByLabelText} = renderFacets({
-			selectedFacets: SELECTED_FACETS,
+			selectedFacets: {
+				[RESOURCE.facets[SAMPLE_FACET].parameterName]:
+					RESOURCE.facets[SAMPLE_FACET].values,
+			},
 		});
 
-		SELECTED_FACETS['entryClassName'].map((item) =>
-			getByLabelText(`${item.value}`)
+		RESOURCE.facets[SAMPLE_FACET].values.map((item) =>
+			getByLabelText(item.text)
 		);
 	});
 
 	it('shows a dropdown of facet options when clicked on', () => {
-		const {getByLabelText, getByText} = renderFacets({});
+		const {getByLabelText, getByText} = renderFacets();
 
-		const firstFacet = RESOURCE.facets[0];
+		const sampleFacet = RESOURCE.facets[SAMPLE_FACET];
 
-		fireEvent.click(getByLabelText(firstFacet['facetLabel']));
+		fireEvent.click(getByLabelText(sampleFacet.label));
 
-		firstFacet['values'].map((item) =>
-			expect(getByText(item.value)).toBeVisible()
+		sampleFacet.values.map((item) =>
+			expect(getByText(item.text)).toBeVisible()
 		);
 	});
 
@@ -62,10 +69,13 @@ describe('BlueprintsSearch', () => {
 
 		const {getAllByLabelText} = renderFacets({
 			onChange,
-			selectedFacets: SELECTED_FACETS,
+			selectedFacets: {
+				[RESOURCE.facets[SAMPLE_FACET].parameterName]:
+					RESOURCE.facets[SAMPLE_FACET].values,
+			},
 		});
 
-		fireEvent.click(getAllByLabelText('Remove', {exact: false})[0]);
+		fireEvent.click(getAllByLabelText('remove', {exact: false})[0]);
 
 		expect(onChange).toHaveBeenCalled();
 	});

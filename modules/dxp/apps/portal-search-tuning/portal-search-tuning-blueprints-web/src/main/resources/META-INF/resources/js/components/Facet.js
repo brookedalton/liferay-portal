@@ -75,7 +75,7 @@ export default function Facet({facets, onChange, selectedFacets}) {
 }
 
 Facet.propTypes = {
-	facets: PropTypes.arrayOf(PropTypes.object),
+	facets: PropTypes.object,
 	onChange: PropTypes.func,
 	selectedFacets: PropTypes.object,
 };

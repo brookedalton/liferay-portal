@@ -13,136 +13,171 @@ export const FETCH_URL = 'https://fetchURL';
 export const SUGGEST_URL = 'https://suggestURL';
 
 export const RESOURCE = {
-	facets: [
-		{
-			facetLabel: 'Asset Type',
-			parameterName: 'entryClassName',
+	aggregations: {},
+	facets: {
+		modified: {
+			handlerName: 'date_range',
+			label: 'Modified',
+			parameterName: 'modified',
 			values: [
 				{
-					text: 'com.liferay.wiki.model.WikiPage',
-					value: 'com.liferay.wiki.model.WikiPage',
-				},
-				{
-					text:
-						'com.liferay.document.library.kernel.model.DLFileEntry',
-					value:
-						'com.liferay.document.library.kernel.model.DLFileEntry',
-				},
-				{
-					text: 'com.liferay.message.boards.model.MBMessage',
-					value: 'com.liferay.message.boards.model.MBMessage',
+					frequency: 40,
+					term: 'last-month',
+					text: 'Last month (40)',
+					value: 'last-month',
 				},
 			],
 		},
-		{
-			facetLabel: 'Format',
-			parameterName: 'extension',
+		tag: {
+			handlerName: 'default',
+			label: 'Tag',
+			parameterName: 'tag',
 			values: [
 				{
-					text: 'pdf',
-					value: 'pdf',
+					frequency: 40,
+					text: 'establishment (40)',
+					value: 'establishment',
 				},
 				{
-					text: 'zip',
-					value: 'zip',
+					frequency: 40,
+					text: 'point of interest (40)',
+					value: 'point of interest',
 				},
+				{frequency: 22, text: 'food (22)', value: 'food'},
+				{frequency: 22, text: 'restaurant (22)', value: 'restaurant'},
 				{
-					text: 'MS Powerpoint',
-					value: 'MS Powerpoint',
+					frequency: 21,
+					text: 'tourist attraction (21)',
+					value: 'tourist attraction',
 				},
 			],
 		},
-		{
-			facetLabel: 'Tag',
-			parameterName: 'assetTagNames',
+		type: {
+			handlerName: 'default',
+			label: 'Type',
+			parameterName: 'type',
 			values: [
 				{
-					text: 'dxp',
-					value: 'dxp',
-				},
-				{
-					text: 'technical support',
-					value: 'technical support',
-				},
-				{
-					text: 'fix pack',
-					value: 'fix pack',
-				},
-				{
-					text: 'pull request tester',
-					value: 'pull request tester',
-				},
-				{
-					text: 'tickets',
-					value: 'tickets',
+					frequency: 40,
+					text: 'Web Content Article (40)',
+					value: 'com.liferay.journal.model.JournalArticle',
 				},
 			],
 		},
-		{
-			facetLabel: 'User',
-			parameterName: 'userName',
+		user: {
+			handlerName: 'default',
+			label: 'User',
+			parameterName: 'user',
 			values: [
-				{
-					text: 'test user1',
-					value: 'test user1',
-				},
-				{
-					text: 'test user2',
-					value: 'test user2',
-				},
-				{
-					text: 'test user3',
-					value: 'test user3',
-				},
+				{frequency: 40, text: 'test test (40)', value: 'test test'},
 			],
 		},
-	],
+	},
 	hits: [
 		{
-			assetTagNames: ['test', 'staging', 'official'],
-			content_highlight:
-				'Staging <liferay-hl>Test</liferay-hl> Plan Staging <liferay-hl>Test</liferay-hl>',
-			date: '7/23/18',
-			description: 'Staging Test Plan Staging Test Cases Upgrade',
-			entryClassPK: '898797',
-			official_content: 'true',
-			title: 'Title Staging Testing',
-			type: 'Web Content',
-			viewURL: '/',
+			b_author: 'test test',
+			b_created: '4/28/21 7:15 PM',
+			b_modified: '4/28/21 7:15 PM',
+			b_summary: 'Los Angeles:34.06868850000001,-118.231565',
+			b_title: 'Los Angeles State Historic Park',
+			b_type: 'Web Content Article',
+			b_viewURL: '',
+			content_highlight: 'Los Angeles:34.06868850000001,-118.231565',
 		},
 		{
-			date: '5/22/19',
-			description: 'Creating a LRSUPPORT Ticket',
-			entryClassPK: '1360528',
-			title: 'Title Support Testing',
-			type: 'Blog',
-			viewURL: '/',
+			b_author: 'test test',
+			b_created: '4/28/21 7:16 PM',
+			b_modified: '4/28/21 7:16 PM',
+			b_summary: 'Los Angeles:34.06612559999999,-118.4090544',
+			b_title: 'Mosaic Hotel',
+			b_type: 'Web Content Article',
+			b_viewURL: '',
+			content_highlight: 'Los Angeles:34.06612559999999,-118.4090544',
 		},
 		{
-			assetTagNames: ['testing', 'fixpack', 'gauntlet', 'cnqa test tips'],
-			date: '1/17/18',
-			description:
-				'Definition Gauntlets that the ER team trigger everyday',
-			entryClassPK: '682986',
-			title: 'Title Gauntlet Testing',
-			type: 'Web Content',
-			viewURL: '/',
+			b_author: 'test test',
+			b_created: '4/28/21 7:17 PM',
+			b_modified: '4/28/21 7:17 PM',
+			b_summary: 'Los Angeles:34.0828512,-118.3238668',
+			b_title: 'Cafe Gratitude',
+			b_type: 'Web Content Article',
+			b_viewURL: '',
+			content_highlight: 'Los Angeles:34.0828512,-118.3238668',
+		},
+		{
+			b_author: 'test test',
+			b_created: '4/28/21 7:18 PM',
+			b_modified: '4/28/21 7:18 PM',
+			b_summary: 'Los Angeles:34.06433,-118.3085449',
+			b_title: 'Beer Belly',
+			b_type: 'Web Content Article',
+			b_viewURL: '',
+			content_highlight: 'Los Angeles:34.06433,-118.3085449',
+		},
+		{
+			b_author: 'test test',
+			b_created: '4/28/21 7:19 PM',
+			b_modified: '4/28/21 7:19 PM',
+			b_summary: 'Los Angeles:34.09513450000001,-118.3739278',
+			b_title: 'The Comedy Store',
+			b_type: 'Web Content Article',
+			b_viewURL: '',
+			content_highlight: 'Los Angeles:34.09513450000001,-118.3739278',
+		},
+		{
+			b_author: 'test test',
+			b_created: '4/28/21 7:20 PM',
+			b_modified: '4/28/21 7:20 PM',
+			b_summary: 'Los Angeles:34.1568,-118.3252223',
+			b_title: 'Walt Disney Studios',
+			b_type: 'Web Content Article',
+			b_viewURL: '',
+			content_highlight: 'Los Angeles:34.1568,-118.3252223',
+		},
+		{
+			b_author: 'test test',
+			b_created: '4/28/21 7:21 PM',
+			b_modified: '4/28/21 7:21 PM',
+			b_summary: 'Los Angeles:34.0495044,-118.2782752',
+			b_title: 'South Bonnie Brae Tract Historic District',
+			b_type: 'Web Content Article',
+			b_viewURL: '',
+			content_highlight: 'Los Angeles:34.0495044,-118.2782752',
+		},
+		{
+			b_author: 'test test',
+			b_created: '4/28/21 7:22 PM',
+			b_modified: '4/28/21 7:22 PM',
+			b_summary: 'Los Angeles:34.1279987,-118.3158935',
+			b_title: 'Sunset Ranch Hollywood',
+			b_type: 'Web Content Article',
+			b_viewURL: '',
+			content_highlight: 'Los Angeles:34.1279987,-118.3158935',
+		},
+		{
+			b_author: 'test test',
+			b_created: '4/28/21 7:23 PM',
+			b_modified: '4/28/21 7:23 PM',
+			b_summary: 'Los Angeles:34.0982596,-118.3684936',
+			b_title: 'Chateau Marmont',
+			b_type: 'Web Content Article',
+			b_viewURL: '',
+			content_highlight: 'Los Angeles:34.0982596,-118.3684936',
+		},
+		{
+			b_author: 'test test',
+			b_created: '4/28/21 7:24 PM',
+			b_modified: '4/28/21 7:24 PM',
+			b_summary: 'Los Angeles:34.0446474,-118.2584329',
+			b_title: "Gill's Cuisine of India",
+			b_type: 'Web Content Article',
+			b_viewURL: '',
+			content_highlight: 'Los Angeles:34.0446474,-118.2584329',
 		},
 	],
-	meta: {
-		executionTime: '0.109',
-		keywords: 'test',
-		start: 0,
-		totalHits: 1992,
-	},
-	pagination: {
-		activePage: 1,
-		totalPages: 200,
-	},
-};
-
-export const SELECTED_FACETS = {
-	entryClassName: RESOURCE.facets[0].values,
+	meta: {executionTime: '0.020', keywords: 'los angeles', totalHits: 40},
+	pagination: {activePage: 1, pageSize: 10, totalPages: 4},
+	suggest: {},
 };
 
 export const SUGGESTIONS = {
