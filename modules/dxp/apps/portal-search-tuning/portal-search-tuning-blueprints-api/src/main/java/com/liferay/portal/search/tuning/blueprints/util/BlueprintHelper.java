@@ -28,7 +28,7 @@ public interface BlueprintHelper {
 
 	public boolean applyIndexerClauses(Blueprint blueprint);
 
-	public Optional<JSONArray> getAggsConfigurationOptional(
+	public Optional<JSONObject> getAggsConfigurationOptional(
 		Blueprint blueprint);
 
 	public Optional<JSONArray> getCustomParameterConfigurationOptional(
@@ -78,7 +78,7 @@ public interface BlueprintHelper {
 	public Optional<JSONArray> getSortParameterConfigurationOptional(
 		Blueprint blueprint);
 
-	public Optional<JSONArray> getSuggestConfigurationOptional(
+	public Optional<JSONObject> getSuggestConfigurationOptional(
 		Blueprint blueprint);
 
 }
