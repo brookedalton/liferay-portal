@@ -62,7 +62,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -154,24 +153,16 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, long userId, long groupId,
 			String languageId, String title, String content,
 			String[] assetTagNames)
-		throws Exception {
+		throws PortalException {
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Adding journal article " + title);
 		}
 
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			JournalArticle.class.getName(), actionRequest);
-
-		serviceContext.setAssetTagNames(assetTagNames);
-		serviceContext.setAddGroupPermissions(true);
-		serviceContext.setAddGuestPermissions(true);
+		ServiceContext serviceContext = _getServiceContext(
+			actionRequest, assetTagNames);
 
 		Locale locale = LocaleUtil.fromLanguageId(languageId);
-
-		Map<Locale, String> titleMap = HashMapBuilder.put(
-			locale, title
-		).build();
 
 		// Respect ES 32KB field size limit (breaks the HTML).
 
@@ -179,34 +170,19 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 			content = content.substring(0, 32000);
 		}
 
-		Map<Locale, String> descriptionMap = HashMapBuilder.put(
-			locale, _getDescription(content)
-		).build();
-
-		String instanceId = _generateInstanceId();
-
-		StringBundler sb = new StringBundler(13);
-
-		sb.append("<root available-locales=\"en_US\" default-locale=\"");
-		sb.append(languageId);
-		sb.append("\">");
-		sb.append("<dynamic-element name=\"content\" type=\"text_area\" ");
-		sb.append("index-type=\"text\" instance-id=\"");
-		sb.append(instanceId);
-		sb.append("\">");
-		sb.append("<dynamic-content language-id=\"");
-		sb.append(languageId);
-		sb.append("\"><![CDATA[");
-		sb.append(content);
-		sb.append("]]></dynamic-content></dynamic-element>");
-		sb.append("</root>");
-
 		return _journalArticleLocalService.addArticle(
-			userId, groupId, 0, titleMap, descriptionMap, sb.toString(),
-			"BASIC-WEB-CONTENT", "BASIC-WEB-CONTENT", serviceContext);
+			userId, groupId, 0,
+			HashMapBuilder.put(
+				locale, title
+			).build(),
+			HashMapBuilder.put(
+				locale, _getDescription(content)
+			).build(),
+			_createArticleXML(content, languageId), "BASIC-WEB-CONTENT",
+			"BASIC-WEB-CONTENT", serviceContext);
 	}
 
-	private void _addLocation(
+	private void _addLocationAttribute(
 		JournalArticle journalArticle, String lat, String lng) {
 
 		JSONObject jsonObject = JSONUtil.put(
@@ -241,6 +217,26 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 
 	private String _cleanTagValue(String s) {
 		return StringUtil.replace(s, CharPool.UNDERLINE, CharPool.SPACE);
+	}
+
+	private String _createArticleXML(String content, String languageId) {
+		StringBundler sb = new StringBundler(13);
+
+		sb.append("<root available-locales=\"en_US\" default-locale=\"");
+		sb.append(languageId);
+		sb.append("\">");
+		sb.append("<dynamic-element name=\"content\" type=\"text_area\" ");
+		sb.append("index-type=\"text\" instance-id=\"");
+		sb.append(_generateInstanceId());
+		sb.append("\">");
+		sb.append("<dynamic-content language-id=\"");
+		sb.append(languageId);
+		sb.append("\"><![CDATA[");
+		sb.append(content);
+		sb.append("]]></dynamic-content></dynamic-element>");
+		sb.append("</root>");
+
+		return sb.toString();
 	}
 
 	private void _createLocationExpandoField(ActionRequest actionRequest)
@@ -300,6 +296,20 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 		}
 
 		return s;
+	}
+
+	private ServiceContext _getServiceContext(
+			ActionRequest actionRequest, String[] assetTagNames)
+		throws PortalException {
+
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			JournalArticle.class.getName(), actionRequest);
+
+		serviceContext.setAssetTagNames(assetTagNames);
+		serviceContext.setAddGroupPermissions(true);
+		serviceContext.setAddGuestPermissions(true);
+
+		return serviceContext;
 	}
 
 	private void _importGooglePlaceArticles(
@@ -428,7 +438,7 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 						actionRequest, userId, groupId, languageId, title,
 						sb.toString(), assetTagNames);
 
-					_addLocation(journalArticle, lat, lng);
+					_addLocationAttribute(journalArticle, lat, lng);
 				}
 			}
 			catch (Exception exception) {
