@@ -20,16 +20,16 @@ import java.util.stream.Stream;
 /**
  * @author Petteri Karttunen
  */
-public enum HighlightingConfigurationKeys {
+public enum HighlightConfigurationKeys {
 
 	FIELDS("fields"), FRAGMENT_OFFSET("fragment_offset"),
 	FRAGMENT_SIZE("fragment_size"), NUMBER_OF_FRAGMENTS("number_of_fragments"),
 	POST_TAGS("post_tags"), PRE_TAGS("pre_tags"),
 	REQUIRE_FIELD_MATCH("require_field_match"), TYPE("type");
 
-	public static HighlightingConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<HighlightingConfigurationKeys> stream = Arrays.stream(
-			HighlightingConfigurationKeys.values());
+	public static HighlightConfigurationKeys findByJsonKey(String jsonKey) {
+		Stream<HighlightConfigurationKeys> stream = Arrays.stream(
+			HighlightConfigurationKeys.values());
 
 		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
@@ -43,7 +43,7 @@ public enum HighlightingConfigurationKeys {
 		return _jsonKey;
 	}
 
-	private HighlightingConfigurationKeys(String jsonKey) {
+	private HighlightConfigurationKeys(String jsonKey) {
 		_jsonKey = jsonKey;
 	}
 
