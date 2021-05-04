@@ -60,21 +60,22 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	}
 
 	@Override
-	public Optional<JSONObject> getAdvancedConfigurationOptional(Blueprint blueprint) {
+	public Optional<JSONObject> getAdvancedConfigurationOptional(
+		Blueprint blueprint) {
 
 		return BlueprintJSONUtil.getValueAsJSONObjectOptional(
-				_getBlueprintConfigurationJSONObject(blueprint),
-				"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey());
+			_getBlueprintConfigurationJSONObject(blueprint),
+			"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey());
 	}
-	
+
 	@Override
 	public Optional<JSONObject> getAggsConfigurationOptional(
 		Blueprint blueprint) {
 
 		return BlueprintJSONUtil.getValueAsJSONObjectOptional(
-				_getBlueprintConfigurationJSONObject(blueprint),
-				"JSONObject/" +
-					BlueprintKeys.AGGREGATION_CONFIGURATION.getJsonKey());
+			_getBlueprintConfigurationJSONObject(blueprint),
+			"JSONObject/" +
+				BlueprintKeys.AGGREGATION_CONFIGURATION.getJsonKey());
 	}
 
 	@Override
@@ -359,10 +360,10 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	@Override
 	public Optional<JSONObject> getSuggestConfigurationOptional(
 		Blueprint blueprint) {
-		
+
 		return BlueprintJSONUtil.getValueAsJSONObjectOptional(
-				_getBlueprintConfigurationJSONObject(blueprint),
-				"JSONObject/" + BlueprintKeys.SUGGEST_CONFIGURATION.getJsonKey());
+			_getBlueprintConfigurationJSONObject(blueprint),
+			"JSONObject/" + BlueprintKeys.SUGGEST_CONFIGURATION.getJsonKey());
 	}
 
 	protected JSONObject getDefaultFrameworkConfigurationJSONObject() {

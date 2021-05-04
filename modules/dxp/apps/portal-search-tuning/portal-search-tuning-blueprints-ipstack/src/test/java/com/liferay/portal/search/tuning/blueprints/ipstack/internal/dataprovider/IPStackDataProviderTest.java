@@ -19,6 +19,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.cache.JSONDataProvider
 import com.liferay.portal.search.tuning.blueprints.ipstack.internal.configuration.IPStackConfiguration;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,8 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 import org.mockito.Matchers;
@@ -37,6 +40,11 @@ import org.mockito.MockitoAnnotations;
  * @author Petteri Karttunen
  */
 public class IPStackDataProviderTest {
+
+	@ClassRule
+	@Rule
+	public static final LiferayUnitTestRule liferayUnitTestRule =
+		LiferayUnitTestRule.INSTANCE;
 
 	@Before
 	public void setUp() throws Exception {
