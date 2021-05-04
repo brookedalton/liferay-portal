@@ -362,18 +362,19 @@ storiesOf('Components|PreviewSidebar', module)
 							context: 'query',
 							occur: 'filtered',
 							query: {
-								query: {
-									range: {
-										createDate: {
-											from: '',
-											include_lower: true,
-											include_upper: true,
-											to: '',
+								wrapper: {
+									query: {
+										range: {
+											createDate: {
+												from: '',
+												include_lower: true,
+												include_upper: true,
+												to: '',
+											},
 										},
 									},
 								},
 							},
-							type: 'wrapper',
 						},
 						rootProperty: null,
 						rootValue: 'FILTERED',
@@ -396,7 +397,6 @@ storiesOf('Components|PreviewSidebar', module)
 							context: 'querys',
 							occur: 'filter',
 							query: {},
-							type: 'wrapper',
 						},
 						rootProperty: null,
 						rootValue: 'QUERYS',
