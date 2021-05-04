@@ -20,20 +20,18 @@ import java.util.stream.Stream;
 /**
  * @author Petteri Karttunen
  */
-public enum TermsAggregationBodyConfigurationKeys {
+public enum DiversifiedSamplerAggregationBodyConfigurationKeys {
 
-	COLLECT_MODE("collect_mode"), EXCLUDE("exclude"),
-	EXECUTION_HINT("execution_hint"), FIELD("field"), INCLUDE("include"),
-	MIN_DOC_COUNT("min_doc_count"), MISSING("missing"), ORDER("order"),
-	SCRIPT("script"), SHARD_MIN_DOC_COUNT("shard_min_doc_count"),
-	SHARD_SIZE("shard_size"),
-	SHOW_TERM_DOC_COUNT_ERROR("show_term_doc_count_error"), SIZE("size");
+	EXECUTION_HINT("execution_hint"), FIELD("field"),
+	MAX_DOCS_PER_VALUE("max_docs_per_value"), MISSING("missing"),
+	SCRIPT("script"), SHARD_SIZE("shard_size");
 
-	public static TermsAggregationBodyConfigurationKeys findByJsonKey(
-		String jsonKey) {
+	public static DiversifiedSamplerAggregationBodyConfigurationKeys
+		findByJsonKey(String jsonKey) {
 
-		Stream<TermsAggregationBodyConfigurationKeys> stream = Arrays.stream(
-			TermsAggregationBodyConfigurationKeys.values());
+		Stream<DiversifiedSamplerAggregationBodyConfigurationKeys> stream =
+			Arrays.stream(
+				DiversifiedSamplerAggregationBodyConfigurationKeys.values());
 
 		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
@@ -47,7 +45,7 @@ public enum TermsAggregationBodyConfigurationKeys {
 		return _jsonKey;
 	}
 
-	private TermsAggregationBodyConfigurationKeys(String jsonKey) {
+	private DiversifiedSamplerAggregationBodyConfigurationKeys(String jsonKey) {
 		_jsonKey = jsonKey;
 	}
 

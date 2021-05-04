@@ -20,20 +20,16 @@ import java.util.stream.Stream;
 /**
  * @author Petteri Karttunen
  */
-public enum TermsAggregationBodyConfigurationKeys {
+public enum GeoDistanceAggregationBodyConfigurationKeys {
 
-	COLLECT_MODE("collect_mode"), EXCLUDE("exclude"),
-	EXECUTION_HINT("execution_hint"), FIELD("field"), INCLUDE("include"),
-	MIN_DOC_COUNT("min_doc_count"), MISSING("missing"), ORDER("order"),
-	SCRIPT("script"), SHARD_MIN_DOC_COUNT("shard_min_doc_count"),
-	SHARD_SIZE("shard_size"),
-	SHOW_TERM_DOC_COUNT_ERROR("show_term_doc_count_error"), SIZE("size");
+	DISTANCE_TYPE("distance_type"), FIELD("field"), KEYED("keyed"),
+	MISSING("missing"), ORIGIN("origin"), SCRIPT("script"), UNIT("unit");
 
-	public static TermsAggregationBodyConfigurationKeys findByJsonKey(
+	public static GeoDistanceAggregationBodyConfigurationKeys findByJsonKey(
 		String jsonKey) {
 
-		Stream<TermsAggregationBodyConfigurationKeys> stream = Arrays.stream(
-			TermsAggregationBodyConfigurationKeys.values());
+		Stream<GeoDistanceAggregationBodyConfigurationKeys> stream =
+			Arrays.stream(GeoDistanceAggregationBodyConfigurationKeys.values());
 
 		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
@@ -47,7 +43,7 @@ public enum TermsAggregationBodyConfigurationKeys {
 		return _jsonKey;
 	}
 
-	private TermsAggregationBodyConfigurationKeys(String jsonKey) {
+	private GeoDistanceAggregationBodyConfigurationKeys(String jsonKey) {
 		_jsonKey = jsonKey;
 	}
 

@@ -20,20 +20,16 @@ import java.util.stream.Stream;
 /**
  * @author Petteri Karttunen
  */
-public enum TermsAggregationBodyConfigurationKeys {
+public enum RangeAggregationBodyConfigurationKeys {
 
-	COLLECT_MODE("collect_mode"), EXCLUDE("exclude"),
-	EXECUTION_HINT("execution_hint"), FIELD("field"), INCLUDE("include"),
-	MIN_DOC_COUNT("min_doc_count"), MISSING("missing"), ORDER("order"),
-	SCRIPT("script"), SHARD_MIN_DOC_COUNT("shard_min_doc_count"),
-	SHARD_SIZE("shard_size"),
-	SHOW_TERM_DOC_COUNT_ERROR("show_term_doc_count_error"), SIZE("size");
+	FIELD("field"), FORMAT("format"), KEYED("keyed"), MISSING("missing"),
+	RANGES("ranges"), SCRIPT("script");
 
-	public static TermsAggregationBodyConfigurationKeys findByJsonKey(
+	public static RangeAggregationBodyConfigurationKeys findByJsonKey(
 		String jsonKey) {
 
-		Stream<TermsAggregationBodyConfigurationKeys> stream = Arrays.stream(
-			TermsAggregationBodyConfigurationKeys.values());
+		Stream<RangeAggregationBodyConfigurationKeys> stream = Arrays.stream(
+			RangeAggregationBodyConfigurationKeys.values());
 
 		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
@@ -47,7 +43,7 @@ public enum TermsAggregationBodyConfigurationKeys {
 		return _jsonKey;
 	}
 
-	private TermsAggregationBodyConfigurationKeys(String jsonKey) {
+	private RangeAggregationBodyConfigurationKeys(String jsonKey) {
 		_jsonKey = jsonKey;
 	}
 

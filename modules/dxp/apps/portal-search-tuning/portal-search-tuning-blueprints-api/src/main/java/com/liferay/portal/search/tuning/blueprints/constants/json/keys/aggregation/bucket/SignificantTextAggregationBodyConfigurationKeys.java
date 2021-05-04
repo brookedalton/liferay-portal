@@ -20,20 +20,24 @@ import java.util.stream.Stream;
 /**
  * @author Petteri Karttunen
  */
-public enum TermsAggregationBodyConfigurationKeys {
+public enum SignificantTextAggregationBodyConfigurationKeys {
 
-	COLLECT_MODE("collect_mode"), EXCLUDE("exclude"),
-	EXECUTION_HINT("execution_hint"), FIELD("field"), INCLUDE("include"),
-	MIN_DOC_COUNT("min_doc_count"), MISSING("missing"), ORDER("order"),
-	SCRIPT("script"), SHARD_MIN_DOC_COUNT("shard_min_doc_count"),
-	SHARD_SIZE("shard_size"),
-	SHOW_TERM_DOC_COUNT_ERROR("show_term_doc_count_error"), SIZE("size");
+	BACKGROUND_FILTER("background_filter"), CHI_SQUARE("chi_square"),
+	EXCLUDE("exclude"), EXECUTION_HINT("execution_hint"), FIELD("field"),
+	FILTER_DUPLICATE_TEXT("filter_duplicate_text"), GND("gnd"),
+	INCLUDE("include"), JLH("jlh"), MIN_DOC_COUNT("min_doc_count"),
+	MISSING("missing"), MUTUAL_INFORMATION("mutual_information"),
+	PERCENTAGE("percentage"), SCRIPT("script"),
+	SCRIPT_HEURISTIC("script_heuristic"),
+	SHARD_MIN_DOC_COUNT("shard_min_doc_count"), SHARD_SIZE("shard_size"),
+	SIZE("size");
 
-	public static TermsAggregationBodyConfigurationKeys findByJsonKey(
+	public static SignificantTextAggregationBodyConfigurationKeys findByJsonKey(
 		String jsonKey) {
 
-		Stream<TermsAggregationBodyConfigurationKeys> stream = Arrays.stream(
-			TermsAggregationBodyConfigurationKeys.values());
+		Stream<SignificantTextAggregationBodyConfigurationKeys> stream =
+			Arrays.stream(
+				SignificantTextAggregationBodyConfigurationKeys.values());
 
 		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
@@ -47,7 +51,7 @@ public enum TermsAggregationBodyConfigurationKeys {
 		return _jsonKey;
 	}
 
-	private TermsAggregationBodyConfigurationKeys(String jsonKey) {
+	private SignificantTextAggregationBodyConfigurationKeys(String jsonKey) {
 		_jsonKey = jsonKey;
 	}
 
