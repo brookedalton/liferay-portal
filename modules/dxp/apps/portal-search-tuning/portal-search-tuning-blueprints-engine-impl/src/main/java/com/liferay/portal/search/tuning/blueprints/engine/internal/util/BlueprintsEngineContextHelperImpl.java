@@ -14,12 +14,12 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
+import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.ClauseTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.condition.ConditionHandlerFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.suggester.SuggesterTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataCreator;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineContextHelper;
 
 import java.util.List;
@@ -36,13 +36,13 @@ public class BlueprintsEngineContextHelperImpl
 	implements BlueprintsEngineContextHelper {
 
 	@Override
-	public String[] getAvailableAggregationTranslatorTypes() {
-		return _aggregationBuilderFactory.getTranslatorTypes();
+	public String[] getAvailableAggregationTranslatorNames() {
+		return _aggregationBuilderFactory.getTranslatorNames();
 	}
 
 	@Override
-	public String[] getAvailableClauseTranslatorTypes() {
-		return _clauseBuilderFactory.getTranslatorTypes();
+	public String[] getAvailableClauseTranslatorNames() {
+		return _clauseBuilderFactory.getTranslatorNames();
 	}
 
 	@Override
@@ -51,8 +51,8 @@ public class BlueprintsEngineContextHelperImpl
 	}
 
 	@Override
-	public String[] getAvailableSuggesterTranslatorTypes() {
-		return _suggesterBuilderFactory.getTranslatorTypes();
+	public String[] getAvailableSuggesterTranslatorNames() {
+		return _suggesterBuilderFactory.getTranslatorNames();
 	}
 
 	@Override
