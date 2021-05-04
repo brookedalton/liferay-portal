@@ -27,7 +27,7 @@ import java.util.Optional;
 public interface SuggesterTranslator {
 
 	public Optional<Suggester> translate(
-		String suggesterName, JSONObject configurationJSONObject,
+		String suggesterName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages);
 
 }
