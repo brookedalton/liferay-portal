@@ -252,15 +252,15 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 		String dateString = "";
 
 		try {
-			String modified = document.getDate(Field.CREATE_DATE);
+			String s = document.getDate(field);
 
-			if (!Validator.isBlank(modified)) {
-				Date lastModified = INDEX_DATE_FORMAT.parse(modified);
+			if (!Validator.isBlank(s)) {
+				Date date = INDEX_DATE_FORMAT.parse(s);
 
 				DateFormat dateFormat = DateFormat.getDateTimeInstance(
 					DateFormat.SHORT, DateFormat.SHORT, locale);
 
-				dateString = dateFormat.format(lastModified);
+				dateString = dateFormat.format(date);
 			}
 		}
 		catch (Exception exception) {
