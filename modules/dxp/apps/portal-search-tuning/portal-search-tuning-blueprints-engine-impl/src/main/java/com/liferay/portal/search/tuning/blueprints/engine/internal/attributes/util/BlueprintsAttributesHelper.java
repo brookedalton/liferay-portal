@@ -12,10 +12,11 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
+package com.liferay.portal.search.tuning.blueprints.engine.internal.attributes.util;
 
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintValueUtil;
 
 import java.util.Optional;
 
