@@ -15,7 +15,6 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation;
 
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReference;
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReferenceUtil;
 
@@ -50,7 +49,7 @@ public class AggregationTranslatorFactoryImpl
 	}
 
 	@Override
-	public String[] getTranslatorTypes() {
+	public String[] getTranslatorNames() {
 		return ServiceComponentReferenceUtil.getComponentKeys(
 			_aggregationTranslators);
 	}
