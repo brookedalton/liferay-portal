@@ -15,16 +15,16 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.metric;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.CardinalityAggregation;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.CardinalityAggregationBodyConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.BaseAggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.ScriptHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.util.SetterHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 
 import java.util.Optional;
 
@@ -38,55 +38,51 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true, property = "name=cardinality",
 	service = AggregationTranslator.class
 )
-public class CardinalityAggregationTranslator
-	extends BaseAggregationTranslator implements AggregationTranslator {
+public class CardinalityAggregationTranslator implements AggregationTranslator {
 
 	@Override
-	public Optional<Aggregation> translate(
-		String aggregationName, JSONObject bodyJSONObject,
-		ParameterData parameterData, Messages messages,
-		AggregationTranslatorFactory aggregationTranslatorFactory) {
+	public Optional<AggregationWrapper> translate(
+		String aggregationName, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
 
-		if (!validateField(bodyJSONObject, messages)) {
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+				jsonObject, messages,
+				CardinalityAggregationBodyConfigurationKeys.FIELD.
+					getJsonKey())) {
+
 			return Optional.empty();
 		}
 
 		CardinalityAggregation aggregation = _aggregations.cardinality(
 			aggregationName,
-			bodyJSONObject.getString(
+			jsonObject.getString(
 				CardinalityAggregationBodyConfigurationKeys.FIELD.
 					getJsonKey()));
 
-		setMissing(aggregation, bodyJSONObject);
+		_setterHelper.setStringValue(
+			jsonObject,
+			CardinalityAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
+			aggregation::setMissing);
 
-		_setPrecisionThreshold(aggregation, bodyJSONObject);
+		_aggregationHelper.setScript(
+			jsonObject, aggregation::setScript, messages);
 
-		setScript(
-			aggregation, _aggregationScriptHelper, bodyJSONObject, messages);
+		_setterHelper.setIntegerValue(
+			jsonObject,
+			CardinalityAggregationBodyConfigurationKeys.PRECISION_THRESHOLD.
+				getJsonKey(),
+			aggregation::setPrecisionThreshold);
 
-		return Optional.of(aggregation);
+		return _aggregationHelper.wrap(aggregation);
 	}
 
-	private void _setPrecisionThreshold(
-		CardinalityAggregation aggregation, JSONObject bodyJSONObject) {
-
-		if (!bodyJSONObject.has(
-				CardinalityAggregationBodyConfigurationKeys.PRECISION_THRESHOLD.
-					getJsonKey())) {
-
-			return;
-		}
-
-		aggregation.setPrecisionThreshold(
-			bodyJSONObject.getInt(
-				CardinalityAggregationBodyConfigurationKeys.PRECISION_THRESHOLD.
-					getJsonKey()));
-	}
+	@Reference
+	private AggregationHelper _aggregationHelper;
 
 	@Reference
 	private Aggregations _aggregations;
 
 	@Reference
-	private ScriptHelper _aggregationScriptHelper;
+	private SetterHelper _setterHelper;
 
 }

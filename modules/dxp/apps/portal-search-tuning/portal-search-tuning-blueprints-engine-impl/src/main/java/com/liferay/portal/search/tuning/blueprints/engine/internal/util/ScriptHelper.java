@@ -15,16 +15,14 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.script.Script;
 import com.liferay.portal.search.script.ScriptBuilder;
 import com.liferay.portal.search.script.ScriptType;
 import com.liferay.portal.search.script.Scripts;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.ScriptConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Optional;
 
@@ -38,99 +36,92 @@ import org.osgi.service.component.annotations.Reference;
 public class ScriptHelper {
 
 	public Optional<Script> getScript(
-		JSONObject scriptJSONObject, Messages messages) {
+		JSONObject jsonObject, Messages messages) {
 
-		if (scriptJSONObject.length() == 0) {
+		if (jsonObject.length() == 0) {
 			return Optional.empty();
 		}
 
 		ScriptBuilder scriptBuilder = _scripts.builder();
 
-		_setIdOrSource(scriptBuilder, scriptJSONObject, messages);
+		_setIdOrSource(scriptBuilder, jsonObject, messages);
 
-		_setLang(scriptBuilder, scriptJSONObject);
+		_setLang(scriptBuilder, jsonObject);
 
-		_setOptions(scriptBuilder, scriptJSONObject);
+		_setOptions(scriptBuilder, jsonObject);
 
-		_setParams(scriptBuilder, scriptJSONObject);
+		_setParams(scriptBuilder, jsonObject);
+
+		return Optional.of(scriptBuilder.build());
+	}
+
+	public Optional<Script> getScript(String scriptString, Messages messages) {
+		if (Validator.isBlank(scriptString)) {
+			return Optional.empty();
+		}
+
+		ScriptBuilder scriptBuilder = _scripts.builder();
+
+		scriptBuilder.idOrCode(
+			scriptString
+		).scriptType(
+			ScriptType.INLINE
+		);
 
 		return Optional.of(scriptBuilder.build());
 	}
 
 	private Optional<Script> _returnIdOrSourceMissing(
-		JSONObject scriptJSONObject, Messages messages) {
+		JSONObject jsonObject, Messages messages) {
 
-		messages.addMessage(
-			new Message.Builder().className(
-				getClass().getName()
-			).localizationKey(
-				"core.error.aggregation-script-id-or-source-missing"
-			).msg(
-				"Aggregation script id or source has to be set"
-			).rootObject(
-				scriptJSONObject
-			).severity(
-				Severity.ERROR
-			).build());
-
-		if (_log.isWarnEnabled()) {
-			_log.warn(
-				"Aggregation script id or source has to be set [ " +
-					scriptJSONObject + "]");
-		}
+		MessagesUtil.requiredFieldMissingError(
+			messages, jsonObject,
+			ScriptConfigurationKeys.ID.getJsonKey() + " or " +
+				ScriptConfigurationKeys.SOURCE.getJsonKey());
 
 		return Optional.empty();
 	}
 
 	private void _setIdOrSource(
-		ScriptBuilder scriptBuilder, JSONObject scriptJSONObject,
-		Messages messages) {
+		ScriptBuilder scriptBuilder, JSONObject jsonObject, Messages messages) {
 
-		if (!scriptJSONObject.isNull(ScriptConfigurationKeys.ID.getJsonKey())) {
+		if (jsonObject.has(ScriptConfigurationKeys.ID.getJsonKey())) {
 			scriptBuilder.idOrCode(
-				scriptJSONObject.getString(
-					ScriptConfigurationKeys.ID.getJsonKey())
+				jsonObject.getString(ScriptConfigurationKeys.ID.getJsonKey())
 			).scriptType(
 				ScriptType.STORED
 			);
 		}
-		else if (!scriptJSONObject.isNull(
-					ScriptConfigurationKeys.SOURCE.getJsonKey())) {
-
+		else if (jsonObject.has(ScriptConfigurationKeys.SOURCE.getJsonKey())) {
 			scriptBuilder.idOrCode(
-				scriptJSONObject.getString(
+				jsonObject.getString(
 					ScriptConfigurationKeys.SOURCE.getJsonKey())
 			).scriptType(
 				ScriptType.INLINE
 			);
 		}
 		else {
-			_returnIdOrSourceMissing(scriptJSONObject, messages);
+			_returnIdOrSourceMissing(jsonObject, messages);
 		}
 	}
 
-	private void _setLang(
-		ScriptBuilder scriptBuilder, JSONObject scriptJSONObject) {
-
-		if (!scriptJSONObject.has(ScriptConfigurationKeys.LANG.getJsonKey())) {
+	private void _setLang(ScriptBuilder scriptBuilder, JSONObject jsonObject) {
+		if (!jsonObject.has(ScriptConfigurationKeys.LANG.getJsonKey())) {
 			return;
 		}
 
 		scriptBuilder.language(
-			scriptJSONObject.getString(
-				ScriptConfigurationKeys.LANG.getJsonKey()));
+			jsonObject.getString(ScriptConfigurationKeys.LANG.getJsonKey()));
 	}
 
 	private void _setOptions(
-		ScriptBuilder scriptBuilder, JSONObject scriptJSONObject) {
+		ScriptBuilder scriptBuilder, JSONObject jsonObject) {
 
-		if (!scriptJSONObject.has(
-				ScriptConfigurationKeys.OPTIONS.getJsonKey())) {
-
+		if (!jsonObject.has(ScriptConfigurationKeys.OPTIONS.getJsonKey())) {
 			return;
 		}
 
-		JSONObject optionsJSONObject = scriptJSONObject.getJSONObject(
+		JSONObject optionsJSONObject = jsonObject.getJSONObject(
 			ScriptConfigurationKeys.OPTIONS.getJsonKey());
 
 		optionsJSONObject.keySet(
@@ -141,15 +132,13 @@ public class ScriptHelper {
 	}
 
 	private void _setParams(
-		ScriptBuilder scriptBuilder, JSONObject scriptJSONObject) {
+		ScriptBuilder scriptBuilder, JSONObject jsonObject) {
 
-		if (!scriptJSONObject.has(
-				ScriptConfigurationKeys.PARAMS.getJsonKey())) {
-
+		if (!jsonObject.has(ScriptConfigurationKeys.PARAMS.getJsonKey())) {
 			return;
 		}
 
-		JSONObject paramsJSONObject = scriptJSONObject.getJSONObject(
+		JSONObject paramsJSONObject = jsonObject.getJSONObject(
 			ScriptConfigurationKeys.PARAMS.getJsonKey());
 
 		paramsJSONObject.keySet(
@@ -158,8 +147,6 @@ public class ScriptHelper {
 			key -> scriptBuilder.putParameter(key, paramsJSONObject.get(key))
 		);
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(ScriptHelper.class);
 
 	@Reference
 	private Scripts _scripts;

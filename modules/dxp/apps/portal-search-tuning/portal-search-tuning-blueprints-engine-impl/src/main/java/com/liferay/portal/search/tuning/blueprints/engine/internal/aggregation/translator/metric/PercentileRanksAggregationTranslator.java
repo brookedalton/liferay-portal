@@ -15,18 +15,19 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.metric;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.PercentileRanksAggregation;
 import com.liferay.portal.search.aggregation.metrics.PercentilesMethod;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.MaxAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.PercentileRanksAggregationBodyConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.BaseAggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintJSONUtil;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.ScriptHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.util.SetterHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 
 import java.util.Optional;
 
@@ -41,68 +42,67 @@ import org.osgi.service.component.annotations.Reference;
 	service = AggregationTranslator.class
 )
 public class PercentileRanksAggregationTranslator
-	extends BaseAggregationTranslator implements AggregationTranslator {
+	implements AggregationTranslator {
 
 	@Override
-	public Optional<Aggregation> translate(
-		String aggregationName, JSONObject bodyJSONObject,
-		ParameterData parameterData, Messages messages,
-		AggregationTranslatorFactory aggregationTranslatorFactory) {
+	public Optional<AggregationWrapper> translate(
+		String aggregationName, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
 
-		double[] values = _getValues(bodyJSONObject);
+		double[] values = _getValues(jsonObject);
 
-		if ((values == null) || !validateField(bodyJSONObject, messages)) {
+		if ((values == null) ||
+			!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+				jsonObject, messages,
+				MaxAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
+
 			return Optional.empty();
 		}
 
 		PercentileRanksAggregation aggregation = _aggregations.percentileRanks(
 			aggregationName,
-			bodyJSONObject.getString(
+			jsonObject.getString(
 				PercentileRanksAggregationBodyConfigurationKeys.FIELD.
 					getJsonKey()),
 			values);
 
-		if (bodyJSONObject.has(
-				PercentileRanksAggregationBodyConfigurationKeys.HDR.
-					getJsonKey())) {
+		_setterHelper.setBooleanValue(
+			jsonObject,
+			PercentileRanksAggregationBodyConfigurationKeys.KEYED.getJsonKey(),
+			aggregation::setKeyed);
 
-			_setHDR(aggregation, bodyJSONObject);
-		}
-		else if (bodyJSONObject.has(
-					PercentileRanksAggregationBodyConfigurationKeys.TDIGEST.
-						getJsonKey())) {
+		_setterHelper.setStringValue(
+			jsonObject,
+			PercentileRanksAggregationBodyConfigurationKeys.MISSING.
+				getJsonKey(),
+			aggregation::setMissing);
 
-			_setTDigest(aggregation, bodyJSONObject);
-		}
+		_aggregationHelper.setScript(
+			jsonObject, aggregation::setScript, messages);
 
-		_setKeyed(aggregation, bodyJSONObject);
+		_setMethod(aggregation, jsonObject);
 
-		setMissing(aggregation, bodyJSONObject);
-
-		setScript(
-			aggregation, _aggregationScriptHelper, bodyJSONObject, messages);
-
-		return Optional.of(aggregation);
+		return _aggregationHelper.wrap(aggregation);
 	}
 
-	private double[] _getValues(JSONObject bodyJSONObject) {
-		if (!bodyJSONObject.has(
+	private double[] _getValues(JSONObject jsonObject) {
+		if (!jsonObject.has(
 				PercentileRanksAggregationBodyConfigurationKeys.VALUES.
 					getJsonKey())) {
 
 			return null;
 		}
 
-		return BlueprintJSONUtil.jsonArrayToDoubleArray(
-			bodyJSONObject.getJSONArray(
+		return BlueprintJSONUtil.toDoubleArray(
+			jsonObject.getJSONArray(
 				PercentileRanksAggregationBodyConfigurationKeys.VALUES.
 					getJsonKey()));
 	}
 
 	private void _setHDR(
-		PercentileRanksAggregation aggregation, JSONObject bodyJSONObject) {
+		PercentileRanksAggregation aggregation, JSONObject jsonObject) {
 
-		JSONObject hdrJSONObject = bodyJSONObject.getJSONObject(
+		JSONObject hdrJSONObject = jsonObject.getJSONObject(
 			PercentileRanksAggregationBodyConfigurationKeys.HDR.getJsonKey());
 
 		if (!hdrJSONObject.has("number_of_significant_value_digits")) {
@@ -114,26 +114,27 @@ public class PercentileRanksAggregationTranslator
 			hdrJSONObject.getInt("number_of_significant_value_digits"));
 	}
 
-	private void _setKeyed(
-		PercentileRanksAggregation aggregation, JSONObject bodyJSONObject) {
+	private void _setMethod(
+		PercentileRanksAggregation aggregation, JSONObject jsonObject) {
 
-		if (!bodyJSONObject.has(
-				PercentileRanksAggregationBodyConfigurationKeys.KEYED.
+		if (jsonObject.has(
+				PercentileRanksAggregationBodyConfigurationKeys.HDR.
 					getJsonKey())) {
 
-			return;
+			_setHDR(aggregation, jsonObject);
 		}
+		else if (jsonObject.has(
+					PercentileRanksAggregationBodyConfigurationKeys.TDIGEST.
+						getJsonKey())) {
 
-		aggregation.setKeyed(
-			bodyJSONObject.getBoolean(
-				PercentileRanksAggregationBodyConfigurationKeys.KEYED.
-					getJsonKey()));
+			_setTDigest(aggregation, jsonObject);
+		}
 	}
 
 	private void _setTDigest(
-		PercentileRanksAggregation aggregation, JSONObject bodyJSONObject) {
+		PercentileRanksAggregation aggregation, JSONObject jsonObject) {
 
-		JSONObject tDigestJSONObject = bodyJSONObject.getJSONObject(
+		JSONObject tDigestJSONObject = jsonObject.getJSONObject(
 			PercentileRanksAggregationBodyConfigurationKeys.TDIGEST.
 				getJsonKey());
 
@@ -146,9 +147,12 @@ public class PercentileRanksAggregationTranslator
 	}
 
 	@Reference
+	private AggregationHelper _aggregationHelper;
+
+	@Reference
 	private Aggregations _aggregations;
 
 	@Reference
-	private ScriptHelper _aggregationScriptHelper;
+	private SetterHelper _setterHelper;
 
 }

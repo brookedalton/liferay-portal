@@ -15,16 +15,16 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.metric;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.ExtendedStatsAggregation;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.ExtendedStatsAggregationBodyConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.BaseAggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.ScriptHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.util.SetterHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 
 import java.util.Optional;
 
@@ -39,54 +39,50 @@ import org.osgi.service.component.annotations.Reference;
 	service = AggregationTranslator.class
 )
 public class ExtendedStatsAggregationTranslator
-	extends BaseAggregationTranslator implements AggregationTranslator {
+	implements AggregationTranslator {
 
 	@Override
-	public Optional<Aggregation> translate(
-		String aggregationName, JSONObject bodyJSONObject,
-		ParameterData parameterData, Messages messages,
-		AggregationTranslatorFactory aggregationTranslatorFactory) {
+	public Optional<AggregationWrapper> translate(
+		String aggregationName, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
 
-		if (!validateField(bodyJSONObject, messages)) {
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+				jsonObject, messages,
+				ExtendedStatsAggregationBodyConfigurationKeys.FIELD.
+					getJsonKey())) {
+
 			return Optional.empty();
 		}
 
 		ExtendedStatsAggregation aggregation = _aggregations.extendedStats(
 			aggregationName,
-			bodyJSONObject.getString(
+			jsonObject.getString(
 				ExtendedStatsAggregationBodyConfigurationKeys.FIELD.
 					getJsonKey()));
 
-		setMissing(aggregation, bodyJSONObject);
+		_setterHelper.setStringValue(
+			jsonObject,
+			ExtendedStatsAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
+			aggregation::setMissing);
 
-		_setSigma(aggregation, bodyJSONObject);
+		_aggregationHelper.setScript(
+			jsonObject, aggregation::setScript, messages);
 
-		setScript(
-			aggregation, _aggregationScriptHelper, bodyJSONObject, messages);
+		_setterHelper.setIntegerValue(
+			jsonObject,
+			ExtendedStatsAggregationBodyConfigurationKeys.SIGMA.getJsonKey(),
+			aggregation::setSigma);
 
-		return Optional.of(aggregation);
+		return _aggregationHelper.wrap(aggregation);
 	}
 
-	private void _setSigma(
-		ExtendedStatsAggregation aggregation, JSONObject bodyJSONObject) {
-
-		if (!bodyJSONObject.has(
-				ExtendedStatsAggregationBodyConfigurationKeys.SIGMA.
-					getJsonKey())) {
-
-			return;
-		}
-
-		aggregation.setSigma(
-			bodyJSONObject.getInt(
-				ExtendedStatsAggregationBodyConfigurationKeys.SIGMA.
-					getJsonKey()));
-	}
+	@Reference
+	private AggregationHelper _aggregationHelper;
 
 	@Reference
 	private Aggregations _aggregations;
 
 	@Reference
-	private ScriptHelper _aggregationScriptHelper;
+	private SetterHelper _setterHelper;
 
 }

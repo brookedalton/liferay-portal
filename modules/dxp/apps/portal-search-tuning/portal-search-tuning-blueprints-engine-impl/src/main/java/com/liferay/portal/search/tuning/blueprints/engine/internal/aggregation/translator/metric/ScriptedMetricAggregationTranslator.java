@@ -15,19 +15,18 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.metric;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.ScriptedMetricAggregation;
 import com.liferay.portal.search.script.Script;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.ScriptedMetricAggregationBodyConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.BaseAggregationTranslator;
+import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.util.ScriptHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.util.SetterHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,22 +44,24 @@ import org.osgi.service.component.annotations.Reference;
 	service = AggregationTranslator.class
 )
 public class ScriptedMetricAggregationTranslator
-	extends BaseAggregationTranslator implements AggregationTranslator {
+	implements AggregationTranslator {
 
 	@Override
-	public Optional<Aggregation> translate(
-		String aggregationName, JSONObject bodyJSONObject,
-		ParameterData parameterData, Messages messages,
-		AggregationTranslatorFactory aggregationTranslatorFactory) {
+	public Optional<AggregationWrapper> translate(
+		String aggregationName, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
 
-		Optional<Script> mapScriptOptional = _getScript(
-			bodyJSONObject.getJSONObject(
+		Optional<Script> mapScriptOptional = _aggregationHelper.getScript(
+			jsonObject.get(
 				ScriptedMetricAggregationBodyConfigurationKeys.MAP_SCRIPT.
 					getJsonKey()),
 			messages);
 
 		if (!mapScriptOptional.isPresent()) {
-			_addValidationMessage(bodyJSONObject, messages);
+			MessagesUtil.requiredFieldMissingError(
+				messages, jsonObject,
+				ScriptedMetricAggregationBodyConfigurationKeys.MAP_SCRIPT.
+					getJsonKey());
 
 			return Optional.empty();
 		}
@@ -70,87 +71,40 @@ public class ScriptedMetricAggregationTranslator
 
 		aggregation.setMapScript(mapScriptOptional.get());
 
-		_setCombineScript(aggregation, bodyJSONObject, messages);
+		_aggregationHelper.setScript(
+			jsonObject,
+			ScriptedMetricAggregationBodyConfigurationKeys.COMBINE_SCRIPT.
+				getJsonKey(),
+			aggregation::setInitScript, messages);
 
-		_setInitScript(aggregation, bodyJSONObject, messages);
+		_aggregationHelper.setScript(
+			jsonObject,
+			ScriptedMetricAggregationBodyConfigurationKeys.INIT_SCRIPT.
+				getJsonKey(),
+			aggregation::setInitScript, messages);
 
-		_setParams(aggregation, bodyJSONObject);
+		_setParams(aggregation, jsonObject);
 
-		_setReduceScript(aggregation, bodyJSONObject, messages);
+		_aggregationHelper.setScript(
+			jsonObject,
+			ScriptedMetricAggregationBodyConfigurationKeys.REDUCE_SCRIPT.
+				getJsonKey(),
+			aggregation::setInitScript, messages);
 
-		return Optional.of(aggregation);
-	}
-
-	private void _addValidationMessage(
-		JSONObject bodyJSONObject, Messages messages) {
-
-		messages.addMessage(
-			new Message.Builder().className(
-				getClass().getName()
-			).localizationKey(
-				"core.error.invalid-or-missing-map-script"
-			).msg(
-				"Invalid or missing map script"
-			).rootObject(
-				bodyJSONObject
-			).rootProperty(
-				"field"
-			).severity(
-				Severity.ERROR
-			).build());
-	}
-
-	private Optional<Script> _getScript(
-		JSONObject scriptJSONObject, Messages messages) {
-
-		if ((scriptJSONObject == null) || (scriptJSONObject.length() == 0)) {
-			return Optional.empty();
-		}
-
-		return _aggregationScriptHelper.getScript(scriptJSONObject, messages);
-	}
-
-	private void _setCombineScript(
-		ScriptedMetricAggregation aggregation, JSONObject bodyJSONObject,
-		Messages messages) {
-
-		Optional<Script> optional = _getScript(
-			bodyJSONObject.getJSONObject(
-				ScriptedMetricAggregationBodyConfigurationKeys.COMBINE_SCRIPT.
-					getJsonKey()),
-			messages);
-
-		if (optional.isPresent()) {
-			aggregation.setCombineScript(optional.get());
-		}
-	}
-
-	private void _setInitScript(
-		ScriptedMetricAggregation aggregation, JSONObject bodyJSONObject,
-		Messages messages) {
-
-		Optional<Script> optional = _getScript(
-			bodyJSONObject.getJSONObject(
-				ScriptedMetricAggregationBodyConfigurationKeys.INIT_SCRIPT.
-					getJsonKey()),
-			messages);
-
-		if (optional.isPresent()) {
-			aggregation.setInitScript(optional.get());
-		}
+		return _aggregationHelper.wrap(aggregation);
 	}
 
 	private void _setParams(
-		ScriptedMetricAggregation aggregation, JSONObject bodyJSONObject) {
+		ScriptedMetricAggregation aggregation, JSONObject jsonObject) {
 
-		if (!bodyJSONObject.has(
+		if (!jsonObject.has(
 				ScriptedMetricAggregationBodyConfigurationKeys.PARAMS.
 					getJsonKey())) {
 
 			return;
 		}
 
-		JSONObject paramsJSONObject = bodyJSONObject.getJSONObject(
+		JSONObject paramsJSONObject = jsonObject.getJSONObject(
 			ScriptedMetricAggregationBodyConfigurationKeys.PARAMS.getJsonKey());
 
 		Map<String, Object> params = new HashMap<>();
@@ -166,25 +120,16 @@ public class ScriptedMetricAggregationTranslator
 		aggregation.setParameters(params);
 	}
 
-	private void _setReduceScript(
-		ScriptedMetricAggregation aggregation, JSONObject bodyJSONObject,
-		Messages messages) {
-
-		Optional<Script> optional = _getScript(
-			bodyJSONObject.getJSONObject(
-				ScriptedMetricAggregationBodyConfigurationKeys.REDUCE_SCRIPT.
-					getJsonKey()),
-			messages);
-
-		if (optional.isPresent()) {
-			aggregation.setReduceScript(optional.get());
-		}
-	}
+	@Reference
+	private AggregationHelper _aggregationHelper;
 
 	@Reference
 	private Aggregations _aggregations;
 
 	@Reference
-	private ScriptHelper _aggregationScriptHelper;
+	private ScriptHelper _scriptHelper;
+
+	@Reference
+	private SetterHelper _setterHelper;
 
 }

@@ -15,16 +15,17 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.metric;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.MinAggregation;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.MaxAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.MinAggregationBodyConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.BaseAggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.ScriptHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.util.SetterHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 
 import java.util.Optional;
 
@@ -38,36 +39,43 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true, property = "name=min",
 	service = AggregationTranslator.class
 )
-public class MinAggregationTranslator
-	extends BaseAggregationTranslator implements AggregationTranslator {
+public class MinAggregationTranslator implements AggregationTranslator {
 
 	@Override
-	public Optional<Aggregation> translate(
-		String aggregationName, JSONObject bodyJSONObject,
-		ParameterData parameterData, Messages messages,
-		AggregationTranslatorFactory aggregationTranslatorFactory) {
+	public Optional<AggregationWrapper> translate(
+		String aggregationName, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
 
-		if (!validateField(bodyJSONObject, messages)) {
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+				jsonObject, messages,
+				MaxAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
+
 			return Optional.empty();
 		}
 
 		MinAggregation aggregation = _aggregations.min(
 			aggregationName,
-			bodyJSONObject.getString(
+			jsonObject.getString(
 				MinAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
 
-		setMissing(aggregation, bodyJSONObject);
+		_setterHelper.setStringValue(
+			jsonObject,
+			MinAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
+			aggregation::setMissing);
 
-		setScript(
-			aggregation, _aggregationScriptHelper, bodyJSONObject, messages);
+		_aggregationHelper.setScript(
+			jsonObject, aggregation::setScript, messages);
 
-		return Optional.of(aggregation);
+		return _aggregationHelper.wrap(aggregation);
 	}
+
+	@Reference
+	private AggregationHelper _aggregationHelper;
 
 	@Reference
 	private Aggregations _aggregations;
 
 	@Reference
-	private ScriptHelper _aggregationScriptHelper;
+	private SetterHelper _setterHelper;
 
 }

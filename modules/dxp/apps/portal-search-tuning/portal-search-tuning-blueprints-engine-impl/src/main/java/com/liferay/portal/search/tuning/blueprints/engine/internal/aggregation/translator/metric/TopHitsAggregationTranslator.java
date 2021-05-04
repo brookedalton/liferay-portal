@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.TopHitsAggregation;
 import com.liferay.portal.search.highlight.Highlight;
@@ -27,12 +26,12 @@ import com.liferay.portal.search.script.ScriptField;
 import com.liferay.portal.search.script.ScriptFieldBuilder;
 import com.liferay.portal.search.script.Scripts;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.TopHitsAggregationBodyConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.BaseAggregationTranslator;
+import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.util.HighlightHelper;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.ScriptHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.util.SetterHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 import java.util.ArrayList;
@@ -50,28 +49,49 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true, property = "name=top_hits",
 	service = AggregationTranslator.class
 )
-public class TopHitsAggregationTranslator
-	extends BaseAggregationTranslator implements AggregationTranslator {
+public class TopHitsAggregationTranslator implements AggregationTranslator {
 
 	@Override
-	public Optional<Aggregation> translate(
-		String aggregationName, JSONObject bodyJSONObject,
-		ParameterData parameterData, Messages messages,
-		AggregationTranslatorFactory aggregationTranslatorFactory) {
+	public Optional<AggregationWrapper> translate(
+		String aggregationName, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
 
 		TopHitsAggregation aggregation = _aggregations.topHits(aggregationName);
 
-		_setDocValueFields(aggregation, bodyJSONObject);
-		_setExplain(aggregation, bodyJSONObject);
-		_setFrom(aggregation, bodyJSONObject);
-		_setHighLight(aggregation, bodyJSONObject, parameterData, messages);
-		_setScriptFields(aggregation, bodyJSONObject, messages);
-		_setSize(aggregation, bodyJSONObject);
-		_setSource(aggregation, bodyJSONObject);
-		_setTrackScores(aggregation, bodyJSONObject);
-		_setVersion(aggregation, bodyJSONObject);
+		_setDocValueFields(aggregation, jsonObject);
 
-		return Optional.of(aggregation);
+		_setterHelper.setBooleanValue(
+			jsonObject,
+			TopHitsAggregationBodyConfigurationKeys.EXPLAIN.getJsonKey(),
+			aggregation::setExplain);
+
+		_setterHelper.setIntegerValue(
+			jsonObject,
+			TopHitsAggregationBodyConfigurationKeys.FROM.getJsonKey(),
+			aggregation::setFrom);
+
+		_setHighLight(aggregation, jsonObject, parameterData, messages);
+
+		_setScriptFields(aggregation, jsonObject, messages);
+
+		_setterHelper.setIntegerValue(
+			jsonObject,
+			TopHitsAggregationBodyConfigurationKeys.SIZE.getJsonKey(),
+			aggregation::setSize);
+
+		_setSource(aggregation, jsonObject);
+
+		_setterHelper.setBooleanValue(
+			jsonObject,
+			TopHitsAggregationBodyConfigurationKeys.TRACK_SCORES.getJsonKey(),
+			aggregation::setTrackScores);
+
+		_setterHelper.setBooleanValue(
+			jsonObject,
+			TopHitsAggregationBodyConfigurationKeys.VERSION.getJsonKey(),
+			aggregation::setVersion);
+
+		return _aggregationHelper.wrap(aggregation);
 	}
 
 	private String _getScriptFieldName(JSONObject scriptFieldJSONObject) {
@@ -81,55 +101,27 @@ public class TopHitsAggregationTranslator
 	}
 
 	private void _setDocValueFields(
-		TopHitsAggregation aggregation, JSONObject bodyJSONObject) {
+		TopHitsAggregation aggregation, JSONObject jsonObject) {
 
-		if (!bodyJSONObject.has(
+		if (!jsonObject.has(
 				TopHitsAggregationBodyConfigurationKeys.DOCVALUE_FIELDS.
 					getJsonKey())) {
 
 			return;
 		}
 
-		JSONArray fieldsJSONArray = bodyJSONObject.getJSONArray(
+		JSONArray fieldsJSONArray = jsonObject.getJSONArray(
 			TopHitsAggregationBodyConfigurationKeys.DOCVALUE_FIELDS.
 				getJsonKey());
 
 		aggregation.setSelectedFields(JSONUtil.toStringList(fieldsJSONArray));
 	}
 
-	private void _setExplain(
-		TopHitsAggregation aggregation, JSONObject bodyJSONObject) {
-
-		if (!bodyJSONObject.has(
-				TopHitsAggregationBodyConfigurationKeys.EXPLAIN.getJsonKey())) {
-
-			return;
-		}
-
-		aggregation.setVersion(
-			bodyJSONObject.getBoolean(
-				TopHitsAggregationBodyConfigurationKeys.EXPLAIN.getJsonKey()));
-	}
-
-	private void _setFrom(
-		TopHitsAggregation aggregation, JSONObject bodyJSONObject) {
-
-		if (!bodyJSONObject.has(
-				TopHitsAggregationBodyConfigurationKeys.FROM.getJsonKey())) {
-
-			return;
-		}
-
-		aggregation.setFrom(
-			bodyJSONObject.getInt(
-				TopHitsAggregationBodyConfigurationKeys.FROM.getJsonKey()));
-	}
-
 	private void _setHighLight(
-		TopHitsAggregation aggregation, JSONObject bodyJSONObject,
+		TopHitsAggregation aggregation, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!bodyJSONObject.has(
+		if (!jsonObject.has(
 				TopHitsAggregationBodyConfigurationKeys.HIGHLIGHT.
 					getJsonKey())) {
 
@@ -137,7 +129,7 @@ public class TopHitsAggregationTranslator
 		}
 
 		Optional<Highlight> optional = _highlightHelper.getHighlight(
-			bodyJSONObject.getJSONObject(
+			jsonObject.getJSONObject(
 				TopHitsAggregationBodyConfigurationKeys.HIGHLIGHT.getJsonKey()),
 			parameterData, messages);
 
@@ -147,10 +139,10 @@ public class TopHitsAggregationTranslator
 	}
 
 	private void _setScriptFields(
-		TopHitsAggregation aggregation, JSONObject bodyJSONObject,
+		TopHitsAggregation aggregation, JSONObject jsonObject,
 		Messages messages) {
 
-		if (!bodyJSONObject.has(
+		if (!jsonObject.has(
 				TopHitsAggregationBodyConfigurationKeys.SCRIPT_FIELDS.
 					getJsonKey())) {
 
@@ -159,7 +151,7 @@ public class TopHitsAggregationTranslator
 
 		List<ScriptField> scriptFields = new ArrayList<>();
 
-		JSONArray jsonArray = bodyJSONObject.getJSONArray(
+		JSONArray jsonArray = jsonObject.getJSONArray(
 			TopHitsAggregationBodyConfigurationKeys.SCRIPT_FIELDS.getJsonKey());
 
 		for (int i = 0; i < jsonArray.length(); i++) {
@@ -167,11 +159,8 @@ public class TopHitsAggregationTranslator
 
 			String fieldName = _getScriptFieldName(scriptFieldJSONObject);
 
-			JSONObject scriptJSONObject = scriptFieldJSONObject.getJSONObject(
-				fieldName);
-
-			Optional<Script> optional = _scriptHelper.getScript(
-				scriptJSONObject, messages);
+			Optional<Script> optional = _aggregationHelper.getScript(
+				scriptFieldJSONObject.get(fieldName), messages);
 
 			if (optional.isPresent()) {
 				ScriptFieldBuilder scriptFieldBuilder = _scripts.fieldBuilder();
@@ -185,40 +174,26 @@ public class TopHitsAggregationTranslator
 		aggregation.setScriptFields(scriptFields);
 	}
 
-	private void _setSize(
-		TopHitsAggregation aggregation, JSONObject bodyJSONObject) {
-
-		if (!bodyJSONObject.has(
-				TopHitsAggregationBodyConfigurationKeys.SIZE.getJsonKey())) {
-
-			return;
-		}
-
-		aggregation.setFrom(
-			bodyJSONObject.getInt(
-				TopHitsAggregationBodyConfigurationKeys.SIZE.getJsonKey()));
-	}
-
 	private void _setSource(
-		TopHitsAggregation aggregation, JSONObject bodyJSONObject) {
+		TopHitsAggregation aggregation, JSONObject jsonObject) {
 
-		if (!bodyJSONObject.has(
+		if (!jsonObject.has(
 				TopHitsAggregationBodyConfigurationKeys.SOURCE.getJsonKey())) {
 
 			return;
 		}
 
-		Object object = bodyJSONObject.get(
+		Object object = jsonObject.get(
 			TopHitsAggregationBodyConfigurationKeys.SOURCE.getJsonKey());
 
 		if (object instanceof JSONObject) {
-			JSONObject jsonObject = (JSONObject)object;
+			JSONObject sourceJSONObject = (JSONObject)object;
 
-			if (jsonObject.length() == 0) {
+			if (sourceJSONObject.length() == 0) {
 				return;
 			}
 
-			_setSourceIncludeExclude(aggregation, (JSONObject)object);
+			_setSourceIncludeExclude(aggregation, sourceJSONObject);
 		}
 		else {
 			aggregation.setFetchSource(GetterUtil.getBoolean(object));
@@ -247,35 +222,8 @@ public class TopHitsAggregationTranslator
 		aggregation.setFetchSourceIncludeExclude(includesArray, excludesArray);
 	}
 
-	private void _setTrackScores(
-		TopHitsAggregation aggregation, JSONObject bodyJSONObject) {
-
-		if (!bodyJSONObject.has(
-				TopHitsAggregationBodyConfigurationKeys.TRACK_SCORES.
-					getJsonKey())) {
-
-			return;
-		}
-
-		aggregation.setVersion(
-			bodyJSONObject.getBoolean(
-				TopHitsAggregationBodyConfigurationKeys.TRACK_SCORES.
-					getJsonKey()));
-	}
-
-	private void _setVersion(
-		TopHitsAggregation aggregation, JSONObject bodyJSONObject) {
-
-		if (!bodyJSONObject.has(
-				TopHitsAggregationBodyConfigurationKeys.VERSION.getJsonKey())) {
-
-			return;
-		}
-
-		aggregation.setVersion(
-			bodyJSONObject.getBoolean(
-				TopHitsAggregationBodyConfigurationKeys.VERSION.getJsonKey()));
-	}
+	@Reference
+	private AggregationHelper _aggregationHelper;
 
 	@Reference
 	private Aggregations _aggregations;
@@ -284,9 +232,9 @@ public class TopHitsAggregationTranslator
 	private HighlightHelper _highlightHelper;
 
 	@Reference
-	private ScriptHelper _scriptHelper;
+	private Scripts _scripts;
 
 	@Reference
-	private Scripts _scripts;
+	private SetterHelper _setterHelper;
 
 }

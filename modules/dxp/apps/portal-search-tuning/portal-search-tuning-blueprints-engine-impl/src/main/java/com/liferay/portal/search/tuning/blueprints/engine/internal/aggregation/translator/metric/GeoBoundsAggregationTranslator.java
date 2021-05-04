@@ -15,15 +15,16 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.metric;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.GeoBoundsAggregation;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.GeoBoundsAggregationBodyConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.BaseAggregationTranslator;
+import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.util.SetterHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 
 import java.util.Optional;
 
@@ -37,46 +38,41 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true, property = "name=geo_bounds",
 	service = AggregationTranslator.class
 )
-public class GeoBoundsAggregationTranslator
-	extends BaseAggregationTranslator implements AggregationTranslator {
+public class GeoBoundsAggregationTranslator implements AggregationTranslator {
 
 	@Override
-	public Optional<Aggregation> translate(
-		String aggregationName, JSONObject bodyJSONObject,
-		ParameterData parameterData, Messages messages,
-		AggregationTranslatorFactory aggregationTranslatorFactory) {
+	public Optional<AggregationWrapper> translate(
+		String aggregationName, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
 
-		if (!validateField(bodyJSONObject, messages)) {
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+				jsonObject, messages,
+				GeoBoundsAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
+
 			return Optional.empty();
 		}
 
 		GeoBoundsAggregation aggregation = _aggregations.geoBounds(
 			aggregationName,
-			bodyJSONObject.getString(
+			jsonObject.getString(
 				GeoBoundsAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
 
-		_setWrapLongitude(aggregation, bodyJSONObject);
+		_setterHelper.setBooleanValue(
+			jsonObject,
+			GeoBoundsAggregationBodyConfigurationKeys.WRAP_LONGITUDE.
+				getJsonKey(),
+			aggregation::setWrapLongitude);
 
-		return Optional.of(aggregation);
-	}
-
-	private void _setWrapLongitude(
-		GeoBoundsAggregation aggregation, JSONObject bodyJSONObject) {
-
-		if (!bodyJSONObject.has(
-				GeoBoundsAggregationBodyConfigurationKeys.WRAP_LONGITUDE.
-					getJsonKey())) {
-
-			return;
-		}
-
-		aggregation.setWrapLongitude(
-			bodyJSONObject.getBoolean(
-				GeoBoundsAggregationBodyConfigurationKeys.WRAP_LONGITUDE.
-					getJsonKey()));
+		return _aggregationHelper.wrap(aggregation);
 	}
 
 	@Reference
+	private AggregationHelper _aggregationHelper;
+
+	@Reference
 	private Aggregations _aggregations;
+
+	@Reference
+	private SetterHelper _setterHelper;
 
 }

@@ -14,18 +14,20 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.search.highlight.FieldConfig;
 import com.liferay.portal.search.highlight.FieldConfigBuilder;
+import com.liferay.portal.search.highlight.FieldConfigBuilderFactory;
 import com.liferay.portal.search.highlight.Highlight;
 import com.liferay.portal.search.highlight.HighlightBuilder;
-import com.liferay.portal.search.highlight.Highlights;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.highlight.HighlightingConfigurationKeys;
+import com.liferay.portal.search.highlight.HighlightBuilderFactory;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.highlight.HighlightConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -37,136 +39,93 @@ import org.osgi.service.component.annotations.Reference;
 public class HighlightHelper {
 
 	public Optional<Highlight> getHighlight(
-		JSONObject highlightJSONObject, ParameterData parameterData,
-		Messages messages) {
+		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
 
-		if ((highlightJSONObject == null) ||
-			(highlightJSONObject.length() == 0)) {
+		HighlightBuilder highlightBuilder = _highlightBuilderFactory.builder();
 
-			return Optional.empty();
-		}
+		_setterHelper.setIntegerValue(
+			jsonObject, HighlightConfigurationKeys.FRAGMENT_SIZE.getJsonKey(),
+			highlightBuilder::fragmentSize);
 
-		HighlightBuilder highlightBuilder = _highlights.builder();
+		_setterHelper.setIntegerValue(
+			jsonObject,
+			HighlightConfigurationKeys.NUMBER_OF_FRAGMENTS.getJsonKey(),
+			highlightBuilder::numOfFragments);
 
-		if (highlightJSONObject.has(
-				HighlightingConfigurationKeys.FRAGMENT_SIZE.getJsonKey())) {
+		_setterHelper.setStringArrayValue(
+			jsonObject, HighlightConfigurationKeys.POST_TAGS.getJsonKey(),
+			highlightBuilder::postTags);
 
-			highlightBuilder.fragmentSize(
-				highlightJSONObject.getInt(
-					HighlightingConfigurationKeys.FRAGMENT_SIZE.getJsonKey()));
-		}
+		_setterHelper.setStringArrayValue(
+			jsonObject, HighlightConfigurationKeys.PRE_TAGS.getJsonKey(),
+			highlightBuilder::preTags);
 
-		if (highlightJSONObject.has(
-				HighlightingConfigurationKeys.NUMBER_OF_FRAGMENTS.
-					getJsonKey())) {
+		_setterHelper.setBooleanValue(
+			jsonObject,
+			HighlightConfigurationKeys.REQUIRE_FIELD_MATCH.getJsonKey(),
+			highlightBuilder::requireFieldMatch);
 
-			highlightBuilder.numOfFragments(
-				highlightJSONObject.getInt(
-					HighlightingConfigurationKeys.NUMBER_OF_FRAGMENTS.
-						getJsonKey()));
-		}
+		_setterHelper.setStringValue(
+			jsonObject, HighlightConfigurationKeys.TYPE.getJsonKey(),
+			highlightBuilder::highlighterType);
 
-		if (highlightJSONObject.has(
-				HighlightingConfigurationKeys.POST_TAGS.getJsonKey())) {
-
-			highlightBuilder.postTags(
-				JSONUtil.toStringArray(
-					highlightJSONObject.getJSONArray(
-						HighlightingConfigurationKeys.POST_TAGS.getJsonKey())));
-		}
-
-		if (highlightJSONObject.has(
-				HighlightingConfigurationKeys.PRE_TAGS.getJsonKey())) {
-
-			highlightBuilder.preTags(
-				JSONUtil.toStringArray(
-					highlightJSONObject.getJSONArray(
-						HighlightingConfigurationKeys.PRE_TAGS.getJsonKey())));
-		}
-
-		if (highlightJSONObject.has(
-				HighlightingConfigurationKeys.REQUIRE_FIELD_MATCH.
-					getJsonKey())) {
-
-			highlightBuilder.requireFieldMatch(
-				highlightJSONObject.getBoolean(
-					HighlightingConfigurationKeys.REQUIRE_FIELD_MATCH.
-						getJsonKey()));
-		}
-
-		if (highlightJSONObject.has(
-				HighlightingConfigurationKeys.TYPE.getJsonKey())) {
-
-			highlightBuilder.highlighterType(
-				highlightJSONObject.getString(
-					HighlightingConfigurationKeys.TYPE.getJsonKey()));
-		}
-
-		if (highlightJSONObject.has(
-				HighlightingConfigurationKeys.FIELDS.getJsonKey())) {
-
-			_addFieldConfigs(
-				highlightBuilder,
-				highlightJSONObject.getJSONArray(
-					HighlightingConfigurationKeys.FIELDS.getJsonKey()));
-		}
+		_setFieldConfigs(highlightBuilder, jsonObject);
 
 		return Optional.of(highlightBuilder.build());
 	}
 
-	private void _addFieldConfigs(
-		HighlightBuilder highlightBuilder, JSONArray fieldsJSONArray) {
+	private FieldConfig _getFieldConfig(
+		JSONObject fieldsJSONObject, String key) {
 
-		for (int i = 0; i < fieldsJSONArray.length(); i++) {
-			JSONObject fieldJSONObject = fieldsJSONArray.getJSONObject(i);
+		JSONObject fieldJSONObject = fieldsJSONObject.getJSONObject(key);
 
-			if (!fieldJSONObject.has(
-					HighlightingConfigurationKeys.FIELD.getJsonKey())) {
+		FieldConfigBuilder fieldConfigBuilder =
+			_fieldConfigBuilderFactory.builder(key);
 
-				continue;
-			}
+		_setterHelper.setIntegerValue(
+			fieldJSONObject,
+			HighlightConfigurationKeys.FRAGMENT_OFFSET.getJsonKey(),
+			fieldConfigBuilder::fragmentOffset);
 
-			FieldConfigBuilder fieldConfigBuilder =
-				_highlights.fieldConfigBuilder();
+		_setterHelper.setIntegerValue(
+			fieldJSONObject,
+			HighlightConfigurationKeys.FRAGMENT_SIZE.getJsonKey(),
+			fieldConfigBuilder::fragmentSize);
 
-			fieldConfigBuilder.field(
-				fieldJSONObject.getString(
-					HighlightingConfigurationKeys.FIELD.getJsonKey()));
+		_setterHelper.setIntegerValue(
+			fieldJSONObject,
+			HighlightConfigurationKeys.NUMBER_OF_FRAGMENTS.getJsonKey(),
+			fieldConfigBuilder::numFragments);
 
-			if (fieldJSONObject.has(
-					HighlightingConfigurationKeys.FRAGMENT_OFFSET.
-						getJsonKey())) {
+		return fieldConfigBuilder.build();
+	}
 
-				fieldConfigBuilder.fragmentOffset(
-					fieldJSONObject.getInt(
-						HighlightingConfigurationKeys.FRAGMENT_OFFSET.
-							getJsonKey()));
-			}
+	private void _setFieldConfigs(
+		HighlightBuilder highlightBuilder, JSONObject jsonObject) {
 
-			if (fieldJSONObject.has(
-					HighlightingConfigurationKeys.FRAGMENT_SIZE.getJsonKey())) {
-
-				fieldConfigBuilder.fragmentSize(
-					fieldJSONObject.getInt(
-						HighlightingConfigurationKeys.FRAGMENT_SIZE.
-							getJsonKey()));
-			}
-
-			if (fieldJSONObject.has(
-					HighlightingConfigurationKeys.NUMBER_OF_FRAGMENTS.
-						getJsonKey())) {
-
-				fieldConfigBuilder.numFragments(
-					fieldJSONObject.getInt(
-						HighlightingConfigurationKeys.NUMBER_OF_FRAGMENTS.
-							getJsonKey()));
-			}
-
-			highlightBuilder.addFieldConfig(fieldConfigBuilder.build());
+		if (!jsonObject.has(HighlightConfigurationKeys.FIELDS.getJsonKey())) {
+			return;
 		}
+
+		JSONObject fieldsJSONObject = jsonObject.getJSONObject(
+			HighlightConfigurationKeys.FIELDS.getJsonKey());
+
+		Set<String> keySet = fieldsJSONObject.keySet();
+
+		Stream<String> stream = keySet.stream();
+
+		stream.forEach(
+			key -> highlightBuilder.addFieldConfig(
+				_getFieldConfig(fieldsJSONObject, key)));
 	}
 
 	@Reference
-	private Highlights _highlights;
+	private FieldConfigBuilderFactory _fieldConfigBuilderFactory;
+
+	@Reference
+	private HighlightBuilderFactory _highlightBuilderFactory;
+
+	@Reference
+	private SetterHelper _setterHelper;
 
 }
