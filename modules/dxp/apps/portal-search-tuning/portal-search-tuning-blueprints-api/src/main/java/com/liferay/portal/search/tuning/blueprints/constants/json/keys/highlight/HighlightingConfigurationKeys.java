@@ -22,18 +22,16 @@ import java.util.stream.Stream;
  */
 public enum HighlightingConfigurationKeys {
 
-	ENABLED("enabled"), FIELD("field"), FIELDS("fields"),
-	FRAGMENT_OFFSET("fragment_offset"), FRAGMENT_SIZE("fragment_size"),
-	NUMBER_OF_FRAGMENTS("number_of_fragments"), POST_TAGS("post_tags"),
-	PRE_TAGS("pre_tags"), REQUIRE_FIELD_MATCH("require_field_match"),
-	TYPE("type");
+	FIELDS("fields"), FRAGMENT_OFFSET("fragment_offset"),
+	FRAGMENT_SIZE("fragment_size"), NUMBER_OF_FRAGMENTS("number_of_fragments"),
+	POST_TAGS("post_tags"), PRE_TAGS("pre_tags"),
+	REQUIRE_FIELD_MATCH("require_field_match"), TYPE("type");
 
 	public static HighlightingConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<HighlightingConfigurationKeys>
-			highlightingConfigurationKeysStream = Arrays.stream(
-				HighlightingConfigurationKeys.values());
+		Stream<HighlightingConfigurationKeys> stream = Arrays.stream(
+			HighlightingConfigurationKeys.values());
 
-		return highlightingConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

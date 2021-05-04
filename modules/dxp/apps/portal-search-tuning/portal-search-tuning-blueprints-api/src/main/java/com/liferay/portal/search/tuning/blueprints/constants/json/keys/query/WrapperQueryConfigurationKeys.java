@@ -25,11 +25,10 @@ public enum WrapperQueryConfigurationKeys {
 	QUERY("query");
 
 	public static WrapperQueryConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<WrapperQueryConfigurationKeys>
-			wrapperQueryConfigurationKeysStream = Arrays.stream(
-				WrapperQueryConfigurationKeys.values());
+		Stream<WrapperQueryConfigurationKeys> stream = Arrays.stream(
+			WrapperQueryConfigurationKeys.values());
 
-		return wrapperQueryConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

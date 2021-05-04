@@ -25,10 +25,9 @@ public enum FilterMode {
 	POST("post"), PRE("pre"), RESCORE("rescore");
 
 	public static FilterMode findByjsonValue(String jsonValue) {
-		Stream<FilterMode> filterModeStream = Arrays.stream(
-			FilterMode.values());
+		Stream<FilterMode> stream = Arrays.stream(FilterMode.values());
 
-		return filterModeStream.filter(
+		return stream.filter(
 			value -> value._jsonValue.equals(jsonValue)
 		).findFirst(
 		).orElse(

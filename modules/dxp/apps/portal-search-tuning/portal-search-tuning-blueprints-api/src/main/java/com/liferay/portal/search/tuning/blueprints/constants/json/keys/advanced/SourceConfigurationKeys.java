@@ -26,10 +26,10 @@ public enum SourceConfigurationKeys {
 	SOURCE_INCLUDES("source_includes");
 
 	public static SourceConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<SourceConfigurationKeys> sourceConfigurationKeysStream =
-			Arrays.stream(SourceConfigurationKeys.values());
+		Stream<SourceConfigurationKeys> stream = Arrays.stream(
+			SourceConfigurationKeys.values());
 
-		return sourceConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

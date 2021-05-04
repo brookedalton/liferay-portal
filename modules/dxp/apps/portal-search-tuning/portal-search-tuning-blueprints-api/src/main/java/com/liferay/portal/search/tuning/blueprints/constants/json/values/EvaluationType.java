@@ -29,10 +29,9 @@ public enum EvaluationType {
 	NOT_IN_RANGE("not_in_range");
 
 	public static EvaluationType findByjsonValue(String jsonValue) {
-		Stream<EvaluationType> evaluationTypeStream = Arrays.stream(
-			EvaluationType.values());
+		Stream<EvaluationType> stream = Arrays.stream(EvaluationType.values());
 
-		return evaluationTypeStream.filter(
+		return stream.filter(
 			value -> value._jsonValue.equals(jsonValue)
 		).findFirst(
 		).orElse(

@@ -22,19 +22,19 @@ import java.util.stream.Stream;
  */
 public enum TermSuggesterConfigurationKeys {
 
-	ANALYZER("analyzer"), FIELD("field"), MAX_EDITS("max_edits"),
-	MAX_INSPECTIONS("max_inspections"), MAX_TERM_FREQ("max_term_freq"),
-	MIN_DOC_FREQ("min_doc_freq"), MIN_WORD_LENGTH("min_word_length"),
-	PREFIX_LENGTH("prefix_length"), SIZE("size"), SORT("sort"),
+	ACCURACY("accuracy"), ANALYZER("analyzer"), FIELD("field"),
+	MAX_EDITS("max_edits"), MAX_INSPECTIONS("max_inspections"),
+	MAX_TERM_FREQ("max_term_freq"), MIN_DOC_FREQ("min_doc_freq"),
+	MIN_WORD_LENGTH("min_word_length"), PREFIX_LENGTH("prefix_length"),
+	SHARD_SIZE("shard_size"), SIZE("size"), SORT("sort"),
 	STRING_DISTANCE("string_distance"), SUGGEST_MODE("suggest_mode"),
 	TEXT("text");
 
 	public static TermSuggesterConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<TermSuggesterConfigurationKeys>
-			termSuggesterConfigurationKeysStream = Arrays.stream(
-				TermSuggesterConfigurationKeys.values());
+		Stream<TermSuggesterConfigurationKeys> stream = Arrays.stream(
+			TermSuggesterConfigurationKeys.values());
 
-		return termSuggesterConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

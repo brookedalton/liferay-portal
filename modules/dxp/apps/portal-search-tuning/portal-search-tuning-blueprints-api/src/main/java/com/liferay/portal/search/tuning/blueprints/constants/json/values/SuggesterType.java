@@ -25,10 +25,9 @@ public enum SuggesterType {
 	COMPLETION("completion"), PHRASE("phrase"), TERM("term");
 
 	public static SuggesterType findBy_jsonValue(String jsonValue) {
-		Stream<SuggesterType> suggesterTypeStream = Arrays.stream(
-			SuggesterType.values());
+		Stream<SuggesterType> stream = Arrays.stream(SuggesterType.values());
 
-		return suggesterTypeStream.filter(
+		return stream.filter(
 			value -> value._jsonValue.equals(jsonValue)
 		).findFirst(
 		).orElse(

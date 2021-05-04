@@ -25,11 +25,10 @@ public enum ParameterConfigurationKeys {
 	CUSTOM("custom"), KEYWORDS("keywords"), PAGE("page"), SIZE("size");
 
 	public static ParameterConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<ParameterConfigurationKeys>
-			requestParameterConfigurationKeysStream = Arrays.stream(
-				ParameterConfigurationKeys.values());
+		Stream<ParameterConfigurationKeys> stream = Arrays.stream(
+			ParameterConfigurationKeys.values());
 
-		return requestParameterConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

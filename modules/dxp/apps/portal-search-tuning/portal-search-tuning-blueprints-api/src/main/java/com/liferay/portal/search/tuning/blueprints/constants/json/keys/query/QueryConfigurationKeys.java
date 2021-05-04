@@ -26,10 +26,10 @@ public enum QueryConfigurationKeys {
 	ENABLED("enabled"), TITLE("title");
 
 	public static QueryConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<QueryConfigurationKeys> clauseConfigurationKeysStream =
-			Arrays.stream(QueryConfigurationKeys.values());
+		Stream<QueryConfigurationKeys> stream = Arrays.stream(
+			QueryConfigurationKeys.values());
 
-		return clauseConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

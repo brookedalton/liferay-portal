@@ -26,10 +26,10 @@ public enum ClauseConfigurationKeys {
 	WINDOW_SIZE("window_size");
 
 	public static ClauseConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<ClauseConfigurationKeys> clausesConfigurationKeysStream =
-			Arrays.stream(ClauseConfigurationKeys.values());
+		Stream<ClauseConfigurationKeys> stream = Arrays.stream(
+			ClauseConfigurationKeys.values());
 
-		return clausesConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

@@ -34,11 +34,10 @@ public enum PhraseSuggesterConfigurationKeys {
 	public static PhraseSuggesterConfigurationKeys findByJsonKey(
 		String jsonKey) {
 
-		Stream<PhraseSuggesterConfigurationKeys>
-			phraseSuggesterConfigurationKeysStream = Arrays.stream(
-				PhraseSuggesterConfigurationKeys.values());
+		Stream<PhraseSuggesterConfigurationKeys> stream = Arrays.stream(
+			PhraseSuggesterConfigurationKeys.values());
 
-		return phraseSuggesterConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

@@ -27,10 +27,10 @@ public enum SortConfigurationKeys {
 	PARAMETERS("parameters"), TYPE("type");
 
 	public static SortConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<SortConfigurationKeys> sortConfigurationKeysStream =
-			Arrays.stream(SortConfigurationKeys.values());
+		Stream<SortConfigurationKeys> stream = Arrays.stream(
+			SortConfigurationKeys.values());
 
-		return sortConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

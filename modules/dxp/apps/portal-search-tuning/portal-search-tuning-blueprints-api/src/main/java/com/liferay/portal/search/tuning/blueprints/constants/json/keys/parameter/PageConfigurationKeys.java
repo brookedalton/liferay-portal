@@ -25,10 +25,10 @@ public enum PageConfigurationKeys {
 	PARAMETER_NAME("parameter_name");
 
 	public static PageConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<PageConfigurationKeys> pagingConfigurationKeysStream =
-			Arrays.stream(PageConfigurationKeys.values());
+		Stream<PageConfigurationKeys> stream = Arrays.stream(
+			PageConfigurationKeys.values());
 
-		return pagingConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

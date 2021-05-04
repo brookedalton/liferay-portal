@@ -27,11 +27,10 @@ public enum ConditionConfigurationKeys {
 	OPERATOR("operator"), PARAMETER_NAME("parameter_name"), VALUE("value");
 
 	public static ConditionConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<ConditionConfigurationKeys>
-			clauseConditionConfigurationKeysStream = Arrays.stream(
-				ConditionConfigurationKeys.values());
+		Stream<ConditionConfigurationKeys> stream = Arrays.stream(
+			ConditionConfigurationKeys.values());
 
-		return clauseConditionConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

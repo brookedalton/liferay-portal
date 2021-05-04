@@ -27,10 +27,9 @@ public enum ParameterType {
 	STRING("string"), STRING_ARRAY("string_array"), TIME_RANGE("time_range");
 
 	public static ParameterType findBy_jsonValue(String jsonValue) {
-		Stream<ParameterType> requestParameterTypeStream = Arrays.stream(
-			ParameterType.values());
+		Stream<ParameterType> stream = Arrays.stream(ParameterType.values());
 
-		return requestParameterTypeStream.filter(
+		return stream.filter(
 			value -> value._jsonValue.equals(jsonValue)
 		).findFirst(
 		).orElse(

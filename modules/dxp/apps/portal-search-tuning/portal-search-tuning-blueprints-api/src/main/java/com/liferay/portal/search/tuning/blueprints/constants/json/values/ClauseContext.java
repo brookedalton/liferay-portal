@@ -25,10 +25,9 @@ public enum ClauseContext {
 	POST_FILTER("post_filter"), QUERY("query"), RESCORE("rescore");
 
 	public static ClauseContext findBy_jsonValue(String jsonValue) {
-		Stream<ClauseContext> clauseContextStream = Arrays.stream(
-			ClauseContext.values());
+		Stream<ClauseContext> stream = Arrays.stream(ClauseContext.values());
 
-		return clauseContextStream.filter(
+		return stream.filter(
 			value -> value._jsonValue.equals(jsonValue)
 		).findFirst(
 		).orElse(

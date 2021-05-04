@@ -32,10 +32,9 @@ public enum BlueprintKeys {
 	SUGGEST_CONFIGURATION("suggest_configuration");
 
 	public static BlueprintKeys findByJsonKey(String jsonKey) {
-		Stream<BlueprintKeys> blueprintKeysStream = Arrays.stream(
-			BlueprintKeys.values());
+		Stream<BlueprintKeys> stream = Arrays.stream(BlueprintKeys.values());
 
-		return blueprintKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

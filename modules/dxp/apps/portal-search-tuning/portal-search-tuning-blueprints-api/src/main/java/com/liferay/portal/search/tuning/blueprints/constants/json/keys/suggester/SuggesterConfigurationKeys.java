@@ -22,14 +22,13 @@ import java.util.stream.Stream;
  */
 public enum SuggesterConfigurationKeys {
 
-	CONFIGURATION("configuration"), DESCRIPTION("description"),
-	ENABLED("enabled"), NAME("name"), TYPE("type");
+	DESCRIPTION("description"), ENABLED("enabled");
 
 	public static SuggesterConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<SuggesterConfigurationKeys> suggesterConfigurationKeysStream =
-			Arrays.stream(SuggesterConfigurationKeys.values());
+		Stream<SuggesterConfigurationKeys> stream = Arrays.stream(
+			SuggesterConfigurationKeys.values());
 
-		return suggesterConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

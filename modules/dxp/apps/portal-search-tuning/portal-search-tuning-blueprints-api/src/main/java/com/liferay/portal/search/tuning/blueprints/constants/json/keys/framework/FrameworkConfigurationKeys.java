@@ -26,10 +26,10 @@ public enum FrameworkConfigurationKeys {
 	SEARCHABLE_ASSET_TYPES("searchable_asset_types");
 
 	public static FrameworkConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<FrameworkConfigurationKeys> frameworkConfigurationKeysStream =
-			Arrays.stream(FrameworkConfigurationKeys.values());
+		Stream<FrameworkConfigurationKeys> stream = Arrays.stream(
+			FrameworkConfigurationKeys.values());
 
-		return frameworkConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

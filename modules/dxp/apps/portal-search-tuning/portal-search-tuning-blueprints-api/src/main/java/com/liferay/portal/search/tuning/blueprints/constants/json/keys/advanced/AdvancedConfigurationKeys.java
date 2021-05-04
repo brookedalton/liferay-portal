@@ -25,10 +25,10 @@ public enum AdvancedConfigurationKeys {
 	QUERY_PROCESSING("query_processing"), SOURCE("source");
 
 	public static AdvancedConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<AdvancedConfigurationKeys> advancedConfigurationKeysStream =
-			Arrays.stream(AdvancedConfigurationKeys.values());
+		Stream<AdvancedConfigurationKeys> stream = Arrays.stream(
+			AdvancedConfigurationKeys.values());
 
-		return advancedConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

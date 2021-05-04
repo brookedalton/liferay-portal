@@ -22,15 +22,13 @@ import java.util.stream.Stream;
  */
 public enum AggregationConfigurationKeys {
 
-	BODY("body"), DESCRIPTION("description"), ENABLED("enabled"), NAME("name"),
-	TYPE("type");
+	DESCRIPTION("description"), ENABLED("enabled");
 
 	public static AggregationConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<AggregationConfigurationKeys>
-			aggregationConfigurationKeysStream = Arrays.stream(
-				AggregationConfigurationKeys.values());
+		Stream<AggregationConfigurationKeys> stream = Arrays.stream(
+			AggregationConfigurationKeys.values());
 
-		return aggregationConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

@@ -25,10 +25,10 @@ public enum KeywordsConfigurationKeys {
 	PARAMETER_NAME("parameter_name");
 
 	public static KeywordsConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<KeywordsConfigurationKeys> keywordsConfigurationKeysStream =
-			Arrays.stream(KeywordsConfigurationKeys.values());
+		Stream<KeywordsConfigurationKeys> stream = Arrays.stream(
+			KeywordsConfigurationKeys.values());
 
-		return keywordsConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

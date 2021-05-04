@@ -28,11 +28,10 @@ public enum CompletionSuggesterConfigurationKeys {
 	public static CompletionSuggesterConfigurationKeys findByJsonKey(
 		String jsonKey) {
 
-		Stream<CompletionSuggesterConfigurationKeys>
-			completionSuggesterConfigurationKeysStream = Arrays.stream(
-				CompletionSuggesterConfigurationKeys.values());
+		Stream<CompletionSuggesterConfigurationKeys> stream = Arrays.stream(
+			CompletionSuggesterConfigurationKeys.values());
 
-		return completionSuggesterConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

@@ -28,11 +28,10 @@ public enum QueryProcessingConfigurationKeys {
 	public static QueryProcessingConfigurationKeys findByJsonKey(
 		String jsonKey) {
 
-		Stream<QueryProcessingConfigurationKeys>
-			queryProcessingConfigurationKeysStream = Arrays.stream(
-				QueryProcessingConfigurationKeys.values());
+		Stream<QueryProcessingConfigurationKeys> stream = Arrays.stream(
+			QueryProcessingConfigurationKeys.values());
 
-		return queryProcessingConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

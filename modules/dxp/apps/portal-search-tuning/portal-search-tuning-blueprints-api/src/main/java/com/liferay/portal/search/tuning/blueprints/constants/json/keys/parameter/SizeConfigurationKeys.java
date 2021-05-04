@@ -26,10 +26,10 @@ public enum SizeConfigurationKeys {
 	PARAMETER_NAME("parameter_name");
 
 	public static SizeConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<SizeConfigurationKeys> sizeConfigurationKeysStream =
-			Arrays.stream(SizeConfigurationKeys.values());
+		Stream<SizeConfigurationKeys> stream = Arrays.stream(
+			SizeConfigurationKeys.values());
 
-		return sizeConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

@@ -25,9 +25,9 @@ public enum Operator {
 	AND("and"), NOT("not"), OR("or");
 
 	public static Operator findByjsonValue(String jsonValue) {
-		Stream<Operator> operatorStream = Arrays.stream(Operator.values());
+		Stream<Operator> stream = Arrays.stream(Operator.values());
 
-		return operatorStream.filter(
+		return stream.filter(
 			value -> value._jsonValue.equals(jsonValue)
 		).findFirst(
 		).orElse(
