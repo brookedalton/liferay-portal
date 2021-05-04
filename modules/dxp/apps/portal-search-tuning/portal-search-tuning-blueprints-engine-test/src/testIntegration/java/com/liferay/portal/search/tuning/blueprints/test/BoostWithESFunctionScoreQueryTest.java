@@ -138,31 +138,31 @@ public class BoostWithESFunctionScoreQueryTest
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"function_score",
+							"query",
 							JSONUtil.put(
-								"boost", 100
-							).put(
-								"gauss",
+								"function_score",
 								JSONUtil.put(
-									"expando__custom_fields__" +
-										"location_geolocation",
+									"boost", 100
+								).put(
+									"gauss",
 									JSONUtil.put(
-										"decay", 0.3
-									).put(
-										"origin",
+										"expando__custom_fields__" +
+											"location_geolocation",
 										JSONUtil.put(
-											"lat", lat
+											"decay", 0.3
 										).put(
-											"lon", lon
-										)
-									).put(
-										"scale", "1000km"
-									))
-							)))
-				).put(
-					"type", "wrapper"
+											"origin",
+											JSONUtil.put(
+												"lat", lat
+											).put(
+												"lon", lon
+											)
+										).put(
+											"scale", "1000km"
+										))
+								))))
 				))
 		).put(
 			"conditions", createJSONArray()

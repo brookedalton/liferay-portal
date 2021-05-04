@@ -113,31 +113,31 @@ public class BoostProximityTest extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"function_score",
+							"query",
 							JSONUtil.put(
-								"boost", boost
-							).put(
-								"gauss",
+								"function_score",
 								JSONUtil.put(
-									"expando__custom_fields__location_" +
-										"geolocation",
+									"boost", boost
+								).put(
+									"gauss",
 									JSONUtil.put(
-										"decay", 0.3
-									).put(
-										"origin",
+										"expando__custom_fields__location_" +
+											"geolocation",
 										JSONUtil.put(
-											"lat", "${ipstack.latitude}"
+											"decay", 0.3
 										).put(
-											"lon", "${ipstack.longitude}"
-										)
-									).put(
-										"scale", "100km"
-									))
-							)))
-				).put(
-					"type", "wrapper"
+											"origin",
+											JSONUtil.put(
+												"lat", "${ipstack.latitude}"
+											).put(
+												"lon", "${ipstack.longitude}"
+											)
+										).put(
+											"scale", "100km"
+										))
+								))))
 				))
 		).put(
 			"conditions", createJSONArray()

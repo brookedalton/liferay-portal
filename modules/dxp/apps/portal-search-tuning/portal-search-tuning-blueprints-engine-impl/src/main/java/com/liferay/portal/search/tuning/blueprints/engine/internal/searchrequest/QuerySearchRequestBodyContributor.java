@@ -169,7 +169,8 @@ public class QuerySearchRequestBodyContributor
 				JSONObject clauseJSONObject = clausesJSONArray.getJSONObject(j);
 
 				Optional<Query> clauseOptional = _clauseHelper.getClause(
-					clauseJSONObject, parameterData, messages);
+					clauseJSONObject.getJSONObject(
+							ClauseConfigurationKeys.QUERY.getJsonKey()), parameterData, messages);
 
 				if (!clauseOptional.isPresent()) {
 					continue;

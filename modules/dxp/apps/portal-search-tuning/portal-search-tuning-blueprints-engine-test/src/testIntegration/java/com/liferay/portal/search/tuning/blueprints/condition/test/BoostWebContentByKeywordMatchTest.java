@@ -75,11 +75,11 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 
 		configurationString = getConfigurationString(
 			_getQueryElementJSONObject(
-				articleId, 100, EvaluationType.NOT_CONTAINS.getjsonValue(),
+				articleId, 100, EvaluationType.NO_WORD_IN.getjsonValue(),
 				"cola"));
 
 		selectedElementString = _getSelectedElementString(
-			articleId, 100, EvaluationType.NOT_CONTAINS.getjsonValue(), "cola");
+			articleId, 100, EvaluationType.NO_WORD_IN.getjsonValue(), "cola");
 
 		assertSearch(
 			blueprint, configurationString, "[coca cola, pepsi cola]", "cola",
@@ -101,17 +101,17 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"terms",
+							"query",
 							JSONUtil.put(
-								"articleId_String_sortable",
-								createJSONArray().put(articleId)
-							).put(
-								"boost", boost
-							)))
-				).put(
-					"type", "wrapper"
+								"terms",
+								JSONUtil.put(
+									"articleId_String_sortable",
+									createJSONArray().put(articleId)
+								).put(
+									"boost", boost
+								))))
 				))
 		).put(
 			"conditions",
@@ -163,17 +163,17 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 							).put(
 								"query",
 								JSONUtil.put(
-									"query",
+									"wrapper",
 									JSONUtil.put(
-										"terms",
+										"query",
 										JSONUtil.put(
-											"articleId_String_sortable",
-											createJSONArray().put(articleId)
-										).put(
-											"boost", boost
-										)))
-							).put(
-								"type", "wrapper"
+											"terms",
+											JSONUtil.put(
+												"articleId_String_sortable",
+												createJSONArray().put(articleId)
+											).put(
+												"boost", boost
+											))))
 							))
 					).put(
 						"conditions",

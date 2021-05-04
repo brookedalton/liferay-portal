@@ -148,13 +148,13 @@ public class BoostPhraseMatchTest extends BaseQueryElementsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"multi_match",
-							getMultiMatchJSONObject(
-								100, null, "and", "phrase")))
-				).put(
-					"type", "wrapper"
+							"query",
+							JSONUtil.put(
+								"multi_match",
+								getMultiMatchJSONObject(
+									100, null, "and", "phrase"))))
 				))
 		).put(
 			"conditions", createJSONArray()

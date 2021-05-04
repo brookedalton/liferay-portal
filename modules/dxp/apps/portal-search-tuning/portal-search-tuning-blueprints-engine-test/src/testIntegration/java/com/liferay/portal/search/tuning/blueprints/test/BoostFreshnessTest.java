@@ -83,29 +83,29 @@ public class BoostFreshnessTest extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"function_score",
+							"query",
 							JSONUtil.put(
-								"boost", boost
-							).put(
-								"gauss",
+								"function_score",
 								JSONUtil.put(
-									"modified",
+									"boost", boost
+								).put(
+									"gauss",
 									JSONUtil.put(
-										"decay", decay
-									).put(
-										"offset", offset
-									).put(
-										"origin",
-										"${time.current_date|dateFormat=" +
-											"yyyyMMddHHmmss}"
-									).put(
-										"scale", scale
-									))
-							)))
-				).put(
-					"type", "wrapper"
+										"modified",
+										JSONUtil.put(
+											"decay", decay
+										).put(
+											"offset", offset
+										).put(
+											"origin",
+											"${time.current_date|dateFormat=" +
+												"yyyyMMddHHmmss}"
+										).put(
+											"scale", scale
+										))
+								))))
 				))
 		).put(
 			"conditions", createJSONArray()

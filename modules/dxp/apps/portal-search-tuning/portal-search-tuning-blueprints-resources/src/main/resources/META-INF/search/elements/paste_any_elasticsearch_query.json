@@ -8,9 +8,10 @@
 						"context": "query",
 						"occur": "${configuration.occur}",
 						"query": {
-							"query": "${configuration.query}"
-						},
-						"type": "wrapper"
+							"wrapper": {
+								"query": "${configuration.query}"
+							}
+						}
 					}
 				],
 				"conditions": [

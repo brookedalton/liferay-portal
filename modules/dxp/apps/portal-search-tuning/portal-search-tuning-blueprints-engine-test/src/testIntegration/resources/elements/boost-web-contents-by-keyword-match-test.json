@@ -6,14 +6,15 @@
 				"context": "query",
 				"occur": "should",
 				"query": {
-					"query": {
-						"terms": {
-							"articleId_String_sortable": "${config.article_ids}",
-							"boost": "${config.boost}"
+					"wrapper": {
+						"query": {
+							"terms": {
+								"articleId_String_sortable": "${config.article_ids}",
+								"boost": "${config.boost}"
+							}
 						}
 					}
-				},
-				"type": "wrapper"
+				}
 			}
 		],
 		"conditions": [

@@ -75,18 +75,18 @@ public abstract class BaseBoostContentsInCategoryTestCase
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"term",
+							"query",
 							JSONUtil.put(
-								"assetCategoryIds",
+								"term",
 								JSONUtil.put(
-									"boost", boost
-								).put(
-									"value", categoryId
-								))))
-				).put(
-					"type", "wrapper"
+									"assetCategoryIds",
+									JSONUtil.put(
+										"boost", boost
+									).put(
+										"value", categoryId
+									)))))
 				))
 		).put(
 			"conditions", getConditions()
@@ -123,18 +123,18 @@ public abstract class BaseBoostContentsInCategoryTestCase
 							).put(
 								"query",
 								JSONUtil.put(
-									"query",
+									"wrapper",
 									JSONUtil.put(
-										"term",
+										"query",
 										JSONUtil.put(
-											"assetCategoryIds",
+											"term",
 											JSONUtil.put(
-												"boost", boost
-											).put(
-												"value", categoryId
-											))))
-							).put(
-								"type", "wrapper"
+												"assetCategoryIds",
+												JSONUtil.put(
+													"boost", boost
+												).put(
+													"value", categoryId
+												)))))
 							))
 					).put(
 						"conditions", getConditions()

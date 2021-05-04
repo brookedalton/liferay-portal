@@ -6,16 +6,17 @@
 				"context": "query",
 				"occur": "must",
 				"query": {
-					"query": {
-						"simple_query_string": {
-							"boost": "${config.boost}",
-							"default_operator": "${config.operator}",
-							"fields": "${config.fields}",
-							"query": "${keywords}"
+					"wrapper": {
+						"query": {
+							"simple_query_string": {
+								"boost": "${config.boost}",
+								"default_operator": "${config.operator}",
+								"fields": "${config.fields}",
+								"query": "${keywords}"
+							}
 						}
 					}
-				},
-				"type": "wrapper"
+				}
 			}
 		],
 		"conditions": [

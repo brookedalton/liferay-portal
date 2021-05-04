@@ -82,19 +82,20 @@ public class HideTaggedContentTest extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"bool",
+							"query",
 							JSONUtil.put(
-								"must_not",
-								createJSONArray().put(
-									JSONUtil.put(
-										"term",
+								"bool",
+								JSONUtil.put(
+									"must_not",
+									createJSONArray().put(
 										JSONUtil.put(
-											"assetTagNames.raw",
-											JSONUtil.put("value", "hide")))))))
-				).put(
-					"type", "wrapper"
+											"term",
+											JSONUtil.put(
+												"assetTagNames.raw",
+												JSONUtil.put(
+													"value", "hide"))))))))
 				))
 		).put(
 			"conditions", createJSONArray()

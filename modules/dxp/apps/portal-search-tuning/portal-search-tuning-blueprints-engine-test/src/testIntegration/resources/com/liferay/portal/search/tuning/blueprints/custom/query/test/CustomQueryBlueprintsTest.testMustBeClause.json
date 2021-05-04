@@ -18,15 +18,16 @@
 					"context": "query",
 					"occur": "must",
 					"query": {
-						"query": {
-							"match": {
-								"content_en_US": {
-									"query": "los angeles"
+						"wrapper": {
+							"query": {
+								"match": {
+									"content_en_US": {
+										"query": "los angeles"
+									}
 								}
 							}
 						}
-					},
-					"type": "wrapper"
+					}
 				}
 			],
 			"conditions": [

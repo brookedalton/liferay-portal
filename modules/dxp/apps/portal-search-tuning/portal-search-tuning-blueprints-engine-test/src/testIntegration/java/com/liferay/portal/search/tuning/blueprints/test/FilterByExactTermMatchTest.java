@@ -135,11 +135,12 @@ public class FilterByExactTermMatchTest extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"terms", JSONUtil.put("groupId", groupIdJSONArray)))
-				).put(
-					"type", "wrapper"
+							"query",
+							JSONUtil.put(
+								"terms",
+								JSONUtil.put("groupId", groupIdJSONArray))))
 				))
 		).put(
 			"conditions", createJSONArray()

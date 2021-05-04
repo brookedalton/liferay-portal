@@ -98,13 +98,13 @@ public class LimitSearchToMySitesTest extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"terms",
+							"query",
 							JSONUtil.put(
-								"scopeGroupId", "${user.user_group_ids}")))
-				).put(
-					"type", "wrapper"
+								"terms",
+								JSONUtil.put(
+									"scopeGroupId", "${user.user_group_ids}"))))
 				))
 		).put(
 			"conditions", createJSONArray()
@@ -142,14 +142,14 @@ public class LimitSearchToMySitesTest extends BaseBlueprintsTestCase {
 							).put(
 								"query",
 								JSONUtil.put(
-									"query",
+									"wrapper",
 									JSONUtil.put(
-										"terms",
+										"query",
 										JSONUtil.put(
-											"scopeGroupId",
-											"${user.user_group_ids}")))
-							).put(
-								"type", "wrapper"
+											"terms",
+											JSONUtil.put(
+												"scopeGroupId",
+												"${user.user_group_ids}"))))
 							))
 					).put(
 						"conditions",

@@ -125,18 +125,18 @@ public class BoostContentsInCategoryTest
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"terms",
+							"query",
 							JSONUtil.put(
-								"assetCategoryIds",
-								createJSONArray().put(
-									_assetCategory.getCategoryId())
-							).put(
-								"boost", 100
-							)))
-				).put(
-					"type", "wrapper"
+								"terms",
+								JSONUtil.put(
+									"assetCategoryIds",
+									createJSONArray().put(
+										_assetCategory.getCategoryId())
+								).put(
+									"boost", 100
+								))))
 				))
 		).put(
 			"conditions", getConditions()

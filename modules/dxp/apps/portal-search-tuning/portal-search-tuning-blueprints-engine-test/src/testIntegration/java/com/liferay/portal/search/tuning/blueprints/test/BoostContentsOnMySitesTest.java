@@ -97,16 +97,16 @@ public class BoostContentsOnMySitesTest extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"terms",
+							"query",
 							JSONUtil.put(
-								"boost", boost
-							).put(
-								"groupId", "${user.user_group_ids}"
-							)))
-				).put(
-					"type", "wrapper"
+								"terms",
+								JSONUtil.put(
+									"boost", boost
+								).put(
+									"groupId", "${user.user_group_ids}"
+								))))
 				))
 		).put(
 			"conditions", createJSONArray()

@@ -8,21 +8,22 @@
 						"context": "query",
 						"occur": "filter",
 						"query": {
-							"query": {
-								"bool": {
-									"must_not": [
-										{
-											"term": {
-												"${configuration.field}": {
-													"value": "${configuration.value}"
+							"wrapper": {
+								"query": {
+									"bool": {
+										"must_not": [
+											{
+												"term": {
+													"${configuration.field}": {
+														"value": "${configuration.value}"
+													}
 												}
 											}
-										}
-									]
+										]
+									}
 								}
 							}
-						},
-						"type": "wrapper"
+						}
 					}
 				],
 				"conditions": [

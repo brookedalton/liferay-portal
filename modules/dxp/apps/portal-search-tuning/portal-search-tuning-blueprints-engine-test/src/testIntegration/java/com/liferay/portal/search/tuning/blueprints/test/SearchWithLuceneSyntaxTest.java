@@ -90,27 +90,27 @@ public class SearchWithLuceneSyntaxTest extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"simple_query_string",
+							"query",
 							JSONUtil.put(
-								"boost", boost
-							).put(
-								"default_operator", operator
-							).put(
-								"fields",
-								fieldsJSONArray.put(
-									"localized_title${context.language_id}^" +
-										titleBoost
+								"simple_query_string",
+								JSONUtil.put(
+									"boost", boost
 								).put(
-									"content${context.language_id}^" +
-										contentBoost
-								)
-							).put(
-								"query", "${keywords}"
-							)))
-				).put(
-					"type", "wrapper"
+									"default_operator", operator
+								).put(
+									"fields",
+									fieldsJSONArray.put(
+										"localized_title${context." +
+											"language_id}^" + titleBoost
+									).put(
+										"content${context.language_id}^" +
+											contentBoost
+									)
+								).put(
+									"query", "${keywords}"
+								))))
 				))
 		).put(
 			"conditions", createJSONArray()
@@ -152,23 +152,22 @@ public class SearchWithLuceneSyntaxTest extends BaseBlueprintsTestCase {
 							).put(
 								"query",
 								JSONUtil.put(
-									"query",
+									"wrapper",
 									JSONUtil.put(
-										"simple_query_string",
+										"query",
 										JSONUtil.put(
-											"boost", boost
-										).put(
-											"default_operator", operator
-										).put(
-											"fields",
-											_getSimpleQueryStringFieldsJSONArray(
-												contentBoost, titleBoost)
-										).put(
-											"query", "${keywords}"
-										))
-								).put(
-									"type", "wrapper"
-								)
+											"simple_query_string",
+											JSONUtil.put(
+												"boost", boost
+											).put(
+												"default_operator", operator
+											).put(
+												"fields",
+												_getSimpleQueryStringFieldsJSONArray(
+													contentBoost, titleBoost)
+											).put(
+												"query", "${keywords}"
+											))))
 							))
 					).put(
 						"conditions", createJSONArray()

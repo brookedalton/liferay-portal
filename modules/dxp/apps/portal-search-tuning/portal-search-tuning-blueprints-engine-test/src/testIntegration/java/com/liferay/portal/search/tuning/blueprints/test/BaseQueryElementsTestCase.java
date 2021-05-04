@@ -80,18 +80,18 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"match",
+							"query",
 							JSONUtil.put(
-								"content_en_US",
+								"match",
 								JSONUtil.put(
-									"boost", boost
-								).put(
-									"query", queryValue
-								))))
-				).put(
-					"type", "wrapper"
+									"content_en_US",
+									JSONUtil.put(
+										"boost", boost
+									).put(
+										"query", queryValue
+									)))))
 				))
 		).put(
 			"conditions", createJSONArray()
@@ -160,13 +160,13 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"multi_match",
-							getMultiMatchJSONObject(
-								boost, fuzziness, operator, type)))
-				).put(
-					"type", "wrapper"
+							"query",
+							JSONUtil.put(
+								"multi_match",
+								getMultiMatchJSONObject(
+									boost, fuzziness, operator, type))))
 				))
 		).put(
 			"conditions", createJSONArray()

@@ -6,16 +6,17 @@
 				"context": "query",
 				"occur": "should",
 				"query": {
-					"query": {
-						"term": {
-							"assetCategoryIds": {
-								"boost": "${config.boost}",
-								"value": "${config.asset_category_id}"
+					"wrapper": {
+						"query": {
+							"term": {
+								"assetCategoryIds": {
+									"boost": "${config.boost}",
+									"value": "${config.asset_category_id}"
+								}
 							}
 						}
 					}
-				},
-				"type": "wrapper"
+				}
 			}
 		],
 		"conditions": [

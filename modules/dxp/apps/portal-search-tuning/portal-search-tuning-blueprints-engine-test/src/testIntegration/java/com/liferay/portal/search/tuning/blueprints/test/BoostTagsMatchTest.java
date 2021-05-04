@@ -98,18 +98,18 @@ public class BoostTagsMatchTest extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"term",
+							"query",
 							JSONUtil.put(
-								"assetTagNames.raw",
+								"term",
 								JSONUtil.put(
-									"boost", boost
-								).put(
-									"value", "${keywords}"
-								))))
-				).put(
-					"type", "wrapper"
+									"assetTagNames.raw",
+									JSONUtil.put(
+										"boost", boost
+									).put(
+										"value", "${keywords}"
+									)))))
 				))
 		).put(
 			"conditions", createJSONArray()
@@ -148,19 +148,18 @@ public class BoostTagsMatchTest extends BaseBlueprintsTestCase {
 							).put(
 								"query",
 								JSONUtil.put(
-									"query",
+									"wrapper",
 									JSONUtil.put(
-										"term",
+										"query",
 										JSONUtil.put(
-											"assetTagNames.raw",
+											"term",
 											JSONUtil.put(
-												"boost", boost
-											).put(
-												"value", "${keywords}"
-											)))
-								).put(
-									"type", "wrapper"
-								)
+												"assetTagNames.raw",
+												JSONUtil.put(
+													"boost", boost
+												).put(
+													"value", "${keywords}"
+												)))))
 							))
 					).put(
 						"conditions", createJSONArray()

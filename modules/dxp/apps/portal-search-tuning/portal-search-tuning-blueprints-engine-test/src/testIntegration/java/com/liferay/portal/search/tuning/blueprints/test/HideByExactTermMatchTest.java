@@ -96,20 +96,20 @@ public class HideByExactTermMatchTest extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"bool",
+							"query",
 							JSONUtil.put(
-								"must_not",
-								createJSONArray().put(
-									JSONUtil.put(
-										"term",
+								"bool",
+								JSONUtil.put(
+									"must_not",
+									createJSONArray().put(
 										JSONUtil.put(
-											"folderId",
+											"term",
 											JSONUtil.put(
-												"value", folderId)))))))
-				).put(
-					"type", "wrapper"
+												"folderId",
+												JSONUtil.put(
+													"value", folderId))))))))
 				))
 		).put(
 			"conditions", createJSONArray()

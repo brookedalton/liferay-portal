@@ -104,13 +104,13 @@ public class LimitSearchToTheseSitesTest extends BaseBlueprintsTestCase {
 				).put(
 					"query",
 					JSONUtil.put(
-						"query",
+						"wrapper",
 						JSONUtil.put(
-							"terms",
+							"query",
 							JSONUtil.put(
-								"scopeGroupId", scopeGroupIdJSONArray)))
-				).put(
-					"type", "wrapper"
+								"terms",
+								JSONUtil.put(
+									"scopeGroupId", scopeGroupIdJSONArray))))
 				))
 		).put(
 			"conditions", createJSONArray()
