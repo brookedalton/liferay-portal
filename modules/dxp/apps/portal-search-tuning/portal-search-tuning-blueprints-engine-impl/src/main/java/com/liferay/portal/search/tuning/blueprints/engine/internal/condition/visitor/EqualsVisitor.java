@@ -15,12 +15,10 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.condition.visitor;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.condition.util.ConditionUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
@@ -32,11 +30,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayPar
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 import java.util.Date;
 
@@ -72,70 +65,11 @@ public class EqualsVisitor
 	public boolean visit(DateParameter parameter)
 		throws ParameterEvaluationException {
 
-		String dateString = conditionJSONObject.getString(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		Date date = ConditionUtil.getDateValue(conditionJSONObject);
 
-		String dateFormatString = conditionJSONObject.getString(
-			ConditionConfigurationKeys.DATE_FORMAT.getJsonKey());
+		Date parameterValue = parameter.getValue();
 
-		if (Validator.isNull(dateFormatString)) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Clause condition date format missing [ " +
-						conditionJSONObject + " ].");
-			}
-
-			throw new ParameterEvaluationException(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.clause-condition-date-format-missing"
-				).msg(
-					"Date format is not defined"
-				).rootObject(
-					conditionJSONObject
-				).rootProperty(
-					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey()
-				).rootValue(
-					dateFormatString
-				).severity(
-					Severity.ERROR
-				).build());
-		}
-
-		try {
-			DateFormat dateFormat = new SimpleDateFormat(dateFormatString);
-
-			Date date = dateFormat.parse(dateString);
-
-			Date parameterValue = parameter.getValue();
-
-			return returnValue(parameterValue.equals(date));
-		}
-		catch (Exception exception) {
-			_log.error(
-				"Unable to parse clause condition date " + dateString + ".",
-				exception);
-
-			throw new ParameterEvaluationException(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.clause-condition-date-parsing-error"
-				).msg(
-					exception.getMessage()
-				).rootObject(
-					conditionJSONObject
-				).rootProperty(
-					ConditionConfigurationKeys.VALUE.getJsonKey()
-				).rootValue(
-					dateString
-				).severity(
-					Severity.ERROR
-				).throwable(
-					exception
-				).build());
-		}
+		return returnValue(parameterValue.equals(date));
 	}
 
 	@Override
@@ -211,7 +145,5 @@ public class EqualsVisitor
 				conditionJSONObject.getString(
 					ConditionConfigurationKeys.VALUE.getJsonKey())));
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(EqualsVisitor.class);
 
 }

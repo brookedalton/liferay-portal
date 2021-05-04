@@ -17,11 +17,11 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.bu
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintJSONUtil;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintsAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONUtil;
 
 import java.util.Optional;
 
@@ -39,14 +39,14 @@ public class StringArrayParameterBuilder implements ParameterBuilder {
 
 	@Override
 	public Optional<Parameter> build(
-		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJSONObject, Messages messages) {
+		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
+		Messages messages) {
 
-		String parameterName = configurationJSONObject.getString(
+		String parameterName = jsonObject.getString(
 			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<String[]> valueOptional = _getValueOptional(
-			blueprintsAttributes, configurationJSONObject, parameterName);
+			blueprintsAttributes, jsonObject, parameterName);
 
 		if (!valueOptional.isPresent()) {
 			return Optional.empty();
@@ -59,20 +59,20 @@ public class StringArrayParameterBuilder implements ParameterBuilder {
 	}
 
 	private Optional<String[]> _getValueOptional(
-		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJSONObject, String parameterName) {
+		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
+		String parameterName) {
 
-		Optional<String[]> valueOptional =
+		Optional<String[]> optional =
 			_blueprintsAttributesHelper.getStringArrayOptional(
 				blueprintsAttributes, parameterName);
 
-		if (!valueOptional.isPresent()) {
-			valueOptional = BlueprintJSONUtil.getStringArrayOptional(
-				configurationJSONObject,
+		if (!optional.isPresent()) {
+			optional = BlueprintJSONUtil.getStringArray(
+				jsonObject,
 				CustomParameterConfigurationKeys.DEFAULT.getJsonKey());
 		}
 
-		return valueOptional;
+		return optional;
 	}
 
 	@Reference

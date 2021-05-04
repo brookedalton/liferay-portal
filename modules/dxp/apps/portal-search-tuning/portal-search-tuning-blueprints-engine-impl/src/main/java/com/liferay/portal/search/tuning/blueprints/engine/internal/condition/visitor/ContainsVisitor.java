@@ -16,8 +16,6 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.condition.vi
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
@@ -32,8 +30,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayPar
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -117,29 +114,12 @@ public class ContainsVisitor
 			return returnValue(match);
 		}
 		catch (NumberFormatException numberFormatException) {
-			_log.error(
-				"Illegal clause condition match value  " + object.toString() +
-					".",
-				numberFormatException);
-
 			throw new ParameterEvaluationException(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.illegal-clause-condition-match-value"
-				).msg(
-					numberFormatException.getMessage()
-				).rootObject(
-					conditionJSONObject
-				).rootProperty(
-					ConditionConfigurationKeys.VALUE.getJsonKey()
-				).rootValue(
-					object.toString()
-				).severity(
-					Severity.ERROR
-				).throwable(
-					numberFormatException
-				).build());
+				MessagesUtil.toErrorMessage(
+					numberFormatException, conditionJSONObject,
+					ConditionConfigurationKeys.VALUE.getJsonKey(),
+					object.toString(),
+					"core.error.illegal-clause-condition-match-value"));
 		}
 	}
 
@@ -193,29 +173,12 @@ public class ContainsVisitor
 			return returnValue(match);
 		}
 		catch (NumberFormatException numberFormatException) {
-			_log.error(
-				"Illegal clause condition match value  " + object.toString() +
-					".",
-				numberFormatException);
-
 			throw new ParameterEvaluationException(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.illegal-clause-condition-match-value"
-				).msg(
-					numberFormatException.getMessage()
-				).rootObject(
-					conditionJSONObject
-				).rootProperty(
-					ConditionConfigurationKeys.VALUE.getJsonKey()
-				).rootValue(
-					object.toString()
-				).severity(
-					Severity.ERROR
-				).throwable(
-					numberFormatException
-				).build());
+				MessagesUtil.toErrorMessage(
+					numberFormatException, conditionJSONObject,
+					ConditionConfigurationKeys.VALUE.getJsonKey(),
+					object.toString(),
+					"core.error.illegal-clause-condition-match-value"));
 		}
 	}
 
@@ -269,8 +232,5 @@ public class ContainsVisitor
 
 		throw new UnsupportedOperationException();
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		ContainsVisitor.class);
 
 }

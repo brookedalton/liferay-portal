@@ -16,13 +16,10 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.condition.vi
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintValueUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
@@ -34,11 +31,10 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayPar
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintValueUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
@@ -76,28 +72,12 @@ public class InRangeVisitor
 			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		if (Validator.isNull(dateFormatString)) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Clause condition date parameter format is missing [ " +
-						conditionJSONObject + " ].");
-			}
-
 			throw new ParameterEvaluationException(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.clause-condition-date-format-missing"
-				).msg(
-					"Clause condition date format is missing"
-				).rootObject(
-					conditionJSONObject
-				).rootProperty(
-					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey()
-				).rootValue(
-					dateFormatString
-				).severity(
-					Severity.ERROR
-				).build());
+				MessagesUtil.toErrorMessage(
+					null, conditionJSONObject,
+					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey(),
+					dateFormatString,
+					"core.error.clause-condition-date-format-missing"));
 		}
 
 		try {
@@ -121,31 +101,12 @@ public class InRangeVisitor
 
 			return returnValue(inRange);
 		}
-		catch (IllegalArgumentException | NullPointerException | ParseException
-					exception) {
-
-			_log.error(
-				"Unable to parse clause condition date " + dateString + ".",
-				exception);
-
+		catch (Exception exception) {
 			throw new ParameterEvaluationException(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.clause-condition-date-parsing-error"
-				).msg(
-					exception.getMessage()
-				).rootObject(
-					conditionJSONObject
-				).rootProperty(
-					ConditionConfigurationKeys.VALUE.getJsonKey()
-				).rootValue(
-					dateString
-				).severity(
-					Severity.ERROR
-				).throwable(
-					exception
-				).build());
+				MessagesUtil.toErrorMessage(
+					exception, conditionJSONObject,
+					ConditionConfigurationKeys.VALUE.getJsonKey(), dateString,
+					"core.error.clause-condition-date-parsing-error"));
 		}
 	}
 
@@ -247,15 +208,12 @@ public class InRangeVisitor
 
 		_checkRangeValue(jsonArray);
 
-		Long lowerBound = jsonArray.getLong(0);
-		Long upperBound = jsonArray.getLong(1);
-
 		Long parameterValue = parameter.getValue();
 
 		boolean inRange = false;
 
-		if ((parameterValue.compareTo(lowerBound) >= 0) &&
-			(parameterValue.compareTo(upperBound) <= 0)) {
+		if ((parameterValue.compareTo(jsonArray.getLong(0)) >= 0) &&
+			(parameterValue.compareTo(jsonArray.getLong(1)) <= 0)) {
 
 			inRange = true;
 		}
@@ -281,31 +239,13 @@ public class InRangeVisitor
 		throws ParameterEvaluationException {
 
 		if (jsonArray.length() != 2) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Invalid clause condition range value " +
-						jsonArray.toString() + ".");
-			}
-
 			throw new ParameterEvaluationException(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.invalid-clause-condition-range-value"
-				).msg(
-					"Invalid clause condition range value"
-				).rootObject(
-					conditionJSONObject
-				).rootProperty(
-					ConditionConfigurationKeys.VALUE.getJsonKey()
-				).rootValue(
-					jsonArray.toString()
-				).severity(
-					Severity.ERROR
-				).build());
+				MessagesUtil.toErrorMessage(
+					null, conditionJSONObject,
+					ConditionConfigurationKeys.VALUE.getJsonKey(),
+					jsonArray.toString(),
+					"core.error.invalid-clause-condition-range-value"));
 		}
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(InRangeVisitor.class);
 
 }

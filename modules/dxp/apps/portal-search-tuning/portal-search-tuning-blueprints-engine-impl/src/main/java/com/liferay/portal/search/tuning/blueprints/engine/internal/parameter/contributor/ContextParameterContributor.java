@@ -17,8 +17,6 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.co
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -33,10 +31,9 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDat
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -233,22 +230,9 @@ public class ContextParameterContributor implements ParameterContributor {
 					layout.getName(blueprintsAttributes.getLocale(), true)));
 		}
 		catch (PortalException portalException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.layout-not-found"
-				).msg(
-					portalException.getMessage()
-				).rootValue(
-					(String)optional.get()
-				).severity(
-					Severity.ERROR
-				).throwable(
-					portalException
-				).build());
-
-			_log.error(portalException.getMessage(), portalException);
+			MessagesUtil.error(
+				messages, portalException, null, null, (String)optional.get(),
+				"core.error.layout-not-found");
 		}
 	}
 
@@ -275,22 +259,9 @@ public class ContextParameterContributor implements ParameterContributor {
 			return _groupLocalService.getGroup(groupId);
 		}
 		catch (PortalException portalException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.group-not-found"
-				).msg(
-					portalException.getMessage()
-				).rootValue(
-					GetterUtil.getString(groupId)
-				).severity(
-					Severity.ERROR
-				).throwable(
-					portalException
-				).build());
-
-			_log.error(portalException.getMessage(), portalException);
+			MessagesUtil.error(
+				messages, portalException, null, null,
+				GetterUtil.getString(groupId), "core.error.group-not-found");
 		}
 
 		return null;
@@ -305,9 +276,6 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		return sb.toString();
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		ContextParameterContributor.class);
 
 	@Reference
 	private GroupLocalService _groupLocalService;

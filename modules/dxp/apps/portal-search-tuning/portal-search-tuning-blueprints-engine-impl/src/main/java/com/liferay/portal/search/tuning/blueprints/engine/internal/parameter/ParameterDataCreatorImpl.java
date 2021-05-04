@@ -37,13 +37,13 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDef
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.keywords.KeywordsProcessor;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReference;
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReferenceUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,18 +68,17 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 		Messages messages) {
 
-		Optional<JSONObject> parameterConfigurationJSONObjectOptional =
+		Optional<JSONObject> optional =
 			_blueprintHelper.getParameterConfigurationOptional(blueprint);
 
-		if (!parameterConfigurationJSONObjectOptional.isPresent()) {
+		if (!optional.isPresent()) {
 			return new ParameterDataImpl(StringPool.BLANK, new ArrayList<>());
 		}
 
 		ParameterDataBuilder parameterDataBuilder =
 			new ParameterDataBuilderImpl();
 
-		JSONObject parameterConfigurationJSONObject =
-			parameterConfigurationJSONObjectOptional.get();
+		JSONObject jsonObject = optional.get();
 
 		_addExplainParameter(parameterDataBuilder, blueprintsAttributes);
 
@@ -88,12 +87,12 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 		_addPagingParameter(
 			parameterDataBuilder, blueprintsAttributes,
-			parameterConfigurationJSONObject.getJSONObject(
+			jsonObject.getJSONObject(
 				ParameterConfigurationKeys.PAGE.getJsonKey()));
 
 		_addSizeParameter(
 			parameterDataBuilder, blueprintsAttributes,
-			parameterConfigurationJSONObject.getJSONObject(
+			jsonObject.getJSONObject(
 				ParameterConfigurationKeys.SIZE.getJsonKey()),
 			messages);
 
@@ -102,7 +101,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 		_addCustomParameters(
 			parameterDataBuilder, blueprintsAttributes,
-			parameterConfigurationJSONObject.getJSONArray(
+			jsonObject.getJSONArray(
 				ParameterConfigurationKeys.CUSTOM.getJsonKey()),
 			messages);
 
@@ -180,10 +179,10 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 	private void _addCustomParameter(
 		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJSONObject, Messages messages) {
+		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
+		Messages messages) {
 
-		String type = configurationJSONObject.getString(
+		String type = jsonObject.getString(
 			CustomParameterConfigurationKeys.TYPE.getJsonKey());
 
 		try {
@@ -191,33 +190,16 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 				_parameterBuilderFactory.getBuilder(type);
 
 			Optional<Parameter> optional = parameterBuilder.build(
-				blueprintsAttributes, configurationJSONObject, messages);
+				blueprintsAttributes, jsonObject, messages);
 
 			if (optional.isPresent()) {
 				parameterDataBuilder.addParameter(optional.get());
 			}
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.unknown-parameter-type"
-				).msg(
-					illegalArgumentException.getMessage()
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					CustomParameterConfigurationKeys.TYPE.getJsonKey()
-				).severity(
-					Severity.ERROR
-				).throwable(
-					illegalArgumentException
-				).build());
-
-			_log.error(
-				illegalArgumentException.getMessage(),
-				illegalArgumentException);
+			MessagesUtil.invalidConfigurationValueError(
+				illegalArgumentException, messages, jsonObject,
+				CustomParameterConfigurationKeys.TYPE.getJsonKey(), type);
 		}
 	}
 
@@ -233,15 +215,12 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		}
 
 		for (int i = 0; i < configurationJSONArray.length(); i++) {
-			JSONObject configurationJSONObject =
-				configurationJSONArray.getJSONObject(i);
+			JSONObject jsonObject = configurationJSONArray.getJSONObject(i);
 
-			if (_validateCustomParameterConfiguration(
-					configurationJSONObject, messages)) {
-
+			if (_validateCustomParameterConfiguration(jsonObject, messages)) {
 				_addCustomParameter(
-					parameterDataBuilder, blueprintsAttributes,
-					configurationJSONObject, messages);
+					parameterDataBuilder, blueprintsAttributes, jsonObject,
+					messages);
 			}
 		}
 	}
@@ -282,10 +261,9 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 	private void _addPagingParameter(
 		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJSONObject) {
+		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject) {
 
-		String parameterName = configurationJSONObject.getString(
+		String parameterName = jsonObject.getString(
 			PageConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
@@ -301,14 +279,14 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 	private void _addSizeParameter(
 		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJSONObject, Messages messages) {
+		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
+		Messages messages) {
 
 		ParameterBuilder parameterBuilder = _parameterBuilderFactory.getBuilder(
 			"integer");
 
 		Optional<Parameter> optional = parameterBuilder.build(
-			blueprintsAttributes, configurationJSONObject, messages);
+			blueprintsAttributes, jsonObject, messages);
 
 		if (optional.isPresent()) {
 			Parameter parameter = optional.get();
@@ -404,127 +382,21 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	}
 
 	private boolean _validateCustomParameterConfiguration(
-		JSONObject configurationJSONObject, Messages messages) {
+		JSONObject jsonObject, Messages messages) {
 
-		boolean valid = true;
-
-		if (configurationJSONObject.isNull(
-				CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
-
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.undefined-parameter-name"
-				).msg(
-					"Parameter name is not defined"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey()
-				).severity(
-					Severity.ERROR
-				).build());
-
-			valid = false;
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Parameter name is not defined [ " +
-						configurationJSONObject + " ].");
-			}
-		}
-
-		if (configurationJSONObject.isNull(
-				CustomParameterConfigurationKeys.TYPE.getJsonKey())) {
-
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.undefined-parameter-type"
-				).msg(
-					"Parameter type is not defined"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					CustomParameterConfigurationKeys.TYPE.getJsonKey()
-				).severity(
-					Severity.ERROR
-				).build());
-
-			valid = false;
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Parameter type is not defined [ " +
-						configurationJSONObject + " ].");
-			}
-		}
-
-		return valid;
+		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+			jsonObject, messages,
+			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
+			CustomParameterConfigurationKeys.TYPE.getJsonKey());
 	}
 
 	private boolean _validateSortParameterConfiguration(
-		JSONObject configurationJSONObject, Messages messages) {
+		JSONObject jsonObject, Messages messages) {
 
-		boolean valid = true;
-
-		if (configurationJSONObject.isNull(
-				SortConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
-
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.undefined-parameter-name"
-				).msg(
-					"Parameter name is not defined"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					SortConfigurationKeys.PARAMETER_NAME.getJsonKey()
-				).severity(
-					Severity.ERROR
-				).build());
-
-			valid = false;
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Parameter name is not defined [ " +
-						configurationJSONObject + " ].");
-			}
-		}
-
-		if (configurationJSONObject.isNull(
-				SortConfigurationKeys.FIELD.getJsonKey())) {
-
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.undefined-field"
-				).msg(
-					"Field is not defined"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					SortConfigurationKeys.FIELD.getJsonKey()
-				).severity(
-					Severity.ERROR
-				).build());
-
-			valid = false;
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Field is not defined [ " + configurationJSONObject +
-						" ].");
-			}
-		}
-
-		return valid;
+		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+			jsonObject, messages,
+			SortConfigurationKeys.PARAMETER_NAME.getJsonKey(),
+			SortConfigurationKeys.FIELD.getJsonKey());
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

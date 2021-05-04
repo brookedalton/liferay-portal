@@ -17,7 +17,7 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.bu
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintsAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
@@ -40,10 +40,10 @@ public class TimeRangeParameterBuilder implements ParameterBuilder {
 
 	@Override
 	public Optional<Parameter> build(
-		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJSONObject, Messages messages) {
+		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
+		Messages messages) {
 
-		String parameterName = configurationJSONObject.getString(
+		String parameterName = jsonObject.getString(
 			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<String> optional =

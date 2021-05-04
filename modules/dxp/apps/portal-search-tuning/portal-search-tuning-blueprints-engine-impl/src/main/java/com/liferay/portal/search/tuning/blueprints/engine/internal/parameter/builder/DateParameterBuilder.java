@@ -23,12 +23,11 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintsAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -139,40 +138,11 @@ public class DateParameterBuilder implements ParameterBuilder {
 	}
 
 	private boolean _validateConfiguration(
-		Messages messages, JSONObject configurationJSONObject) {
+		Messages messages, JSONObject jsonObject) {
 
-		boolean valid = true;
-
-		if (Validator.isNull(
-				configurationJSONObject.getString(
-					CustomParameterConfigurationKeys.DATE_FORMAT.
-						getJsonKey()))) {
-
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.undefined-date-format"
-				).msg(
-					"Date format is not defined"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					CustomParameterConfigurationKeys.DATE_FORMAT.getJsonKey()
-				).severity(
-					Severity.ERROR
-				).build());
-
-			valid = false;
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Date format is not defined [ " + configurationJSONObject +
-						" ].");
-			}
-		}
-
-		return valid;
+		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+			jsonObject, messages,
+			CustomParameterConfigurationKeys.DATE_FORMAT.getJsonKey());
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

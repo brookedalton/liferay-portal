@@ -19,11 +19,11 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintValueUtil;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintsAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.FloatParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintValueUtil;
 
 import java.util.Optional;
 
@@ -40,14 +40,14 @@ public class FloatParameterBuilder implements ParameterBuilder {
 
 	@Override
 	public Optional<Parameter> build(
-		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJSONObject, Messages messages) {
+		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
+		Messages messages) {
 
-		String parameterName = configurationJSONObject.getString(
+		String parameterName = jsonObject.getString(
 			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<Float> valueOptional = _getValueOptional(
-			blueprintsAttributes, configurationJSONObject, parameterName);
+			blueprintsAttributes, jsonObject, parameterName);
 
 		if (!valueOptional.isPresent()) {
 			return Optional.empty();
@@ -56,15 +56,12 @@ public class FloatParameterBuilder implements ParameterBuilder {
 		return Optional.of(
 			new FloatParameter(
 				parameterName, "${parameter." + parameterName + "}",
-				_getAdjustedValue(
-					valueOptional.get(), configurationJSONObject)));
+				_getAdjustedValue(valueOptional.get(), jsonObject)));
 	}
 
-	private float _getAdjustedValue(
-		float value, JSONObject configurationJSONObject) {
-
+	private float _getAdjustedValue(float value, JSONObject jsonObject) {
 		Optional<Float> minValue = BlueprintValueUtil.stringToFloatOptional(
-			configurationJSONObject.getString(
+			jsonObject.getString(
 				CustomParameterConfigurationKeys.MIN_VALUE.getJsonKey()));
 
 		if (minValue.isPresent() &&
@@ -78,7 +75,7 @@ public class FloatParameterBuilder implements ParameterBuilder {
 		}
 
 		Optional<Float> maxValue = BlueprintValueUtil.stringToFloatOptional(
-			configurationJSONObject.getString(
+			jsonObject.getString(
 				CustomParameterConfigurationKeys.MAX_VALUE.getJsonKey()));
 
 		if (maxValue.isPresent() &&
@@ -95,8 +92,8 @@ public class FloatParameterBuilder implements ParameterBuilder {
 	}
 
 	private Optional<Float> _getValueOptional(
-		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJSONObject, String parameterName) {
+		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
+		String parameterName) {
 
 		Optional<String> valueStringOptional =
 			_blueprintsAttributesHelper.getStringOptional(
@@ -104,7 +101,7 @@ public class FloatParameterBuilder implements ParameterBuilder {
 
 		if (!valueStringOptional.isPresent()) {
 			valueStringOptional = BlueprintValueUtil.toStringOptional(
-				configurationJSONObject.getString(
+				jsonObject.getString(
 					CustomParameterConfigurationKeys.DEFAULT.getJsonKey()));
 		}
 

@@ -15,8 +15,6 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.contributor;
 
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
@@ -38,10 +36,9 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDef
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 import com.liferay.segments.model.SegmentsEntry;
 import com.liferay.segments.service.SegmentsEntryLocalService;
 
@@ -71,17 +68,18 @@ public class UserParameterContributor implements ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		try {
-			_contribute(parameterDataBuilder, blueprintsAttributes);
+		long userId = _getUserId(blueprintsAttributes);
+
+		if (userId == 0) {
+			MessagesUtil.error(
+				messages, null, null, null, null,
+				"core.error.user-id-not-set-in-request-attributes");
+
+			return;
 		}
-		catch (UserIdUnsetException userIdUnsetException) {
-		}
-		catch (UserNotFoundException userNotFoundException) {
-			messages.addMessage(_toMessage(userNotFoundException));
-		}
-		catch (UnforeseenException unforeseenException) {
-			messages.addMessage(_toMessage(unforeseenException));
-		}
+
+		_contribute(
+			parameterDataBuilder, blueprintsAttributes, userId, messages);
 	}
 
 	@Override
@@ -237,7 +235,8 @@ public class UserParameterContributor implements ParameterContributor {
 	}
 
 	private void _addUserInfo(
-		ParameterDataBuilder parameterDataBuilder, User user) {
+			ParameterDataBuilder parameterDataBuilder, User user)
+		throws NumberFormatException, PortalException {
 
 		parameterDataBuilder.addParameter(
 			new LongParameter(
@@ -288,44 +287,37 @@ public class UserParameterContributor implements ParameterContributor {
 					ReservedParameterNames.USER_CREATE_DATE.getKey()),
 				user.getCreateDate()));
 
-		try {
-			parameterDataBuilder.addParameter(
-				new DateParameter(
-					ReservedParameterNames.USER_BIRTHDAY.getKey(),
-					_getTemplateVariableName(
-						ReservedParameterNames.USER_BIRTHDAY.getKey()),
-					user.getBirthday()));
+		parameterDataBuilder.addParameter(
+			new DateParameter(
+				ReservedParameterNames.USER_BIRTHDAY.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_BIRTHDAY.getKey()),
+				user.getBirthday()));
 
-			parameterDataBuilder.addParameter(
-				new IntegerParameter(
-					ReservedParameterNames.USER_AGE.getKey(),
-					_getTemplateVariableName(
-						ReservedParameterNames.USER_AGE.getKey()),
-					_getUserAge(user.getBirthday())));
-			parameterDataBuilder.addParameter(
-				new BooleanParameter(
-					ReservedParameterNames.USER_IS_MALE.getKey(),
-					_getTemplateVariableName(
-						ReservedParameterNames.USER_IS_MALE.getKey()),
-					user.isMale()));
-			parameterDataBuilder.addParameter(
-				new BooleanParameter(
-					ReservedParameterNames.USER_IS_FEMALE.getKey(),
-					_getTemplateVariableName(
-						ReservedParameterNames.USER_IS_FEMALE.getKey()),
-					user.isFemale()));
-			parameterDataBuilder.addParameter(
-				new BooleanParameter(
-					ReservedParameterNames.USER_IS_GENDER_X.getKey(),
-					_getTemplateVariableName(
-						ReservedParameterNames.USER_IS_GENDER_X.getKey()),
-					!user.isFemale() && !user.isMale()));
-		}
-		catch (NumberFormatException | PortalException exception) {
-			_log.error(exception.getMessage(), exception);
-
-			throw new UnforeseenException(user.getUserId(), exception);
-		}
+		parameterDataBuilder.addParameter(
+			new IntegerParameter(
+				ReservedParameterNames.USER_AGE.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_AGE.getKey()),
+				_getUserAge(user.getBirthday())));
+		parameterDataBuilder.addParameter(
+			new BooleanParameter(
+				ReservedParameterNames.USER_IS_MALE.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_IS_MALE.getKey()),
+				user.isMale()));
+		parameterDataBuilder.addParameter(
+			new BooleanParameter(
+				ReservedParameterNames.USER_IS_FEMALE.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_IS_FEMALE.getKey()),
+				user.isFemale()));
+		parameterDataBuilder.addParameter(
+			new BooleanParameter(
+				ReservedParameterNames.USER_IS_GENDER_X.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_IS_GENDER_X.getKey()),
+				!user.isFemale() && !user.isMale()));
 
 		parameterDataBuilder.addParameter(
 			new StringParameter(
@@ -352,8 +344,9 @@ public class UserParameterContributor implements ParameterContributor {
 	}
 
 	private void _addUserSegments(
-		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes, User user) {
+			ParameterDataBuilder parameterDataBuilder,
+			BlueprintsAttributes blueprintsAttributes, User user)
+		throws PortalException {
 
 		long[] groupIds = _getUserAccessibleSiteGroupIds(
 			blueprintsAttributes.getCompanyId(), user);
@@ -404,17 +397,25 @@ public class UserParameterContributor implements ParameterContributor {
 
 	private void _contribute(
 		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes) {
+		BlueprintsAttributes blueprintsAttributes, long userId,
+		Messages messages) {
 
-		User user = _getUser(_getUserId(blueprintsAttributes));
+		try {
+			User user = _userLocalService.getUser(userId);
 
-		_addUserInfo(parameterDataBuilder, user);
+			_addUserInfo(parameterDataBuilder, user);
 
-		_addUserGroupIds(parameterDataBuilder, user);
+			_addUserGroupIds(parameterDataBuilder, user);
 
-		_addUserRoleIds(parameterDataBuilder, user);
+			_addUserRoleIds(parameterDataBuilder, user);
 
-		_addUserSegments(parameterDataBuilder, blueprintsAttributes, user);
+			_addUserSegments(parameterDataBuilder, blueprintsAttributes, user);
+		}
+		catch (Exception exception) {
+			MessagesUtil.error(
+				messages, exception, null, null, null,
+				"core.error.unknown-error");
+		}
 	}
 
 	private String _getTemplateVariableName(String key) {
@@ -427,47 +428,31 @@ public class UserParameterContributor implements ParameterContributor {
 		return sb.toString();
 	}
 
-	private User _getUser(Long userId) {
-		try {
-			return _userLocalService.getUser(userId);
-		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
+	private long[] _getUserAccessibleSiteGroupIds(long companyId, User user)
+		throws PortalException {
 
-			throw new UserNotFoundException(userId, portalException);
-		}
-	}
-
-	private long[] _getUserAccessibleSiteGroupIds(long companyId, User user) {
 		List<Long> groupIds = new ArrayList<>();
 
-		try {
-			Company company = _companyLocalService.getCompany(companyId);
+		Company company = _companyLocalService.getCompany(companyId);
 
-			long companyGroupId = company.getGroupId();
+		long companyGroupId = company.getGroupId();
 
-			groupIds.add(companyGroupId);
+		groupIds.add(companyGroupId);
 
-			for (Group group :
-					_groupLocalService.getGroups(companyId, 0, true)) {
+		for (Group group : _groupLocalService.getGroups(companyId, 0, true)) {
+			if (group.isActive() && !group.isStagingGroup() &&
+				group.hasPublicLayouts()) {
 
-				if (group.isActive() && !group.isStagingGroup() &&
-					group.hasPublicLayouts()) {
-
-					groupIds.add(group.getGroupId());
-				}
-			}
-
-			for (Group group : user.getSiteGroups()) {
-				if (!groupIds.contains(group.getGroupId()) &&
-					group.isActive() && !group.isStagingGroup()) {
-
-					groupIds.add(group.getGroupId());
-				}
+				groupIds.add(group.getGroupId());
 			}
 		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
+
+		for (Group group : user.getSiteGroups()) {
+			if (!groupIds.contains(group.getGroupId()) && group.isActive() &&
+				!group.isStagingGroup()) {
+
+				groupIds.add(group.getGroupId());
+			}
 		}
 
 		groupIds.toArray(new Long[0]);
@@ -498,57 +483,12 @@ public class UserParameterContributor implements ParameterContributor {
 	}
 
 	private Long _getUserId(BlueprintsAttributes blueprintsAttributes) {
-		Long userId = blueprintsAttributes.getUserId();
-
-		if (GetterUtil.getLong(userId) == 0) {
-			throw new UserIdUnsetException();
-		}
-
-		return userId;
+		return GetterUtil.getLong(blueprintsAttributes.getUserId());
 	}
 
 	private Boolean _isSignedIn(User user) {
 		return !user.isDefaultUser();
 	}
-
-	private Message _toMessage(UnforeseenException unforeseenException) {
-		Throwable throwable = unforeseenException.getCause();
-
-		return new Message.Builder().className(
-			UserParameterContributor.class.getName()
-		).localizationKey(
-			"core.error.unknown-exception"
-		).msg(
-			throwable.getMessage()
-		).rootValue(
-			String.valueOf(unforeseenException._userId)
-		).severity(
-			Severity.ERROR
-		).throwable(
-			throwable
-		).build();
-	}
-
-	private Message _toMessage(UserNotFoundException userNotFoundException) {
-		Throwable throwable = userNotFoundException.getCause();
-
-		return new Message.Builder().className(
-			UserParameterContributor.class.getName()
-		).localizationKey(
-			"core.error.user-not-found"
-		).msg(
-			throwable.getMessage()
-		).rootValue(
-			String.valueOf(userNotFoundException._userId)
-		).severity(
-			Severity.ERROR
-		).throwable(
-			throwable
-		).build();
-	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		UserParameterContributor.class);
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
@@ -564,32 +504,5 @@ public class UserParameterContributor implements ParameterContributor {
 
 	@Reference
 	private UserLocalService _userLocalService;
-
-	private class UnforeseenException extends RuntimeException {
-
-		public UnforeseenException(long userId, Throwable throwable) {
-			super(throwable);
-
-			_userId = userId;
-		}
-
-		private final long _userId;
-
-	}
-
-	private class UserIdUnsetException extends RuntimeException {
-	}
-
-	private class UserNotFoundException extends RuntimeException {
-
-		public UserNotFoundException(long userId, Throwable throwable) {
-			super(throwable);
-
-			_userId = userId;
-		}
-
-		private final long _userId;
-
-	}
 
 }
