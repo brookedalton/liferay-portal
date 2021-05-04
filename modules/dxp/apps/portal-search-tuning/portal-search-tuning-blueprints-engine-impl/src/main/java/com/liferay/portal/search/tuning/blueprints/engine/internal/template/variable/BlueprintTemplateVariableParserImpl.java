@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
+package com.liferay.portal.search.tuning.blueprints.engine.internal.template.variable;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -27,10 +27,9 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.vis
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
-import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.engine.template.variable.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -78,7 +77,7 @@ public class BlueprintTemplateVariableParserImpl
 			}
 		}
 		catch (JSONException jsonException) {
-			_logException(jsonException, object, messages);
+			_handleException(jsonException, object, messages);
 
 			return Optional.empty();
 		}
@@ -109,7 +108,7 @@ public class BlueprintTemplateVariableParserImpl
 				_parseJSONArray(jsonArray, parameterData, messages));
 		}
 		catch (JSONException jsonException) {
-			_logException(jsonException, jsonArray, messages);
+			_handleException(jsonException, jsonArray, messages);
 		}
 
 		return Optional.empty();
@@ -138,7 +137,7 @@ public class BlueprintTemplateVariableParserImpl
 				_parseJSONObject(jsonObject, parameterData, messages));
 		}
 		catch (JSONException jsonException) {
-			_logException(jsonException, jsonObject, messages);
+			_handleException(jsonException, jsonObject, messages);
 		}
 
 		return Optional.empty();
@@ -178,33 +177,20 @@ public class BlueprintTemplateVariableParserImpl
 		return sb.toString();
 	}
 
+	private void _handleException(
+		Exception exception, Object rootObject, Messages messages) {
+
+		MessagesUtil.error(
+			messages, exception, rootObject, null, null,
+			"core.error.unknown-template-variable-parsing-error");
+	}
+
 	private boolean _hasTemplateVariables(String str) {
 		if (str.indexOf("${") > 0) {
 			return true;
 		}
 
 		return false;
-	}
-
-	private void _logException(
-		Exception exception, Object rootObject, Messages messages) {
-
-		_log.error(exception.getMessage(), exception);
-
-		messages.addMessage(
-			new Message.Builder().className(
-				getClass().getName()
-			).localizationKey(
-				"core.error.unknown-template-variable-parsing-error"
-			).msg(
-				exception.getMessage()
-			).rootObject(
-				rootObject.toString()
-			).severity(
-				Severity.ERROR
-			).throwable(
-				exception
-			).build());
 	}
 
 	private JSONArray _parseJSONArray(
@@ -284,7 +270,7 @@ public class BlueprintTemplateVariableParserImpl
 			return str;
 		}
 		catch (Exception exception) {
-			_logException(exception, str, messages);
+			_handleException(exception, str, messages);
 		}
 
 		return null;
@@ -373,30 +359,9 @@ public class BlueprintTemplateVariableParserImpl
 
 	private boolean _validateParsing(String str, Messages messages) {
 		if (str.contains("${")) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.unable-to-parse-template-variables"
-				).msg(
-					"Some template variables could not be parsed"
-				).rootObject(
-					str
-				).severity(
-					Severity.WARN
-				).build());
-
-			if (_log.isWarnEnabled()) {
-				StringBundler sb = new StringBundler(5);
-
-				sb.append("Some template variables could not be parsed. This ");
-				sb.append("could happen because of a configuration error or ");
-				sb.append("values being not available runtime  [ ");
-				sb.append(str);
-				sb.append(" ]");
-
-				_log.warn(sb.toString());
-			}
+			MessagesUtil.warning(
+				messages, "Unable to parse template variables", str, null, null,
+				"core.error.unable-to-parse-template-variables");
 
 			return false;
 		}
