@@ -58,18 +58,15 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 			FrameworkConfigurationKeys.APPLY_INDEXER_CLAUSES.getJsonKey(),
 			true);
 	}
-
+	
 	@Override
-	public Optional<JSONArray> getAggsConfigurationOptional(
+	public Optional<JSONObject> getAggsConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONArray> jsonArrayOptional =
-			BlueprintJSONUtil.getValueAsJSONArrayOptional(
+		return BlueprintJSONUtil.getValueAsJSONObjectOptional(
 				_getBlueprintConfigurationJSONObject(blueprint),
-				"JSONArray/" +
+				"JSONObject/" +
 					BlueprintKeys.AGGREGATION_CONFIGURATION.getJsonKey());
-
-		return _maybeJsonArrayOptional(jsonArrayOptional);
 	}
 
 	@Override
@@ -352,16 +349,12 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	}
 
 	@Override
-	public Optional<JSONArray> getSuggestConfigurationOptional(
+	public Optional<JSONObject> getSuggestConfigurationOptional(
 		Blueprint blueprint) {
-
-		Optional<JSONArray> jsonArrayOptional =
-			BlueprintJSONUtil.getValueAsJSONArrayOptional(
+		
+		return BlueprintJSONUtil.getValueAsJSONObjectOptional(
 				_getBlueprintConfigurationJSONObject(blueprint),
-				"JSONObject/" +
-					BlueprintKeys.SUGGEST_CONFIGURATION.getJsonKey());
-
-		return _maybeJsonArrayOptional(jsonArrayOptional);
+				"JSONObject/" + BlueprintKeys.SUGGEST_CONFIGURATION.getJsonKey());
 	}
 
 	protected JSONObject getDefaultFrameworkConfigurationJSONObject() {
