@@ -54,20 +54,19 @@ public class FacetParameterContributor implements ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		Optional<JSONArray> configurationJSONArrayOptional =
+		Optional<JSONArray> optional =
 			_blueprintHelper.getJSONArrayConfigurationOptional(
 				blueprint,
 				"JSONArray/" + FacetsBlueprintKeys.CONFIGURATION_SECTION);
 
-		if (!configurationJSONArrayOptional.isPresent()) {
+		if (!optional.isPresent()) {
 			return;
 		}
 
-		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
+		JSONArray jsonArray = optional.get();
 
-		for (int i = 0; i < configurationJSONArray.length(); i++) {
-			JSONObject configurationJSONObject =
-				configurationJSONArray.getJSONObject(i);
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject configurationJSONObject = jsonArray.getJSONObject(i);
 
 			boolean enabled = configurationJSONObject.getBoolean(
 				FacetConfigurationKeys.ENABLED.getJsonKey(), true);

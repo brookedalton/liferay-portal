@@ -31,6 +31,7 @@ import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.spi.contributor.JSONTranslationContributor;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Map;
 import java.util.Optional;
@@ -67,8 +68,6 @@ public class FacetsJSONTranslationContributor
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages) {
 
-		JSONObject jsonObject = _jsonFactory.createJSONObject();
-
 		Optional<JSONArray> configurationJSONArrayOptional =
 			_blueprintHelper.getJSONArrayConfigurationOptional(
 				blueprint,
@@ -80,36 +79,41 @@ public class FacetsJSONTranslationContributor
 		if (aggregationResultsMap.isEmpty() ||
 			!configurationJSONArrayOptional.isPresent()) {
 
-			return jsonObject;
+			return _jsonFactory.createJSONObject();
 		}
 
-		_processFacets(
-			jsonObject, aggregationResultsMap, blueprintsAttributes,
-			resourceBundle, messages, configurationJSONArrayOptional.get());
-
-		return jsonObject;
+		return _processFacets(
+			aggregationResultsMap, blueprintsAttributes, resourceBundle,
+			messages, configurationJSONArrayOptional.get());
 	}
 
-	private void _processFacets(
-		JSONObject jsonObject,
+	private String _getHandler(JSONObject jsonObject) {
+		return jsonObject.getString(
+			FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
+	}
+
+	private boolean _isEnabled(JSONObject jsonObject) {
+		return jsonObject.getBoolean(
+			FacetConfigurationKeys.ENABLED.getJsonKey(), true);
+	}
+
+	private JSONObject _processFacets(
 		Map<String, AggregationResult> aggregationResultsMap,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
 		JSONArray configurationJSONArray) {
 
+		JSONObject facetsResponseJSONObject = _jsonFactory.createJSONObject();
+
 		for (int i = 0; i < configurationJSONArray.length(); i++) {
 			JSONObject configurationJSONObject =
 				configurationJSONArray.getJSONObject(i);
 
-			boolean enabled = configurationJSONObject.getBoolean(
-				FacetConfigurationKeys.ENABLED.getJsonKey(), true);
-
-			if (!enabled) {
+			if (!_isEnabled(configurationJSONObject)) {
 				continue;
 			}
 
-			String responseHandlerName = configurationJSONObject.getString(
-				FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
+			String responseHandlerName = _getHandler(configurationJSONObject);
 
 			String aggregationName = FacetConfigurationUtil.getAggregationName(
 				configurationJSONObject);
@@ -117,31 +121,38 @@ public class FacetsJSONTranslationContributor
 			for (Map.Entry<String, AggregationResult> entry :
 					aggregationResultsMap.entrySet()) {
 
-				String aggregationResultName = entry.getKey();
-
 				if (!StringUtil.equalsIgnoreCase(
-						aggregationResultName, aggregationName)) {
+						entry.getKey(), aggregationName)) {
 
 					continue;
 				}
 
-				FacetResponseHandler facetResponseHandler =
-					_facetResponseHandlerFactory.getHandler(
+				try {
+					FacetResponseHandler facetResponseHandler =
+						_facetResponseHandlerFactory.getHandler(
+							responseHandlerName);
+
+					Optional<JSONObject> resultOptional =
+						facetResponseHandler.getResultOptional(
+							entry.getValue(), blueprintsAttributes,
+							resourceBundle, messages, configurationJSONObject);
+
+					if (resultOptional.isPresent()) {
+						facetsResponseJSONObject.put(
+							FacetConfigurationUtil.getFacetName(
+								configurationJSONObject),
+							resultOptional.get());
+					}
+				}
+				catch (IllegalArgumentException illegalArgumentException) {
+					MessagesUtil.invalidConfigurationValueError(
+						illegalArgumentException, messages, null, null,
 						responseHandlerName);
-
-				Optional<JSONObject> resultOptional =
-					facetResponseHandler.getResultOptional(
-						entry.getValue(), blueprintsAttributes, resourceBundle,
-						messages, configurationJSONObject);
-
-				if (resultOptional.isPresent()) {
-					jsonObject.put(
-						FacetConfigurationUtil.getFacetName(
-							configurationJSONObject),
-						resultOptional.get());
 				}
 			}
 		}
+
+		return facetsResponseJSONObject;
 	}
 
 	@Reference
