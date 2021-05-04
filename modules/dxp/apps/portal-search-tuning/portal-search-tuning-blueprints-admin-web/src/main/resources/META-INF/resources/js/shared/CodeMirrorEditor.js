@@ -70,7 +70,13 @@ function useCombinedRefs(...refs) {
 
 const CodeMirrorEditor = React.forwardRef(
 	(
-		{onChange = () => {}, mode = 'json', value = '', readOnly = false},
+		{
+			folded = false,
+			onChange = () => {},
+			mode = 'json',
+			value = '',
+			readOnly = false,
+		},
 		ref
 	) => {
 		const innerRef = useRef(ref);
@@ -99,12 +105,23 @@ const CodeMirrorEditor = React.forwardRef(
 					readOnly,
 					tabSize: 2,
 					value,
-					viewportMargin: Infinity,
 				});
 
 				codeMirror.on('change', (cm) => {
 					onChange(cm.getValue());
 				});
+
+				if (folded) {
+					codeMirror.operation(() => {
+						for (
+							let line = codeMirror.firstLine() + 1;
+							line <= codeMirror.lastLine() - 1;
+							++line
+						) {
+							codeMirror.foldCode({ch: 0, line}, null, 'fold');
+						}
+					});
+				}
 
 				editor.current = codeMirror;
 			}

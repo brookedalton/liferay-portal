@@ -148,6 +148,7 @@ function PreviewSidebar({
 						body={
 							<div className="json-modal">
 								<CodeMirrorEditor
+									folded
 									readOnly
 									value={JSON.stringify(results, null, 2)}
 								/>
