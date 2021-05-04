@@ -258,9 +258,11 @@ public abstract class BaseBlueprintsTestCase {
 			JSONUtil.put(
 				SourceConfigurationKeys.FETCH_SOURCE.getJsonKey(), true
 			).put(
-				SourceConfigurationKeys.SOURCE_EXCLUDES.getJsonKey(), ""
+				SourceConfigurationKeys.SOURCE_EXCLUDES.getJsonKey(),
+				createJSONArray()
 			).put(
-				SourceConfigurationKeys.SOURCE_INCLUDES.getJsonKey(), ""
+				SourceConfigurationKeys.SOURCE_INCLUDES.getJsonKey(),
+				createJSONArray()
 			)
 		);
 	}
