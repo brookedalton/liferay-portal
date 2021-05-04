@@ -63,6 +63,9 @@ public class BlueprintsSearchRequestContributorHelperImpl
 			_blueprintsSearchRequestHelper.getModelIndexerClassNames(
 				blueprint, blueprintsAttributes.getCompanyId()));
 
+		_blueprintsSearchRequestHelper.setSource(
+			searchRequestBuilder, parameterData, blueprint, messages);
+
 		_blueprintsSearchRequestHelper.executeSearchRequestBodyContributors(
 			searchRequestBuilder, parameterData, blueprint, messages);
 

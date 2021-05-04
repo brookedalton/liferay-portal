@@ -164,6 +164,9 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 				_getFrom(parameterData, blueprint, size)
 			);
 
+		_blueprintsSearchRequestHelper.setSource(
+			searchRequestBuilder, parameterData, blueprint, messages);
+
 		if (!_blueprintsSearchRequestHelper.shouldApplyIndexerClauses(
 				blueprint)) {
 
