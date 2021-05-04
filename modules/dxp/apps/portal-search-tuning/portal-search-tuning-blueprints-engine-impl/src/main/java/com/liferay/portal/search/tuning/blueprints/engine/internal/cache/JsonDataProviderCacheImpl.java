@@ -14,8 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.cache;
 
+import com.liferay.portal.kernel.cache.MultiVMPool;
 import com.liferay.portal.kernel.cache.PortalCache;
-import com.liferay.portal.kernel.cache.SingleVMPool;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.tuning.blueprints.engine.cache.JSONDataProviderCache;
 
@@ -27,6 +27,11 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true, service = JSONDataProviderCache.class)
 public class JsonDataProviderCacheImpl implements JSONDataProviderCache {
+
+	@Override
+	public void clearCache() {
+		_portalCache.removeAll();
+	}
 
 	@Override
 	public JSONObject getJSONObject(String cacheKey) {
@@ -43,10 +48,15 @@ public class JsonDataProviderCacheImpl implements JSONDataProviderCache {
 		_portalCache.put(cacheKey, jsonObject, timeToLive);
 	}
 
+	@Override
+	public void remove(String cacheKey) {
+		_portalCache.remove(cacheKey);
+	}
+
 	@Reference(unbind = "-")
-	protected void setSingleVMPool(SingleVMPool singleVMPool) {
+	protected void setMultiVMPool(MultiVMPool multiVMPool) {
 		_portalCache =
-			(PortalCache<String, JSONObject>)singleVMPool.getPortalCache(
+			(PortalCache<String, JSONObject>)multiVMPool.getPortalCache(
 				JsonDataProviderCacheImpl.class.getName());
 	}
 

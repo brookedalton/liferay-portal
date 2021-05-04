@@ -21,10 +21,14 @@ import com.liferay.portal.kernel.json.JSONObject;
  */
 public interface JSONDataProviderCache {
 
+	public void clearCache();
+
 	public JSONObject getJSONObject(String cacheKey);
 
 	public void put(String cacheKey, JSONObject jsonObject);
 
 	public void put(String cacheKey, JSONObject jsonObject, int timeToLive);
+
+	public void remove(String cacheKey);
 
 }
