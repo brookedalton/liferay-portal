@@ -14,26 +14,24 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.searchrequest;
 
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.aggregation.Aggregation;
-import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
-import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.engine.template.variable.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -53,190 +51,134 @@ public class AggsSearchRequestBodyContributor
 		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
 		ParameterData parameterData, Messages messages) {
 
-		Optional<JSONArray> configurationJSONArrayOptional =
+		Optional<JSONObject> optional =
 			_blueprintHelper.getAggsConfigurationOptional(blueprint);
 
-		if (!configurationJSONArrayOptional.isPresent()) {
+		if (!optional.isPresent()) {
 			return;
 		}
 
-		_contribute(
-			searchRequestBuilder, configurationJSONArrayOptional.get(),
-			parameterData, messages);
+		_processAggregations(
+			searchRequestBuilder, null, optional.get(), parameterData,
+			messages);
 	}
 
-	private void _contribute(
+	private void _addAggregation(
 		SearchRequestBuilder searchRequestBuilder,
-		JSONArray configurationJSONArray, ParameterData parameterData,
+		AggregationWrapper aggregationWrapper) {
+
+		if (aggregationWrapper.isPipeline()) {
+			searchRequestBuilder.addPipelineAggregation(
+				aggregationWrapper.getPipelineAggregation());
+		}
+		else {
+			searchRequestBuilder.addAggregation(
+				aggregationWrapper.getAggregation());
+		}
+	}
+
+	private void _addChildAggregation(
+		AggregationWrapper parentAggregationWrapper,
+		AggregationWrapper childAggregationWrapper) {
+
+		if (!parentAggregationWrapper.isPipeline()) {
+			Aggregation aggregation = parentAggregationWrapper.getAggregation();
+
+			aggregation.addChildAggregation(
+				childAggregationWrapper.getAggregation());
+		}
+	}
+
+	private Optional<AggregationWrapper> _getAggregationOptional(
+		String name, String type, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
+
+		if (!_isEnabled(jsonObject)) {
+			return Optional.empty();
+		}
+
+		Optional<JSONObject> optional =
+			_blueprintTemplateVariableParser.parseObject(
+				jsonObject, parameterData, messages);
+
+		if (!optional.isPresent()) {
+			return Optional.empty();
+		}
+
+		AggregationTranslator aggregationTranslator =
+			_aggregationTranslatorFactory.getTranslator(type);
+
+		return aggregationTranslator.translate(
+			name, optional.get(), parameterData, messages);
+	}
+
+	private boolean _isEnabled(JSONObject jsonObject) {
+		return jsonObject.getBoolean(
+			AggregationConfigurationKeys.ENABLED.getJsonKey(), true);
+	}
+
+	private void _processAggregations(
+		SearchRequestBuilder searchRequestBuilder,
+		AggregationWrapper parentAggregationWrapper,
+		JSONObject aggregationJSONObject, ParameterData parameterData,
 		Messages messages) {
 
-		for (int i = 0; i < configurationJSONArray.length(); i++) {
-			JSONObject configurationJSONObject =
-				configurationJSONArray.getJSONObject(i);
+		Set<String> keySet = aggregationJSONObject.keySet();
 
-			if (!_validateConfiguration(configurationJSONObject, messages) ||
-				!configurationJSONObject.getBoolean(
-					AggregationConfigurationKeys.ENABLED.getJsonKey(), true)) {
+		keySet.forEach(
+			name -> {
+				JSONObject nameJSONObject = aggregationJSONObject.getJSONObject(
+					name);
 
-				continue;
-			}
+				Optional<String> typeOptional =
+					BlueprintJSONUtil.getFirstKeyOptional(nameJSONObject);
 
-			Optional<Aggregation> aggregationOptional = _getAggregationOptional(
-				configurationJSONObject, parameterData, messages);
+				if (!typeOptional.isPresent()) {
+					return;
+				}
 
-			if (aggregationOptional.isPresent()) {
-				searchRequestBuilder.addAggregation(aggregationOptional.get());
-			}
-		}
+				String type = typeOptional.get();
+
+				JSONObject typeJSONObject = nameJSONObject.getJSONObject(type);
+
+				AggregationWrapper aggregationWrapper;
+
+				try {
+					Optional<AggregationWrapper> aggregationWrapperOptional =
+						_getAggregationOptional(
+							name, type, typeJSONObject, parameterData,
+							messages);
+
+					aggregationWrapper = aggregationWrapperOptional.get();
+				}
+				catch (IllegalArgumentException illegalArgumentException) {
+					MessagesUtil.invalidConfigurationValueError(
+						illegalArgumentException, messages, nameJSONObject,
+						null, type);
+
+					return;
+				}
+
+				if (!aggregationWrapper.isPipeline()) {
+					JSONObject aggsJSONObject = typeJSONObject.getJSONObject(
+						"aggs");
+
+					if (aggsJSONObject != null) {
+						_processAggregations(
+							searchRequestBuilder, aggregationWrapper,
+							aggsJSONObject, parameterData, messages);
+					}
+				}
+
+				if (parentAggregationWrapper == null) {
+					_addAggregation(searchRequestBuilder, aggregationWrapper);
+				}
+				else {
+					_addChildAggregation(
+						parentAggregationWrapper, aggregationWrapper);
+				}
+			});
 	}
-
-	private Optional<Aggregation> _getAggregationOptional(
-		JSONObject configurationJSONObject, ParameterData parameterData,
-		Messages messages) {
-
-		String name = configurationJSONObject.getString(
-			AggregationConfigurationKeys.NAME.getJsonKey());
-
-		String type = configurationJSONObject.getString(
-			AggregationConfigurationKeys.TYPE.getJsonKey());
-
-		try {
-			Optional<JSONObject> bodyJSONObjectOptional =
-				_blueprintTemplateVariableParser.parseObject(
-					configurationJSONObject.getJSONObject(
-						AggregationConfigurationKeys.BODY.getJsonKey()),
-					parameterData, messages);
-
-			if (!bodyJSONObjectOptional.isPresent()) {
-				return Optional.empty();
-			}
-
-			AggregationTranslator aggregationTranslator =
-				_aggregationTranslatorFactory.getTranslator(type);
-
-			return aggregationTranslator.translate(
-				name, bodyJSONObjectOptional.get(), parameterData, messages,
-				_aggregationTranslatorFactory);
-		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.unknown-aggregation-type"
-				).msg(
-					illegalArgumentException.getMessage()
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					AggregationConfigurationKeys.TYPE.getJsonKey()
-				).rootValue(
-					type
-				).severity(
-					Severity.ERROR
-				).throwable(
-					illegalArgumentException
-				).build());
-
-			_log.error(
-				illegalArgumentException.getMessage(),
-				illegalArgumentException);
-		}
-
-		return Optional.empty();
-	}
-
-	private boolean _validateConfiguration(
-		JSONObject configurationJSONObject, Messages messages) {
-
-		boolean valid = true;
-
-		if (configurationJSONObject.isNull(
-				AggregationConfigurationKeys.NAME.getJsonKey())) {
-
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.undefined-aggregation-name"
-				).msg(
-					"Aggregation name is not defined"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					AggregationConfigurationKeys.NAME.getJsonKey()
-				).severity(
-					Severity.ERROR
-				).build());
-
-			valid = false;
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Aggregation name is not defined [ " +
-						configurationJSONObject + "]");
-			}
-		}
-
-		if (configurationJSONObject.isNull(
-				AggregationConfigurationKeys.TYPE.getJsonKey())) {
-
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.undefined-aggregation-type"
-				).msg(
-					"Aggregation type is not defined"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					AggregationConfigurationKeys.TYPE.getJsonKey()
-				).severity(
-					Severity.ERROR
-				).build());
-
-			valid = false;
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Aggregation type is not defined [ " +
-						configurationJSONObject + "]");
-			}
-		}
-
-		if (configurationJSONObject.isNull(
-				AggregationConfigurationKeys.BODY.getJsonKey())) {
-
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.undefined-aggregation-body"
-				).msg(
-					"Aggregation body is not defined"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					AggregationConfigurationKeys.BODY.getJsonKey()
-				).severity(
-					Severity.ERROR
-				).build());
-
-			valid = false;
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Aggregation body is not defined [ " +
-						configurationJSONObject + "]");
-			}
-		}
-
-		return valid;
-	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		AggsSearchRequestBodyContributor.class);
 
 	@Reference
 	private AggregationTranslatorFactory _aggregationTranslatorFactory;
@@ -246,8 +188,5 @@ public class AggsSearchRequestBodyContributor
 
 	@Reference
 	private BlueprintTemplateVariableParser _blueprintTemplateVariableParser;
-
-	@Reference
-	private Queries _queries;
 
 }

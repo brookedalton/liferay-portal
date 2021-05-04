@@ -37,10 +37,9 @@ public class FieldSortTranslator implements SortTranslator {
 
 	@Override
 	public Optional<Sort> translate(
-		JSONObject configurationJSONObject, SortOrder sortOrder,
-		Messages messages) {
+		JSONObject jsonObject, SortOrder sortOrder, Messages messages) {
 
-		String field = configurationJSONObject.getString(
+		String field = jsonObject.getString(
 			SortConfigurationKeys.FIELD.getJsonKey());
 
 		if (field.equals("_score")) {

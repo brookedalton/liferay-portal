@@ -17,11 +17,10 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.searchreques
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.highlight.Highlight;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.highlight.HighlightingConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.util.HighlightHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
-import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
+import com.liferay.portal.search.tuning.blueprints.engine.template.variable.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
@@ -46,45 +45,34 @@ public class HighlightSearchRequestBodyContributor
 		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
 		ParameterData parameterData, Messages messages) {
 
-		Optional<JSONObject> configurationJSONObjectOptional =
+		Optional<JSONObject> optional =
 			_blueprintHelper.getHighlightConfigurationOptional(blueprint);
 
-		if (!configurationJSONObjectOptional.isPresent()) {
+		if (!optional.isPresent()) {
 			return;
 		}
 
 		_contribute(
-			searchRequestBuilder, configurationJSONObjectOptional.get(),
-			parameterData, messages);
+			searchRequestBuilder, optional.get(), parameterData, messages);
 	}
 
 	private void _contribute(
-		SearchRequestBuilder searchRequestBuilder,
-		JSONObject configurationJSONObject, ParameterData parameterData,
-		Messages messages) {
+		SearchRequestBuilder searchRequestBuilder, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
 
-		boolean enabled = configurationJSONObject.getBoolean(
-			HighlightingConfigurationKeys.ENABLED.getJsonKey());
-
-		if (!enabled) {
-			searchRequestBuilder.highlightEnabled(false);
-
-			return;
-		}
-
-		Optional<JSONObject> highlightJSONObjectOptional =
+		Optional<JSONObject> optional1 =
 			_blueprintTemplateVariableParser.parseObject(
-				configurationJSONObject, parameterData, messages);
+				jsonObject, parameterData, messages);
 
-		if (!highlightJSONObjectOptional.isPresent()) {
+		if (!optional1.isPresent()) {
 			return;
 		}
 
-		Optional<Highlight> highlightOptional = _highlightHelper.getHighlight(
-			highlightJSONObjectOptional.get(), parameterData, messages);
+		Optional<Highlight> optional2 = _highlightHelper.getHighlight(
+			optional1.get(), parameterData, messages);
 
-		if (highlightOptional.isPresent()) {
-			searchRequestBuilder.highlight(highlightOptional.get());
+		if (optional2.isPresent()) {
+			searchRequestBuilder.highlight(optional2.get());
 		}
 	}
 

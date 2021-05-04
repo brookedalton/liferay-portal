@@ -16,8 +16,6 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.executor;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.search.filter.ComplexQueryBuilderFactory;
-import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.rescore.Rescore;
 import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
@@ -180,12 +178,6 @@ public class SearchExecutorImpl implements SearchExecutor {
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;
-
-	@Reference
-	private ComplexQueryBuilderFactory _complexQueryBuilderFactory;
-
-	@Reference
-	private Queries _queries;
 
 	private volatile Map<String, ServiceComponentReference<QueryPostProcessor>>
 		_queryPostProcessors = new ConcurrentHashMap<>();
