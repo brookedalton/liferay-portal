@@ -15,7 +15,7 @@
 package com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.search.aggregation.Aggregation;
+import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
@@ -26,9 +26,8 @@ import java.util.Optional;
  */
 public interface AggregationTranslator {
 
-	public Optional<Aggregation> translate(
-		String aggregationName, JSONObject configurationJSONObject,
-		ParameterData parameterData, Messages messages,
-		AggregationTranslatorFactory aggregationTranslatorFactory);
+	public Optional<AggregationWrapper> translate(
+		String aggregationName, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages);
 
 }
