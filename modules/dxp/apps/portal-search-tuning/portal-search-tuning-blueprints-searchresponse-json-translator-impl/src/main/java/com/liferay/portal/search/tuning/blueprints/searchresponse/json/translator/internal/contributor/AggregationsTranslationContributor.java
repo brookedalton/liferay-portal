@@ -14,29 +14,27 @@
 
 package com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.internal.contributor;
 
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.searcher.SearchResponse;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.constants.JSONKeys;
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.internal.aggregation.AggregationJSONTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.spi.aggregation.AggregationJSONTranslator;
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.spi.contributor.JSONTranslationContributor;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -45,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, property = "name=aggregations",
+	immediate = true, property = "name=aggs",
 	service = JSONTranslationContributor.class
 )
 public class AggregationsTranslationContributor
@@ -62,91 +60,76 @@ public class AggregationsTranslationContributor
 			_getAggregationsJSONObject(searchResponse, blueprint, messages));
 	}
 
+	private void _addResult(
+		JSONObject responseJSONObject, String aggregationName, String type,
+		AggregationResult aggregationResult, Messages messages) {
+
+		try {
+			AggregationJSONTranslator aggregationResponseBuilder =
+				_aggregationResponseBuilderFactory.getTranslator(type);
+
+			Optional<JSONObject> aggregationJsonOptional =
+				aggregationResponseBuilder.translate(aggregationResult);
+
+			if (aggregationJsonOptional.isPresent()) {
+				responseJSONObject.put(
+					aggregationName, aggregationJsonOptional.get());
+			}
+		}
+		catch (IllegalArgumentException illegalArgumentException) {
+			MessagesUtil.invalidConfigurationValueError(
+				illegalArgumentException, messages, null, null, type);
+		}
+	}
+
 	private JSONObject _getAggregationsJSONObject(
 		SearchResponse searchResponse, Blueprint blueprint, Messages messages) {
 
-		JSONObject aggregationsJSONObject = _jsonFactory.createJSONObject();
+		JSONObject responseJSONObject = _jsonFactory.createJSONObject();
 
-		Optional<JSONArray> aggregationsConfigurationOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_blueprintHelper.getAggsConfigurationOptional(blueprint);
 
 		Map<String, AggregationResult> aggregations =
 			searchResponse.getAggregationResultsMap();
 
 		if (aggregations.isEmpty() ||
-			!aggregationsConfigurationOptional.isPresent()) {
+			!configurationJSONObjectOptional.isPresent()) {
 
-			return aggregationsJSONObject;
+			return responseJSONObject;
 		}
 
-		JSONArray aggregationsConfigurationJSONArray =
-			aggregationsConfigurationOptional.get();
+		JSONObject configurationJSONObject =
+			configurationJSONObjectOptional.get();
 
-		for (int i = 0; i < aggregationsConfigurationJSONArray.length(); i++) {
-			JSONObject aggregationJSONObject =
-				aggregationsConfigurationJSONArray.getJSONObject(i);
+		Set<String> keySet = configurationJSONObject.keySet();
 
-			String aggregationName = aggregationJSONObject.getString(
-				AggregationConfigurationKeys.NAME.getJsonKey());
+		keySet.forEach(
+			aggregationName -> {
+				JSONObject nameJSONObject =
+					configurationJSONObject.getJSONObject(aggregationName);
 
-			String type = aggregationJSONObject.getString(
-				AggregationConfigurationKeys.TYPE.getJsonKey());
+				Optional<String> typeOptional =
+					BlueprintJSONUtil.getFirstKeyOptional(nameJSONObject);
 
-			for (Map.Entry<String, AggregationResult> entry :
-					aggregations.entrySet()) {
+				Set<Map.Entry<String, AggregationResult>> entrySet =
+					aggregations.entrySet();
 
-				String aggregationResultName = entry.getKey();
+				Stream<Map.Entry<String, AggregationResult>> stream =
+					entrySet.stream();
 
-				if (!StringUtil.equalsIgnoreCase(
-						aggregationResultName, aggregationName)) {
+				stream.filter(
+					entry -> StringUtil.equalsIgnoreCase(
+						entry.getKey(), aggregationName)
+				).forEach(
+					entry -> _addResult(
+						responseJSONObject, entry.getKey(), typeOptional.get(),
+						entry.getValue(), messages)
+				);
+			});
 
-					continue;
-				}
-
-				try {
-					AggregationJSONTranslator aggregationResponseBuilder =
-						_aggregationResponseBuilderFactory.getTranslator(type);
-
-					Optional<JSONObject> aggregationJsonOptional =
-						aggregationResponseBuilder.translate(entry.getValue());
-
-					if (aggregationJsonOptional.isPresent()) {
-						aggregationsJSONObject.put(
-							aggregationName, aggregationJsonOptional.get());
-					}
-				}
-				catch (IllegalArgumentException illegalArgumentException) {
-					messages.addMessage(
-						new Message.Builder().className(
-							getClass().getName()
-						).localizationKey(
-							"json-response.error.unknown-aggregation-type"
-						).msg(
-							illegalArgumentException.getMessage()
-						).rootObject(
-							aggregationJSONObject
-						).rootProperty(
-							AggregationConfigurationKeys.TYPE.getJsonKey()
-						).rootValue(
-							type
-						).severity(
-							Severity.ERROR
-						).throwable(
-							illegalArgumentException
-						).build());
-
-					_log.error(
-						illegalArgumentException.getMessage(),
-						illegalArgumentException);
-				}
-			}
-		}
-
-		return aggregationsJSONObject;
+		return responseJSONObject;
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		AggregationsTranslationContributor.class);
 
 	@Reference
 	private AggregationJSONTranslatorFactory _aggregationResponseBuilderFactory;
