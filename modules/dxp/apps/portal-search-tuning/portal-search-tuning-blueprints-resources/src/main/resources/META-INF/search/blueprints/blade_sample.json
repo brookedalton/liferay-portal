@@ -2,6 +2,23 @@
 	"blueprint-payload": {
 		"configuration": {
 			"advanced_configuration": {
+				"query_processing": {
+					"exclude_query_contributors": "",
+					"exclude_query_post_processors": ""
+				},
+				"source": {
+					"fetch_source": true,
+					"source_excludes": [],
+					"source_includes": [
+						"articleId",
+						"entryClassName",
+						"entryClassPK",
+						"title${context.language_id}",
+						"content${context.language_id}",
+						"modified",
+						"createDate"
+					]
+				}
 			},
 			"aggregation_configuration": [
 			],
@@ -164,18 +181,16 @@
 				"apply_indexer_clauses": false
 			},
 			"highlight_configuration": {
-				"enabled": "true",
-				"fields": [
-					{
-						"field": "title${context.language_id}"
-					},
-					{
-						"field": "content${context.language_id}"
-					}
-				],
-				"fragment_size": "50",
+				"fields": {
+					"title${context.language_id}": {},
+					"content${context.language_id}": {}
+				},
 				"require_field_match": "true",
-				"snippet_size": "10"
+				"enabled": "true",
+				"fragment_size": "50",
+				"number_of_fragments": "10",
+				"post_tags": ["</liferay-hl>"],
+				"pre_tags": ["<liferay-hl>"]
 			},
 			"parameter_configuration": {
 				"custom": [
