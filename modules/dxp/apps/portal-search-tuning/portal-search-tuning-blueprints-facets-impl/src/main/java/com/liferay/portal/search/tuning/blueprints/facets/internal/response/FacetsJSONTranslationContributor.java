@@ -146,7 +146,8 @@ public class FacetsJSONTranslationContributor
 				}
 				catch (IllegalArgumentException illegalArgumentException) {
 					MessagesUtil.invalidConfigurationValueError(
-						illegalArgumentException, messages, null, null,
+						messages, getClass().getName(),
+						illegalArgumentException, null, null,
 						responseHandlerName);
 				}
 			}

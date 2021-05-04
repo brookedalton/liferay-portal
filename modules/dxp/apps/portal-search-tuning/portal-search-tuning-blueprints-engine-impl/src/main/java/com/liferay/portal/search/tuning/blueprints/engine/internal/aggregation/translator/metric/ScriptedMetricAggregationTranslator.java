@@ -59,7 +59,7 @@ public class ScriptedMetricAggregationTranslator
 
 		if (!mapScriptOptional.isPresent()) {
 			MessagesUtil.requiredFieldMissingError(
-				messages, jsonObject,
+				messages, getClass().getName(), jsonObject,
 				ScriptedMetricAggregationBodyConfigurationKeys.MAP_SCRIPT.
 					getJsonKey());
 

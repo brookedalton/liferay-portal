@@ -181,8 +181,8 @@ public class BlueprintTemplateVariableParserImpl
 		Exception exception, Object rootObject, Messages messages) {
 
 		MessagesUtil.error(
-			messages, exception, rootObject, null, null,
-			"core.error.unknown-template-variable-parsing-error");
+			messages, getClass().getName(), exception, rootObject, null, null,
+			"core.error.error-in-parsing-template-variables");
 	}
 
 	private boolean _hasTemplateVariables(String str) {
@@ -360,8 +360,9 @@ public class BlueprintTemplateVariableParserImpl
 	private boolean _validateParsing(String str, Messages messages) {
 		if (str.contains("${")) {
 			MessagesUtil.warning(
-				messages, "Unable to parse template variables", str, null, null,
-				"core.error.unable-to-parse-template-variables");
+				messages, getClass().getName(),
+				"Unable to parse some of the template variables", str, null,
+				null, "core.error.unable-to-parse-template-variables");
 
 			return false;
 		}

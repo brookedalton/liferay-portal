@@ -142,8 +142,8 @@ public class SortSearchRequestBodyContributor
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, jsonObject,
-				SortConfigurationKeys.TYPE.getJsonKey(), type);
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject, SortConfigurationKeys.TYPE.getJsonKey(), type);
 		}
 
 		return Optional.empty();
@@ -184,8 +184,8 @@ public class SortSearchRequestBodyContributor
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, jsonObject,
-				SortConfigurationKeys.ORDER.getJsonKey(), s);
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject, SortConfigurationKeys.ORDER.getJsonKey(), s);
 		}
 
 		return null;

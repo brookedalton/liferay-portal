@@ -231,8 +231,8 @@ public class ContextParameterContributor implements ParameterContributor {
 		}
 		catch (PortalException portalException) {
 			MessagesUtil.error(
-				messages, portalException, null, null, (String)optional.get(),
-				"core.error.layout-not-found");
+				messages, getClass().getName(), portalException, null, null,
+				(String)optional.get(), "core.error.layout-not-found");
 		}
 	}
 
@@ -260,7 +260,7 @@ public class ContextParameterContributor implements ParameterContributor {
 		}
 		catch (PortalException portalException) {
 			MessagesUtil.error(
-				messages, portalException, null, null,
+				messages, getClass().getName(), portalException, null, null,
 				GetterUtil.getString(groupId), "core.error.group-not-found");
 		}
 

@@ -27,16 +27,17 @@ import com.liferay.portal.search.tuning.blueprints.message.Severity;
 public class MessagesUtil {
 
 	public static void error(
-		Messages messages, Throwable throwable, Object rootObject,
-		String rootProperty, String rootValue, String localizationKey) {
+		Messages messages, String className, Throwable throwable,
+		Object rootObject, String rootProperty, String rootValue,
+		String localizationKey) {
 
 		messages.addMessage(
 			new Message.Builder().className(
-				MessagesUtil.class.getName()
+				className
 			).localizationKey(
 				localizationKey
 			).msg(
-				_getMsg(throwable)
+				_getMsg(throwable, className)
 			).rootObject(
 				rootObject
 			).rootProperty(
@@ -55,25 +56,25 @@ public class MessagesUtil {
 		else {
 			StringBundler sb = new StringBundler();
 
-			sb.append("There was an error. ");
-
-			_addLogMessageDetails(sb, rootObject, rootProperty, rootValue);
+			_addLogMessageDetails(
+				new StringBundler(), className, rootObject, rootProperty,
+				rootValue);
 
 			_log.error(sb.toString());
 		}
 	}
 
 	public static void invalidConfigurationValueError(
-		Throwable throwable, Messages messages, Object rootObject,
-		String rootProperty, String rootValue) {
+		Messages messages, String className, Throwable throwable,
+		Object rootObject, String rootProperty, String rootValue) {
 
 		messages.addMessage(
 			new Message.Builder().className(
-				MessagesUtil.class.getName()
+				className
 			).localizationKey(
 				"core.error.invalid-configuration-value"
 			).msg(
-				_getMsg(throwable)
+				_getMsg(throwable, className)
 			).rootObject(
 				rootObject
 			).rootProperty(
@@ -94,18 +95,19 @@ public class MessagesUtil {
 
 		sb.append("Invalid or unknown configuration value.");
 
-		_addLogMessageDetails(sb, rootObject, rootProperty, rootValue);
+		_addLogMessageDetails(
+			sb, className, rootObject, rootProperty, rootValue);
 
 		_log.error(sb.toString());
 	}
 
 	public static void invalidConfigurationValueTypeError(
-		Messages messages, String correctType, Object rootObject,
-		String rootProperty, String rootValue) {
+		Messages messages, String className, String correctType,
+		Object rootObject, String rootProperty, String rootValue) {
 
 		messages.addMessage(
 			new Message.Builder().className(
-				MessagesUtil.class.getName()
+				className
 			).localizationKey(
 				"core.error.invalid-configuration-value-type"
 			).msg(
@@ -122,23 +124,24 @@ public class MessagesUtil {
 				Severity.ERROR
 			).build());
 
-		StringBundler sb = new StringBundler(9);
+		StringBundler sb = new StringBundler();
 
 		sb.append("Invalid configuration value type. ");
 		sb.append(correctType);
 		sb.append(" expected.");
 
-		_addLogMessageDetails(sb, rootObject, rootProperty, rootValue);
+		_addLogMessageDetails(
+			sb, className, rootObject, rootProperty, rootValue);
 
 		_log.error(sb.toString());
 	}
 
 	public static void requiredFieldMissingError(
-		Messages messages, Object rootObject, String field) {
+		Messages messages, String className, Object rootObject, String field) {
 
 		messages.addMessage(
 			new Message.Builder().className(
-				MessagesUtil.class.getName()
+				className
 			).localizationKey(
 				"core.error.required-field-missing"
 			).msg(
@@ -157,21 +160,21 @@ public class MessagesUtil {
 		sb.append(field);
 		sb.append(" is missing.");
 
-		_addLogMessageDetails(sb, rootObject, null, null);
+		_addLogMessageDetails(sb, className, rootObject, field, null);
 
 		_log.error(sb.toString());
 	}
 
 	public static Message toErrorMessage(
-		Throwable throwable, Object rootObject, String rootProperty,
-		String rootValue, String localizationKey) {
+		String className, Throwable throwable, Object rootObject,
+		String rootProperty, String rootValue, String localizationKey) {
 
 		return new Message.Builder().className(
-			MessagesUtil.class.getName()
+			className
 		).localizationKey(
 			localizationKey
 		).msg(
-			_getMsg(throwable)
+			_getMsg(throwable, className)
 		).rootObject(
 			rootObject
 		).rootProperty(
@@ -186,16 +189,16 @@ public class MessagesUtil {
 	}
 
 	public static void unknownError(
-		Throwable throwable, Messages messages, Object rootObject,
-		String rootProperty, String rootValue) {
+		Messages messages, String className, Throwable throwable,
+		Object rootObject, String rootProperty, String rootValue) {
 
 		messages.addMessage(
 			new Message.Builder().className(
-				MessagesUtil.class.getName()
+				className
 			).localizationKey(
 				"core.error.unknown-error"
 			).msg(
-				_getMsg(throwable)
+				_getMsg(throwable, className)
 			).rootObject(
 				rootObject
 			).rootProperty(
@@ -214,21 +217,20 @@ public class MessagesUtil {
 		else {
 			StringBundler sb = new StringBundler();
 
-			sb.append("There was an unknown error. ");
-
-			_addLogMessageDetails(sb, rootObject, rootProperty, rootValue);
+			_addLogMessageDetails(
+				sb, className, rootObject, rootProperty, rootValue);
 
 			_log.error(sb.toString());
 		}
 	}
 
 	public static void warning(
-		Messages messages, String message, Object rootObject,
+		Messages messages, String className, String message, Object rootObject,
 		String rootProperty, String rootValue, String localizationKey) {
 
 		messages.addMessage(
 			new Message.Builder().className(
-				MessagesUtil.class.getName()
+				className
 			).localizationKey(
 				localizationKey
 			).msg(
@@ -240,24 +242,30 @@ public class MessagesUtil {
 			).rootValue(
 				rootValue
 			).severity(
-				Severity.ERROR
+				Severity.WARN
 			).build());
 
+		StringBundler sb = new StringBundler();
+
+		sb.append("Warning: ");
+		sb.append(message);
+
+		_addLogMessageDetails(
+			sb, className, rootObject, rootProperty, rootValue);
+
 		if (_log.isWarnEnabled()) {
-			StringBundler sb = new StringBundler();
-
-			sb.append("Warning: ");
-			sb.append(message);
-
-			_addLogMessageDetails(sb, rootObject, rootProperty, rootValue);
-
-			_log.warn(message);
+			_log.warn(sb.toString());
 		}
 	}
 
 	private static void _addLogMessageDetails(
-		StringBundler sb, Object rootObject, String rootProperty,
-		String rootValue) {
+		StringBundler sb, String className, Object rootObject,
+		String rootProperty, String rootValue) {
+
+		if (className != null) {
+			sb.append(" Reporting class: ");
+			sb.append(className);
+		}
 
 		if (rootValue != null) {
 			sb.append(" Root value: ");
@@ -265,23 +273,23 @@ public class MessagesUtil {
 		}
 
 		if (rootProperty != null) {
-			sb.append(", Root property: ");
+			sb.append(" Root property: ");
 			sb.append(rootProperty);
 		}
 
 		if (rootObject != null) {
-			sb.append(", Root object: [ ");
-			sb.append(rootProperty);
+			sb.append(" Root object: [ ");
+			sb.append(rootObject);
 			sb.append(" ]");
 		}
 	}
 
-	private static String _getMsg(Throwable throwable) {
+	private static String _getMsg(Throwable throwable, String className) {
 		if (throwable != null) {
 			return throwable.getMessage();
 		}
 
-		return null;
+		return className + " reported an error";
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(MessagesUtil.class);

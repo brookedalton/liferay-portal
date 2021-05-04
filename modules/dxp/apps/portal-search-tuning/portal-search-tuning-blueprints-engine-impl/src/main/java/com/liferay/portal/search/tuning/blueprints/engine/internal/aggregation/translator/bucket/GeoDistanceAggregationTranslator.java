@@ -149,7 +149,8 @@ public class GeoDistanceAggregationTranslator implements AggregationTranslator {
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, jsonObject,
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject,
 				GeoDistanceAggregationBodyConfigurationKeys.DISTANCE_TYPE.
 					getJsonKey(),
 				distanceType);
@@ -178,7 +179,8 @@ public class GeoDistanceAggregationTranslator implements AggregationTranslator {
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, jsonObject,
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject,
 				GeoDistanceAggregationBodyConfigurationKeys.UNIT.getJsonKey(),
 				unit);
 		}

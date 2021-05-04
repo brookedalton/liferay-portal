@@ -198,8 +198,9 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, jsonObject,
-				CustomParameterConfigurationKeys.TYPE.getJsonKey(), type);
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject, CustomParameterConfigurationKeys.TYPE.getJsonKey(),
+				type);
 		}
 	}
 

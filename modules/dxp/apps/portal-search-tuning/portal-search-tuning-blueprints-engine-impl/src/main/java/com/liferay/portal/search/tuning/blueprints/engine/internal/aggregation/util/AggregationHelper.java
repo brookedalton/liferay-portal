@@ -78,7 +78,8 @@ public class AggregationHelper {
 		}
 		else {
 			MessagesUtil.invalidConfigurationValueTypeError(
-				messages, JSONObject.class.getSimpleName(), bodyJSONObject,
+				messages, getClass().getName(),
+				JSONObject.class.getSimpleName(), bodyJSONObject,
 				"buckets_path", object.toString());
 		}
 
@@ -99,8 +100,8 @@ public class AggregationHelper {
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, bodyJSONObject,
-				"gap_policy", s);
+				messages, getClass().getName(), illegalArgumentException,
+				bodyJSONObject, "gap_policy", s);
 		}
 
 		return null;

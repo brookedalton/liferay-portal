@@ -243,7 +243,8 @@ public class DefaultConditionHandler implements ConditionHandler {
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, jsonObject,
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject,
 				ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey(), s);
 		}
 
@@ -262,8 +263,9 @@ public class DefaultConditionHandler implements ConditionHandler {
 		}
 
 		MessagesUtil.invalidConfigurationValueError(
-			null, messages, jsonObject,
-			ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey(),
+			messages, getClass().getName(),
+			new Throwable("Evaluation visitor could not be resolved"),
+			jsonObject, ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey(),
 			evaluationType.name());
 
 		return null;

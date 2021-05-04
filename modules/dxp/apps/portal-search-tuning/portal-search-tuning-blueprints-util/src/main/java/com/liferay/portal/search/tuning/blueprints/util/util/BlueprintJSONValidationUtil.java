@@ -38,7 +38,9 @@ public class BlueprintJSONValidationUtil {
 		JSONObject jsonObject, Messages messages, String field) {
 
 		if (!jsonObject.has(field)) {
-			MessagesUtil.requiredFieldMissingError(messages, jsonObject, field);
+			MessagesUtil.requiredFieldMissingError(
+				messages, BlueprintJSONValidationUtil.class.getName(),
+				jsonObject, field);
 
 			return false;
 		}

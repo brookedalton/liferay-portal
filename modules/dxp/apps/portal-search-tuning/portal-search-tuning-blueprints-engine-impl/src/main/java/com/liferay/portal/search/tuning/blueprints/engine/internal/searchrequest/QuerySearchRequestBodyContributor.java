@@ -170,7 +170,8 @@ public class QuerySearchRequestBodyContributor
 
 				Optional<Query> clauseOptional = _clauseHelper.getClause(
 					clauseJSONObject.getJSONObject(
-							ClauseConfigurationKeys.QUERY.getJsonKey()), parameterData, messages);
+						ClauseConfigurationKeys.QUERY.getJsonKey()),
+					parameterData, messages);
 
 				if (!clauseOptional.isPresent()) {
 					continue;
@@ -259,7 +260,8 @@ public class QuerySearchRequestBodyContributor
 			}
 			catch (Exception exception) {
 				MessagesUtil.unknownError(
-					exception, messages, null, null, null);
+					messages, getClass().getName(), exception, null, null,
+					null);
 			}
 		}
 	}
@@ -275,8 +277,9 @@ public class QuerySearchRequestBodyContributor
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, jsonObject,
-				ClauseConfigurationKeys.CONTEXT.getJsonKey(), context);
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject, ClauseConfigurationKeys.CONTEXT.getJsonKey(),
+				context);
 		}
 
 		return null;
@@ -291,8 +294,8 @@ public class QuerySearchRequestBodyContributor
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, jsonObject,
-				ClauseConfigurationKeys.OCCUR.getJsonKey(), occur);
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject, ClauseConfigurationKeys.OCCUR.getJsonKey(), occur);
 		}
 
 		return null;
@@ -379,12 +382,13 @@ public class QuerySearchRequestBodyContributor
 			}
 			catch (IllegalArgumentException illegalArgumentException) {
 				MessagesUtil.invalidConfigurationValueError(
-					illegalArgumentException, messages, conditionJSONObject,
-					null, null);
+					messages, getClass().getName(), illegalArgumentException,
+					conditionJSONObject, null, null);
 			}
 			catch (Exception exception) {
 				MessagesUtil.unknownError(
-					exception, messages, conditionJSONObject, null, null);
+					messages, getClass().getName(), exception,
+					conditionJSONObject, null, null);
 			}
 		}
 

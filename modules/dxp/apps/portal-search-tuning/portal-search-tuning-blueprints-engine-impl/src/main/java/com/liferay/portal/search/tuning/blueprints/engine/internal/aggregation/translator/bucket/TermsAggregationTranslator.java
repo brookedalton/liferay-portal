@@ -131,7 +131,8 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, jsonObject,
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject,
 				TermsAggregationBodyConfigurationKeys.COLLECT_MODE.getJsonKey(),
 				collectModeString);
 		}

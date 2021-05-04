@@ -78,7 +78,8 @@ public class AggregationsTranslationContributor
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, null, null, type);
+				messages, getClass().getName(), illegalArgumentException, null,
+				null, type);
 		}
 	}
 

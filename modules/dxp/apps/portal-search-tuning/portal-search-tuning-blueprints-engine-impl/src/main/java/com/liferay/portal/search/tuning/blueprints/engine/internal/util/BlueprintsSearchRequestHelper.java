@@ -111,7 +111,8 @@ public class BlueprintsSearchRequestHelper {
 			}
 			catch (IllegalStateException illegalStateException) {
 				MessagesUtil.error(
-					messages, illegalStateException, null, null, null,
+					messages, getClass().getName(), illegalStateException, null,
+					null, null,
 					"core.error.error-in-executing-search-request-body-" +
 						"contributors");
 			}

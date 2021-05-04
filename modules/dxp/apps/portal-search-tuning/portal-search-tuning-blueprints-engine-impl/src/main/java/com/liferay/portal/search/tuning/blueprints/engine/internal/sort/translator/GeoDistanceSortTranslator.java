@@ -119,8 +119,8 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 			}
 			catch (IllegalArgumentException illegalArgumentException) {
 				MessagesUtil.invalidConfigurationValueError(
-					illegalArgumentException, messages, jsonObject,
-					"distance_type", distanceType);
+					messages, getClass().getName(), illegalArgumentException,
+					jsonObject, "distance_type", distanceType);
 			}
 		}
 	}
@@ -157,8 +157,8 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 			}
 			catch (IllegalArgumentException illegalArgumentException) {
 				MessagesUtil.invalidConfigurationValueError(
-					illegalArgumentException, messages, jsonObject, "mode",
-					mode);
+					messages, getClass().getName(), illegalArgumentException,
+					jsonObject, "mode", mode);
 			}
 		}
 	}

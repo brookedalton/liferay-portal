@@ -71,8 +71,9 @@ public class UserParameterContributor implements ParameterContributor {
 		long userId = _getUserId(blueprintsAttributes);
 
 		if (userId == 0) {
-			MessagesUtil.error(
-				messages, null, null, null, null,
+			MessagesUtil.warning(
+				messages, getClass().getName(),
+				"User ID not set in request attributes", null, null, null,
 				"core.error.user-id-not-set-in-request-attributes");
 
 			return;
@@ -413,7 +414,7 @@ public class UserParameterContributor implements ParameterContributor {
 		}
 		catch (Exception exception) {
 			MessagesUtil.error(
-				messages, exception, null, null, null,
+				messages, getClass().getName(), exception, null, null, null,
 				"core.error.unknown-error");
 		}
 	}

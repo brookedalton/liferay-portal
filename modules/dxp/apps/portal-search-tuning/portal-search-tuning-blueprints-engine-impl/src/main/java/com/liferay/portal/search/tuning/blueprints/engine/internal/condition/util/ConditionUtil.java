@@ -42,7 +42,8 @@ public class ConditionUtil {
 		if (Validator.isNull(dateFormatString)) {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
-					null, conditionJSONObject,
+					ConditionUtil.class.getName(),
+					new Throwable("Date format missing"), conditionJSONObject,
 					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey(),
 					dateFormatString,
 					"core.error.clause-condition-date-format-missing"));
@@ -56,7 +57,8 @@ public class ConditionUtil {
 		catch (Exception exception) {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
-					exception, conditionJSONObject,
+					ConditionUtil.class.getName(), exception,
+					conditionJSONObject,
 					ConditionConfigurationKeys.VALUE.getJsonKey(), dateString,
 					"core.error.clause-condition-date-parsing-error"));
 		}

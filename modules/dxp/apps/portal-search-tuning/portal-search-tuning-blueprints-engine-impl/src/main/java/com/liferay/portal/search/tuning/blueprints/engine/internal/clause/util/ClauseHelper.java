@@ -56,7 +56,8 @@ public class ClauseHelper {
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, null, null, type);
+				messages, getClass().getName(), illegalArgumentException, null,
+				null, type);
 		}
 
 		return Optional.empty();

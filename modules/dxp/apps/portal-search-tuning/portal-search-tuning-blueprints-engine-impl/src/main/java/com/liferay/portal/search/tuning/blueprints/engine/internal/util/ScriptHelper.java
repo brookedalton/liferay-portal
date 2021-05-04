@@ -75,7 +75,7 @@ public class ScriptHelper {
 		JSONObject jsonObject, Messages messages) {
 
 		MessagesUtil.requiredFieldMissingError(
-			messages, jsonObject,
+			messages, getClass().getName(), jsonObject,
 			ScriptConfigurationKeys.ID.getJsonKey() + " or " +
 				ScriptConfigurationKeys.SOURCE.getJsonKey());
 

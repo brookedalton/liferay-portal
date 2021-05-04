@@ -116,7 +116,8 @@ public class ContainsVisitor
 		catch (NumberFormatException numberFormatException) {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
-					numberFormatException, conditionJSONObject,
+					getClass().getName(), numberFormatException,
+					conditionJSONObject,
 					ConditionConfigurationKeys.VALUE.getJsonKey(),
 					object.toString(),
 					"core.error.illegal-clause-condition-match-value"));
@@ -175,7 +176,8 @@ public class ContainsVisitor
 		catch (NumberFormatException numberFormatException) {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
-					numberFormatException, conditionJSONObject,
+					getClass().getName(), numberFormatException,
+					conditionJSONObject,
 					ConditionConfigurationKeys.VALUE.getJsonKey(),
 					object.toString(),
 					"core.error.illegal-clause-condition-match-value"));

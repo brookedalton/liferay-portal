@@ -168,7 +168,8 @@ public class SetterHelper {
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, jsonObject, "order", order);
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject, "order", order);
 		}
 	}
 

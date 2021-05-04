@@ -153,8 +153,8 @@ public class AggsSearchRequestBodyContributor
 				}
 				catch (IllegalArgumentException illegalArgumentException) {
 					MessagesUtil.invalidConfigurationValueError(
-						illegalArgumentException, messages, nameJSONObject,
-						null, type);
+						messages, getClass().getName(),
+						illegalArgumentException, nameJSONObject, null, type);
 
 					return;
 				}
