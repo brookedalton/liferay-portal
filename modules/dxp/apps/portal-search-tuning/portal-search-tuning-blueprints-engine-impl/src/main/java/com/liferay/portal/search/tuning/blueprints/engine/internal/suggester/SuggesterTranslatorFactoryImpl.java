@@ -37,22 +37,22 @@ public class SuggesterTranslatorFactoryImpl
 	implements SuggesterTranslatorFactory {
 
 	@Override
-	public SuggesterTranslator getTranslator(String type)
+	public SuggesterTranslator getTranslator(String name)
 		throws IllegalArgumentException {
 
 		SuggesterTranslator suggesterTranslator = _suggesterTranslators.get(
-			type);
+			name);
 
 		if (suggesterTranslator == null) {
 			throw new IllegalArgumentException(
-				"Unable to find suggester translator for " + type);
+				"No registered translator " + name);
 		}
 
 		return suggesterTranslator;
 	}
 
 	@Override
-	public String[] getTranslatorTypes() {
+	public String[] getTranslatorNames() {
 		Set<String> set = _suggesterTranslators.keySet();
 
 		return set.toArray(new String[0]);
@@ -66,36 +66,36 @@ public class SuggesterTranslatorFactoryImpl
 		SuggesterTranslator suggesterTranslator,
 		Map<String, Object> properties) {
 
-		String type = (String)properties.get("type");
+		String name = (String)properties.get("name");
 
-		if (Validator.isBlank(type)) {
+		if (Validator.isBlank(name)) {
 			Class<?> clazz = suggesterTranslator.getClass();
 
 			StringBundler sb = new StringBundler(3);
 
-			sb.append("Unable to register suggester translator ");
+			sb.append("Unable to register translator ");
 			sb.append(clazz.getName());
-			sb.append(". Type property empty.");
+			sb.append(". Name property empty.");
 
 			_log.error(sb.toString());
 
 			return;
 		}
 
-		_suggesterTranslators.put(type, suggesterTranslator);
+		_suggesterTranslators.put(name, suggesterTranslator);
 	}
 
 	protected void unregisterSuggesterBuilder(
 		SuggesterTranslator suggesterTranslator,
 		Map<String, Object> properties) {
 
-		String type = (String)properties.get("type");
+		String name = (String)properties.get("name");
 
-		if (Validator.isBlank(type)) {
+		if (Validator.isBlank(name)) {
 			return;
 		}
 
-		_suggesterTranslators.remove(type);
+		_suggesterTranslators.remove(name);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

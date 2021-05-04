@@ -21,9 +21,9 @@ import com.liferay.portal.search.tuning.blueprints.engine.spi.suggester.Suggeste
  */
 public interface SuggesterTranslatorFactory {
 
-	public SuggesterTranslator getTranslator(String type)
+	public SuggesterTranslator getTranslator(String name)
 		throws IllegalArgumentException;
 
-	public String[] getTranslatorTypes();
+	public String[] getTranslatorNames();
 
 }

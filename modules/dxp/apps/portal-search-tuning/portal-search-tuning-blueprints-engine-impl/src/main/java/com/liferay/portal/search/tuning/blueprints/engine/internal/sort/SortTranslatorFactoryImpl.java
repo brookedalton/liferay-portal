@@ -41,14 +41,14 @@ public class SortTranslatorFactoryImpl implements SortTranslatorFactory {
 
 		if (serviceComponentReference == null) {
 			throw new IllegalArgumentException(
-				"Unable to find sort translator " + name);
+				"No registered translator  " + name);
 		}
 
 		return serviceComponentReference.getServiceComponent();
 	}
 
 	@Override
-	public String[] getTranslatorTypes() {
+	public String[] getTranslatorNames() {
 		return ServiceComponentReferenceUtil.getComponentKeys(_sortTranslators);
 	}
 

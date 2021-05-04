@@ -33,22 +33,22 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 public class ClauseTranslatorFactoryImpl implements ClauseTranslatorFactory {
 
 	@Override
-	public ClauseTranslator getTranslator(String type)
+	public ClauseTranslator getTranslator(String name)
 		throws IllegalArgumentException {
 
 		ServiceComponentReference<ClauseTranslator> serviceComponentReference =
-			_clauseTranslators.get(type);
+			_clauseTranslators.get(name);
 
 		if (serviceComponentReference == null) {
 			throw new IllegalArgumentException(
-				"No registered clause translator for " + type);
+				"No registered clause translator " + name);
 		}
 
 		return serviceComponentReference.getServiceComponent();
 	}
 
 	@Override
-	public String[] getTranslatorTypes() {
+	public String[] getTranslatorNames() {
 		return ServiceComponentReferenceUtil.getComponentKeys(
 			_clauseTranslators);
 	}

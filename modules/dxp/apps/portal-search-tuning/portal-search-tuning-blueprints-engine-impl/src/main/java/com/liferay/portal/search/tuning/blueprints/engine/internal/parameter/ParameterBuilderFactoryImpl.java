@@ -33,15 +33,15 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 public class ParameterBuilderFactoryImpl implements ParameterBuilderFactory {
 
 	@Override
-	public ParameterBuilder getBuilder(String type)
+	public ParameterBuilder getBuilder(String name)
 		throws IllegalArgumentException {
 
 		ServiceComponentReference<ParameterBuilder> serviceComponentReference =
-			_parameterBuilders.get(type);
+			_parameterBuilders.get(name);
 
 		if (serviceComponentReference == null) {
 			throw new IllegalArgumentException(
-				"No registered parameter builder " + type);
+				"No registered parameter builder " + name);
 		}
 
 		return serviceComponentReference.getServiceComponent();

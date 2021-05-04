@@ -21,9 +21,9 @@ import com.liferay.portal.search.tuning.blueprints.engine.spi.clause.ClauseTrans
  */
 public interface ClauseTranslatorFactory {
 
-	public ClauseTranslator getTranslator(String type)
+	public ClauseTranslator getTranslator(String name)
 		throws IllegalArgumentException;
 
-	public String[] getTranslatorTypes();
+	public String[] getTranslatorNames();
 
 }

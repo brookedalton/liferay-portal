@@ -21,7 +21,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.spi.clause.ConditionHa
  */
 public interface ConditionHandlerFactory {
 
-	public ConditionHandler getHandler(String handlerName)
+	public ConditionHandler getHandler(String name)
 		throws IllegalArgumentException;
 
 	public String[] getHandlerNames();

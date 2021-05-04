@@ -21,7 +21,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.bui
  */
 public interface ParameterBuilderFactory {
 
-	public ParameterBuilder getBuilder(String type)
+	public ParameterBuilder getBuilder(String name)
 		throws IllegalArgumentException;
 
 }

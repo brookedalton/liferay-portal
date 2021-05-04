@@ -41,7 +41,7 @@ public class ConditionHandlerFactoryImpl implements ConditionHandlerFactory {
 
 		if (serviceComponentReference == null) {
 			throw new IllegalArgumentException(
-				"No registered condition handler for " + name);
+				"No registered condition handler " + name);
 		}
 
 		return serviceComponentReference.getServiceComponent();

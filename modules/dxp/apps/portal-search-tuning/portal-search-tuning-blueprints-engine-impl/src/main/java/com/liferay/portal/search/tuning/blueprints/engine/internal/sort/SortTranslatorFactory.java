@@ -21,9 +21,9 @@ import com.liferay.portal.search.tuning.blueprints.engine.spi.sort.SortTranslato
  */
 public interface SortTranslatorFactory {
 
-	public SortTranslator getTranslator(String type)
+	public SortTranslator getTranslator(String name)
 		throws IllegalArgumentException;
 
-	public String[] getTranslatorTypes();
+	public String[] getTranslatorNames();
 
 }
