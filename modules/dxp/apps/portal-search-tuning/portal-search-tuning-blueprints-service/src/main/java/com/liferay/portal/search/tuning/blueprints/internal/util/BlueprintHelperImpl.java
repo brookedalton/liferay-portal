@@ -58,6 +58,14 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 			FrameworkConfigurationKeys.APPLY_INDEXER_CLAUSES.getJsonKey(),
 			true);
 	}
+
+	@Override
+	public Optional<JSONObject> getAdvancedConfigurationOptional(Blueprint blueprint) {
+
+		return BlueprintJSONUtil.getValueAsJSONObjectOptional(
+				_getBlueprintConfigurationJSONObject(blueprint),
+				"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey());
+	}
 	
 	@Override
 	public Optional<JSONObject> getAggsConfigurationOptional(

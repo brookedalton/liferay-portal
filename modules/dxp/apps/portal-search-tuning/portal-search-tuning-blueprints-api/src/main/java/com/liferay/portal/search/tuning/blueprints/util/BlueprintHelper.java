@@ -28,6 +28,9 @@ public interface BlueprintHelper {
 
 	public boolean applyIndexerClauses(Blueprint blueprint);
 
+	public Optional<JSONObject> getAdvancedConfigurationOptional(
+		Blueprint blueprint);
+
 	public Optional<JSONObject> getAggsConfigurationOptional(
 		Blueprint blueprint);
 

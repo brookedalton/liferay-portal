@@ -16,16 +16,20 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.AdvancedConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.SourceConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataCreator;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
+import com.liferay.portal.search.tuning.blueprints.engine.template.variable.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
@@ -34,6 +38,7 @@ import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReference;
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReferenceUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,22 +110,10 @@ public class BlueprintsSearchRequestHelper {
 					searchRequestBuilder, blueprint, parameterData, messages);
 			}
 			catch (IllegalStateException illegalStateException) {
-				messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"core.error.error-in-executing-search-request-body-" +
-							"contributors"
-					).msg(
-						illegalStateException.getMessage()
-					).severity(
-						Severity.ERROR
-					).throwable(
-						illegalStateException
-					).build());
-
-				_log.error(
-					illegalStateException.getMessage(), illegalStateException);
+				MessagesUtil.error(
+					messages, illegalStateException, null, null, null,
+					"core.error.error-in-executing-search-request-body-" +
+						"contributors");
 			}
 		}
 	}
@@ -140,6 +133,70 @@ public class BlueprintsSearchRequestHelper {
 		}
 
 		return new String[0];
+	}
+
+	public void setSource(
+		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
+		Blueprint blueprint, Messages messages) {
+
+		Optional<JSONObject> optional1 =
+			_blueprintHelper.getAdvancedConfigurationOptional(blueprint);
+
+		if (!optional1.isPresent()) {
+			return;
+		}
+
+		JSONObject advancedConfigurationJSONObject = optional1.get();
+
+		if (!advancedConfigurationJSONObject.has(
+				AdvancedConfigurationKeys.SOURCE.getJsonKey())) {
+
+			return;
+		}
+
+		Optional<JSONObject> optional2 =
+			_blueprintTemplateVariableParser.parseObject(
+				advancedConfigurationJSONObject.getJSONObject(
+					AdvancedConfigurationKeys.SOURCE.getJsonKey()),
+				parameterData, messages);
+
+		if (!optional2.isPresent()) {
+			return;
+		}
+
+		JSONObject sourceConfigurationJSONObject = optional2.get();
+
+		if (sourceConfigurationJSONObject.has(
+				SourceConfigurationKeys.FETCH_SOURCE.getJsonKey())) {
+
+			searchRequestBuilder.fetchSource(
+				sourceConfigurationJSONObject.getBoolean(
+					SourceConfigurationKeys.FETCH_SOURCE.getJsonKey()));
+		}
+
+		if (sourceConfigurationJSONObject.has(
+				SourceConfigurationKeys.SOURCE_EXCLUDES.getJsonKey())) {
+
+			JSONArray jsonArray = sourceConfigurationJSONObject.getJSONArray(
+				SourceConfigurationKeys.SOURCE_EXCLUDES.getJsonKey());
+
+			if (jsonArray.length() > 0) {
+				searchRequestBuilder.fetchSourceExcludes(
+					JSONUtil.toStringArray(jsonArray));
+			}
+		}
+
+		if (sourceConfigurationJSONObject.has(
+				SourceConfigurationKeys.SOURCE_INCLUDES.getJsonKey())) {
+
+			JSONArray jsonArray = sourceConfigurationJSONObject.getJSONArray(
+				SourceConfigurationKeys.SOURCE_INCLUDES.getJsonKey());
+
+			if (jsonArray.length() > 0) {
+				searchRequestBuilder.fetchSourceIncludes(
+					JSONUtil.toStringArray(jsonArray));
+			}
+		}
 	}
 
 	public boolean shouldApplyIndexerClauses(Blueprint blueprint) {
@@ -197,6 +254,9 @@ public class BlueprintsSearchRequestHelper {
 
 	@Reference
 	private BlueprintService _blueprintService;
+
+	@Reference
+	private BlueprintTemplateVariableParser _blueprintTemplateVariableParser;
 
 	@Reference
 	private ParameterDataCreator _parameterDataCreator;
