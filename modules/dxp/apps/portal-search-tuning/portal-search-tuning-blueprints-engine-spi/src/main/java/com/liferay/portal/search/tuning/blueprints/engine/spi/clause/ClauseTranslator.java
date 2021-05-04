@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.Optional;
 
@@ -28,7 +27,6 @@ import java.util.Optional;
 public interface ClauseTranslator {
 
 	public Optional<Query> translate(
-		JSONObject configurationJSONObject, Blueprint blueprint,
-		ParameterData parameterData, Messages messages);
+		JSONObject jsonObject, ParameterData parameterData, Messages messages);
 
 }
