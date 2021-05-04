@@ -15,11 +15,9 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.translator.bucket;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.aggregation.Aggregations;
-import com.liferay.portal.search.aggregation.bucket.CollectionMode;
-import com.liferay.portal.search.aggregation.bucket.TermsAggregation;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.bucket.TermsAggregationBodyConfigurationKeys;
+import com.liferay.portal.search.aggregation.bucket.SignificantTextAggregation;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.bucket.SignificantTextAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.util.SetterHelper;
@@ -27,7 +25,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDat
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
-import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Optional;
 
@@ -38,10 +35,11 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, property = "name=terms",
+	immediate = true, property = "name=significant_text",
 	service = AggregationTranslator.class
 )
-public class TermsAggregationTranslator implements AggregationTranslator {
+public class SignificantTextAggregationTranslator
+	implements AggregationTranslator {
 
 	@Override
 	public Optional<AggregationWrapper> translate(
@@ -50,91 +48,73 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
 				jsonObject, messages,
-				TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
+				SignificantTextAggregationBodyConfigurationKeys.FIELD.
+					getJsonKey())) {
 
 			return Optional.empty();
 		}
 
-		TermsAggregation aggregation = _aggregations.terms(
+		SignificantTextAggregation aggregation = _aggregations.significantText(
 			aggregationName,
 			jsonObject.getString(
-				TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
+				SignificantTextAggregationBodyConfigurationKeys.FIELD.
+					getJsonKey()));
 
-		_setCollectMode(aggregation, jsonObject, messages);
+		_aggregationHelper.setBackgroundFilter(
+			jsonObject, aggregation::setBackgroundFilterQuery, parameterData,
+			messages);
 
 		_setterHelper.setStringValue(
 			jsonObject,
-			TermsAggregationBodyConfigurationKeys.EXECUTION_HINT.getJsonKey(),
+			SignificantTextAggregationBodyConfigurationKeys.EXECUTION_HINT.
+				getJsonKey(),
 			aggregation::setExecutionHint);
+
+		_setterHelper.setBooleanValue(
+			jsonObject,
+			SignificantTextAggregationBodyConfigurationKeys.
+				FILTER_DUPLICATE_TEXT.getJsonKey(),
+			aggregation::setFilterDuplicateText);
 
 		_aggregationHelper.setIncludeExcludeClause(
 			jsonObject, aggregation::setIncludeExcludeClause);
 
-		_setterHelper.setIntegerValue(
+		_setterHelper.setLongValue(
 			jsonObject,
-			TermsAggregationBodyConfigurationKeys.MIN_DOC_COUNT.getJsonKey(),
+			SignificantTextAggregationBodyConfigurationKeys.MIN_DOC_COUNT.
+				getJsonKey(),
 			aggregation::setMinDocCount);
 
 		_setterHelper.setStringValue(
 			jsonObject,
-			TermsAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
+			SignificantTextAggregationBodyConfigurationKeys.MISSING.
+				getJsonKey(),
 			aggregation::setMissing);
-
-		_aggregationHelper.setOrders(
-			jsonObject, aggregation::addOrders, messages);
 
 		_aggregationHelper.setScript(
 			jsonObject, aggregation::setScript, messages);
 
-		_setterHelper.setIntegerValue(
+		_setterHelper.setLongValue(
 			jsonObject,
-			TermsAggregationBodyConfigurationKeys.SHARD_MIN_DOC_COUNT.
+			SignificantTextAggregationBodyConfigurationKeys.SHARD_MIN_DOC_COUNT.
 				getJsonKey(),
 			aggregation::setShardMinDocCount);
 
 		_setterHelper.setIntegerValue(
 			jsonObject,
-			TermsAggregationBodyConfigurationKeys.SHARD_SIZE.getJsonKey(),
+			SignificantTextAggregationBodyConfigurationKeys.SHARD_SIZE.
+				getJsonKey(),
 			aggregation::setShardSize);
 
-		_setterHelper.setBooleanValue(
-			jsonObject,
-			TermsAggregationBodyConfigurationKeys.SHOW_TERM_DOC_COUNT_ERROR.
-				getJsonKey(),
-			aggregation::setShowTermDocCountError);
+		_aggregationHelper.setSignificanceHeuristics(
+			jsonObject, aggregation::setSignificanceHeuristic, messages);
 
 		_setterHelper.setIntegerValue(
-			jsonObject, TermsAggregationBodyConfigurationKeys.SIZE.getJsonKey(),
+			jsonObject,
+			SignificantTextAggregationBodyConfigurationKeys.SIZE.getJsonKey(),
 			aggregation::setSize);
 
 		return _aggregationHelper.wrap(aggregation);
-	}
-
-	private void _setCollectMode(
-		TermsAggregation aggregation, JSONObject jsonObject,
-		Messages messages) {
-
-		if (!jsonObject.has(
-				TermsAggregationBodyConfigurationKeys.COLLECT_MODE.
-					getJsonKey())) {
-
-			return;
-		}
-
-		String collectModeString = jsonObject.getString(
-			TermsAggregationBodyConfigurationKeys.COLLECT_MODE.getJsonKey());
-
-		try {
-			aggregation.setCollectionMode(
-				CollectionMode.valueOf(
-					StringUtil.toUpperCase(collectModeString)));
-		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			MessagesUtil.invalidConfigurationValueError(
-				illegalArgumentException, messages, jsonObject,
-				TermsAggregationBodyConfigurationKeys.COLLECT_MODE.getJsonKey(),
-				collectModeString);
-		}
 	}
 
 	@Reference
