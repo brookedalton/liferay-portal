@@ -24,13 +24,13 @@ import java.util.Map;
  */
 public interface BlueprintsEngineContextHelper {
 
-	public String[] getAvailableAggregationTranslatorTypes();
+	public String[] getAvailableAggregationTranslatorNames();
 
-	public String[] getAvailableClauseTranslatorTypes();
+	public String[] getAvailableClauseTranslatorNames();
 
 	public String[] getAvailableConditionHandlerNames();
 
-	public String[] getAvailableSuggesterTranslatorTypes();
+	public String[] getAvailableSuggesterTranslatorNames();
 
 	public Map<String, List<ParameterDefinition>>
 		getContributedParameterDefinitions();
