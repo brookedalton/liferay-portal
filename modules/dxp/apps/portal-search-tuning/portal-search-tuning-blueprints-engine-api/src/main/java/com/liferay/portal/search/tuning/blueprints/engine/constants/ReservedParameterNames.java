@@ -51,11 +51,10 @@ public enum ReservedParameterNames {
 	USER_SEGMENT_ENTRY_LOCALE_NAMES("user_segment_locale_names");
 
 	public static ReservedParameterNames findByJsonKey(String jsonKey) {
-		Stream<ReservedParameterNames>
-			reservedParameterConfigurationKeysStream = Arrays.stream(
-				ReservedParameterNames.values());
+		Stream<ReservedParameterNames> stream = Arrays.stream(
+			ReservedParameterNames.values());
 
-		return reservedParameterConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._key.equals(jsonKey)
 		).findFirst(
 		).orElse(
