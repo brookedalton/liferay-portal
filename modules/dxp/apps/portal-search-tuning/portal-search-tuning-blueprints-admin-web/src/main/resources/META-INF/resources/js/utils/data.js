@@ -88,15 +88,15 @@ export const DEFAULT_BASELINE_ELEMENTS = [
 export const DEFAULT_EDIT_ELEMENT = TEXT_MATCH_OVER_MULTIPLE_FIELDS;
 
 export const DEFAULT_HIGHLIGHT_CONFIGURATION = {
-	  fields: {
-	    'title${context.language_id}': {},
-	    'content${context.language_id}': {}
-	  },
-	  fragment_size: 50,
-		post_tags: ['</liferay-hl>'],
-		pre_tags: ['<liferay-hl>'],
-		require_field_match: true,
-		number_of_fragments: 10
+	fields: {
+		'content${context.language_id}': {},
+		'title${context.language_id}': {},
+	},
+	fragment_size: 50,
+	number_of_fragments: 10,
+	post_tags: ['</liferay-hl>'],
+	pre_tags: ['<liferay-hl>'],
+	require_field_match: true,
 };
 
 export const DEFAULT_PARAMETER_CONFIGURATION = {};
