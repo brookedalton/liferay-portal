@@ -22,24 +22,25 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						function_score: {
-							boost: '${configuration.boost}',
-							gauss: {
-								'${configuration.field}': {
-									decay: '${configuration.decay}',
-									offset: 0,
-									origin: {
-										lat: '${ipstack.latitude}',
-										lon: '${ipstack.longitude}',
+					wrapper: {
+						query: {
+							function_score: {
+								boost: '${configuration.boost}',
+								gauss: {
+									'${configuration.field}': {
+										decay: '${configuration.decay}',
+										offset: 0,
+										origin: {
+											lat: '${ipstack.latitude}',
+											lon: '${ipstack.longitude}',
+										},
+										scale: '${configuration.scale}',
 									},
-									scale: '${configuration.scale}',
 								},
 							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

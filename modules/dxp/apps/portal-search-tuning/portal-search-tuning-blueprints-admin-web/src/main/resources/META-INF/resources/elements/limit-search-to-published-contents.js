@@ -33,13 +33,14 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						term: {
-							status: 0,
+					wrapper: {
+						query: {
+							term: {
+								status: 0,
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

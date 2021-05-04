@@ -22,15 +22,16 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						terms: {
-							articleId_String_sortable:
-								'${configuration.article_ids}',
-							boost: '${configuration.boost}',
+					wrapper: {
+						query: {
+							terms: {
+								articleId_String_sortable:
+									'${configuration.article_ids}',
+								boost: '${configuration.boost}',
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [

@@ -22,19 +22,20 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						function_score: {
-							boost: '${configuration.boost}',
-							field_value_factor: {
-								factor: '${configuration.factor}',
-								field: 'versionCount_sortable',
-								missing: 1,
-								modifier: '${configuration.modifier}',
+					wrapper: {
+						query: {
+							function_score: {
+								boost: '${configuration.boost}',
+								field_value_factor: {
+									factor: '${configuration.factor}',
+									field: 'versionCount_sortable',
+									missing: 1,
+									modifier: '${configuration.modifier}',
+								},
 							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

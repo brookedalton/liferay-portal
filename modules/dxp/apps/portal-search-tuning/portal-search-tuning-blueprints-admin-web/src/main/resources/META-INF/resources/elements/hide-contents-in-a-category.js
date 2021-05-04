@@ -22,22 +22,23 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						bool: {
-							must_not: [
-								{
-									term: {
-										assetCategoryIds: {
-											value:
-												'${configuration.asset_category_id}',
+					wrapper: {
+						query: {
+							bool: {
+								must_not: [
+									{
+										term: {
+											assetCategoryIds: {
+												value:
+													'${configuration.asset_category_id}',
+											},
 										},
 									},
-								},
-							],
+								],
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

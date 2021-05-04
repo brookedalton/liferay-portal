@@ -22,30 +22,31 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						bool: {
-							must: [
-								{
-									terms: {
-										entryClasslabel: [
-											'com.liferay.portal.kernel.model.Layout',
-											'com.liferay.journal.model.JournalArticle',
-										],
-									},
-								},
-								{
-									term: {
-										defaultLanguageId: {
-											boost: '${configuration.boost}',
-											value: '${context.language_id}',
+					wrapper: {
+						query: {
+							bool: {
+								must: [
+									{
+										terms: {
+											entryClasslabel: [
+												'com.liferay.portal.kernel.model.Layout',
+												'com.liferay.journal.model.JournalArticle',
+											],
 										},
 									},
-								},
-							],
+									{
+										term: {
+											defaultLanguageId: {
+												boost: '${configuration.boost}',
+												value: '${context.language_id}',
+											},
+										},
+									},
+								],
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

@@ -22,13 +22,14 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						term: {
-							userId: '${user.user_id}',
+					wrapper: {
+						query: {
+							term: {
+								userId: '${user.user_id}',
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

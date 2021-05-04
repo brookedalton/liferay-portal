@@ -22,21 +22,23 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						bool: {
-							must_not: [
-								{
-									term: {
-										'assetTagNames.raw': {
-											value: '${configuration.asset_tag}',
+					wrapper: {
+						query: {
+							bool: {
+								must_not: [
+									{
+										term: {
+											'assetTagNames.raw': {
+												value:
+													'${configuration.asset_tag}',
+											},
 										},
 									},
-								},
-							],
+								],
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

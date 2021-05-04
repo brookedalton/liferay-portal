@@ -22,36 +22,37 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						bool: {
-							should: [
-								{
-									bool: {
-										must_not: [
-											{
-												exists: {
-													field: 'stagingGroup',
+					wrapper: {
+						query: {
+							bool: {
+								should: [
+									{
+										bool: {
+											must_not: [
+												{
+													exists: {
+														field: 'stagingGroup',
+													},
 												},
-											},
-										],
+											],
+										},
 									},
-								},
-								{
-									bool: {
-										must: [
-											{
-												term: {
-													stagingGroup: false,
+									{
+										bool: {
+											must: [
+												{
+													term: {
+														stagingGroup: false,
+													},
 												},
-											},
-										],
+											],
+										},
 									},
-								},
-							],
+								],
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [

@@ -22,18 +22,19 @@ export default {
 				context: 'query',
 				occur: 'must',
 				query: {
-					query: {
-						multi_match: {
-							boost: '${configuration.boost}',
-							fields: '${configuration.fields}',
-							fuzziness: '${configuration.fuzziness}',
-							operator: '${configuration.operator}',
-							query: '${keywords}',
-							type: '${configuration.type}',
+					wrapper: {
+						query: {
+							multi_match: {
+								boost: '${configuration.boost}',
+								fields: '${configuration.fields}',
+								fuzziness: '${configuration.fuzziness}',
+								operator: '${configuration.operator}',
+								query: '${keywords}',
+								type: '${configuration.type}',
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

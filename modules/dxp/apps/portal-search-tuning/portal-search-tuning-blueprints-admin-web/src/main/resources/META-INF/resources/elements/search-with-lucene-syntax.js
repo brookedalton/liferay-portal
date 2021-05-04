@@ -22,16 +22,17 @@ export default {
 				context: 'query',
 				occur: 'must',
 				query: {
-					query: {
-						simple_query_string: {
-							boost: '${configuration.boost}',
-							default_operator: '${configuration.operator}',
-							fields: '${configuration.fields}',
-							query: '${keywords}',
+					wrapper: {
+						query: {
+							simple_query_string: {
+								boost: '${configuration.boost}',
+								default_operator: '${configuration.operator}',
+								fields: '${configuration.fields}',
+								query: '${keywords}',
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

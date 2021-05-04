@@ -22,15 +22,16 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						terms: {
-							boost: '${configuration.boost}',
-							commerceAccountGroupIds:
-								'${commerce.commerce_account_group_ids}',
+					wrapper: {
+						query: {
+							terms: {
+								boost: '${configuration.boost}',
+								commerceAccountGroupIds:
+									'${commerce.commerce_account_group_ids}',
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

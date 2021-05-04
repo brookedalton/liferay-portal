@@ -22,16 +22,17 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						term: {
-							entryClassName: {
-								boost: '${configuration.boost}',
-								value: '${configuration.entry_class_name}',
+					wrapper: {
+						query: {
+							term: {
+								entryClassName: {
+									boost: '${configuration.boost}',
+									value: '${configuration.entry_class_name}',
+								},
 							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

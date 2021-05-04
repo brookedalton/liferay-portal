@@ -22,9 +22,10 @@ export default {
 				context: 'query',
 				occur: '${configuration.occur}',
 				query: {
-					query: '${configuration.query}',
+					wrapper: {
+						query: '${configuration.query}',
+					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

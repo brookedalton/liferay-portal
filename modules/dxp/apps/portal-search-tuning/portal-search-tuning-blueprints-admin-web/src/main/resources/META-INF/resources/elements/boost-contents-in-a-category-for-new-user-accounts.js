@@ -22,16 +22,17 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						term: {
-							assetCategoryIds: {
-								boost: '${configuration.boost}',
-								value: '${configuration.asset_category_id}',
+					wrapper: {
+						query: {
+							term: {
+								assetCategoryIds: {
+									boost: '${configuration.boost}',
+									value: '${configuration.asset_category_id}',
+								},
 							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [

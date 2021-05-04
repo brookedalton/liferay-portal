@@ -22,14 +22,16 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						terms: {
-							'assetTagNames.raw': '${configuration.asset_tags}',
-							boost: '${configuration.boost}',
+					wrapper: {
+						query: {
+							terms: {
+								'assetTagNames.raw':
+									'${configuration.asset_tags}',
+								boost: '${configuration.boost}',
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

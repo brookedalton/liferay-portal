@@ -22,14 +22,15 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						terms: {
-							boost: '${configuration.boost}',
-							groupId: '${user.user_group_ids}',
+					wrapper: {
+						query: {
+							terms: {
+								boost: '${configuration.boost}',
+								groupId: '${user.user_group_ids}',
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

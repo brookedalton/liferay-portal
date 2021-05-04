@@ -22,13 +22,15 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						terms: {
-							'${configuration.field}': '${configuration.values}',
+					wrapper: {
+						query: {
+							terms: {
+								'${configuration.field}':
+									'${configuration.values}',
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

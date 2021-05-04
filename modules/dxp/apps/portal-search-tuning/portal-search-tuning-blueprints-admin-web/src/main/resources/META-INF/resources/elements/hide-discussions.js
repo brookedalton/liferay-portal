@@ -22,36 +22,37 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						bool: {
-							should: [
-								{
-									bool: {
-										must_not: [
-											{
-												exists: {
-													field: 'discussion',
+					wrapper: {
+						query: {
+							bool: {
+								should: [
+									{
+										bool: {
+											must_not: [
+												{
+													exists: {
+														field: 'discussion',
+													},
 												},
-											},
-										],
+											],
+										},
 									},
-								},
-								{
-									bool: {
-										must: [
-											{
-												term: {
-													discussion: false,
+									{
+										bool: {
+											must: [
+												{
+													term: {
+														discussion: false,
+													},
 												},
-											},
-										],
+											],
+										},
 									},
-								},
-							],
+								],
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

@@ -22,17 +22,18 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						multi_match: {
-							boost: '${configuration.boost}',
-							fields: '${configuration.fields}',
-							operator: 'and',
-							query: '${keywords}',
-							type: '${configuration.type}',
+					wrapper: {
+						query: {
+							multi_match: {
+								boost: '${configuration.boost}',
+								fields: '${configuration.fields}',
+								operator: 'and',
+								query: '${keywords}',
+								type: '${configuration.type}',
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

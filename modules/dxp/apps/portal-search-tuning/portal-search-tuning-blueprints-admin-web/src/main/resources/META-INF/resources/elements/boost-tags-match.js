@@ -22,16 +22,17 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						term: {
-							'assetTagNames.raw': {
-								boost: '${configuration.boost}',
-								value: '${keywords}',
+					wrapper: {
+						query: {
+							term: {
+								'assetTagNames.raw': {
+									boost: '${configuration.boost}',
+									value: '${keywords}',
+								},
 							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

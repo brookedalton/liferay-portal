@@ -22,26 +22,27 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						bool: {
-							must: [
-								{
-									range: {
-										modified_sortable: {
-											from:
-												'${parameter.time|dateFormat=timestamp}',
-											include_lower: true,
-											include_upper: true,
-											to:
-												'${time.current_date|dateFormat=timestamp}',
+					wrapper: {
+						query: {
+							bool: {
+								must: [
+									{
+										range: {
+											modified_sortable: {
+												from:
+													'${parameter.time|dateFormat=timestamp}',
+												include_lower: true,
+												include_upper: true,
+												to:
+													'${time.current_date|dateFormat=timestamp}',
+											},
 										},
 									},
-								},
-							],
+								],
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

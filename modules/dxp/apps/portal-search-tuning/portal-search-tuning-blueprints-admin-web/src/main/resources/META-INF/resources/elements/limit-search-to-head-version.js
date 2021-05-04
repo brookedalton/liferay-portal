@@ -22,49 +22,50 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						bool: {
-							should: [
-								{
-									bool: {
-										must_not: [
-											{
-												term: {
-													entryClasslabel: {
-														value:
-															'com.liferay.journal.model.JournalArticle',
+					wrapper: {
+						query: {
+							bool: {
+								should: [
+									{
+										bool: {
+											must_not: [
+												{
+													term: {
+														entryClasslabel: {
+															value:
+																'com.liferay.journal.model.JournalArticle',
+														},
 													},
 												},
-											},
-										],
+											],
+										},
 									},
-								},
-								{
-									bool: {
-										must: [
-											{
-												term: {
-													entryClasslabel: {
-														value:
-															'com.liferay.journal.model.JournalArticle',
+									{
+										bool: {
+											must: [
+												{
+													term: {
+														entryClasslabel: {
+															value:
+																'com.liferay.journal.model.JournalArticle',
+														},
 													},
 												},
-											},
-											{
-												term: {
-													head: {
-														value: true,
+												{
+													term: {
+														head: {
+															value: true,
+														},
 													},
 												},
-											},
-										],
+											],
+										},
 									},
-								},
-							],
+								],
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

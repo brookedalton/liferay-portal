@@ -22,13 +22,14 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						term: {
-							mimeType: 'application_pdf',
+					wrapper: {
+						query: {
+							term: {
+								mimeType: 'application_pdf',
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

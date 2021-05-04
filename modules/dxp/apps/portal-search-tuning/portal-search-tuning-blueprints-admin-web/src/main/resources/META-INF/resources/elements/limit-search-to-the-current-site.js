@@ -22,13 +22,14 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						term: {
-							scopeGroupId: '${context.scope_group_id}',
+					wrapper: {
+						query: {
+							term: {
+								scopeGroupId: '${context.scope_group_id}',
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

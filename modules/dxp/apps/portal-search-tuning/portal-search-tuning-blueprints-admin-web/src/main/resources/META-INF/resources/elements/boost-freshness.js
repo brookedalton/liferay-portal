@@ -22,22 +22,23 @@ export default {
 				context: 'query',
 				occur: 'should',
 				query: {
-					query: {
-						function_score: {
-							boost: '${configuration.boost}',
-							gauss: {
-								modified: {
-									decay: '${configuration.decay}',
-									offset: '${configuration.offset}',
-									origin:
-										'${time.current_date|dateFormat=yyyyMMddHHmmss}',
-									scale: '${configuration.scale}',
+					wrapper: {
+						query: {
+							function_score: {
+								boost: '${configuration.boost}',
+								gauss: {
+									modified: {
+										decay: '${configuration.decay}',
+										offset: '${configuration.offset}',
+										origin:
+											'${time.current_date|dateFormat=yyyyMMddHHmmss}',
+										scale: '${configuration.scale}',
+									},
 								},
 							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],

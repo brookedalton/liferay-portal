@@ -22,33 +22,34 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						bool: {
-							should: [
-								{
-									bool: {
-										must_not: [
-											{
-												exists: {
-													field: 'ctCollectionId',
+					wrapper: {
+						query: {
+							bool: {
+								should: [
+									{
+										bool: {
+											must_not: [
+												{
+													exists: {
+														field: 'ctCollectionId',
+													},
 												},
-											},
-										],
-									},
-								},
-								{
-									term: {
-										ctCollectionId: {
-											value:
-												'${context.ct_collection_id}',
+											],
 										},
 									},
-								},
-							],
+									{
+										term: {
+											ctCollectionId: {
+												value:
+													'${context.ct_collection_id}',
+											},
+										},
+									},
+								],
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		description: {

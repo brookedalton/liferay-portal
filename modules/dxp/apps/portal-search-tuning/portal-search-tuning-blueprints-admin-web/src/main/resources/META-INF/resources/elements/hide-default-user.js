@@ -22,37 +22,38 @@ export default {
 				context: 'query',
 				occur: 'filter',
 				query: {
-					query: {
-						bool: {
-							should: [
-								{
-									bool: {
-										must_not: [
-											{
-												term: {
-													entryClassName:
-														'com.liferay.portal.kernel.model.User',
+					wrapper: {
+						query: {
+							bool: {
+								should: [
+									{
+										bool: {
+											must_not: [
+												{
+													term: {
+														entryClassName:
+															'com.liferay.portal.kernel.model.User',
+													},
 												},
-											},
-										],
+											],
+										},
 									},
-								},
-								{
-									bool: {
-										must: [
-											{
-												term: {
-													defaultUser: false,
+									{
+										bool: {
+											must: [
+												{
+													term: {
+														defaultUser: false,
+													},
 												},
-											},
-										],
+											],
+										},
 									},
-								},
-							],
+								],
+							},
 						},
 					},
 				},
-				type: 'wrapper',
 			},
 		],
 		conditions: [],
