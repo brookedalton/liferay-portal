@@ -31,6 +31,6 @@ public interface FacetResponseHandler {
 		AggregationResult aggregationResult,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
-		JSONObject configurationJSONObject);
+		JSONObject jsonObject);
 
 }

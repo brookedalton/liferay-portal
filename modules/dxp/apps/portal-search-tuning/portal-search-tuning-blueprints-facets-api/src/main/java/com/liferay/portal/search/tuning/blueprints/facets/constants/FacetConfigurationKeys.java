@@ -31,11 +31,11 @@ public enum FacetConfigurationKeys {
 	MULTI_VALUE_OPERATOR("multi_value_operator"), NAME("name"),
 	PARAMETER_NAME("parameter_name"), SHARD_SIZE("shard_size"), SIZE("size");
 
-	public static FacetConfigurationKeys findByJsonKey(String jsonKey) {
-		Stream<FacetConfigurationKeys> facetConfigurationKeysStream =
+	public static final FacetConfigurationKeys findByJsonKey(String jsonKey) {
+		Stream<FacetConfigurationKeys> stream =
 			Arrays.stream(FacetConfigurationKeys.values());
 
-		return facetConfigurationKeysStream.filter(
+		return stream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(
