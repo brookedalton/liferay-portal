@@ -28,9 +28,8 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.engine.cache.JSONDataProviderCache;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider.GeoLocationDataProvider;
 import com.liferay.portal.search.tuning.blueprints.ipstack.internal.configuration.IPStackConfiguration;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.io.IOException;
 
@@ -159,16 +158,12 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		String rawData, Messages messages) {
 
 		if (Validator.isBlank(rawData)) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"ipstack.error.empty-response"
-				).msg(
-					"IPStack response was empty"
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable(
+					"IPStack response empty from [ " +
+						_ipStackConfiguration.apiURL() + " ]"),
+				null, null, null, "ipstack.error.empty-response");
 
 			return null;
 		}
@@ -177,20 +172,9 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 			return _jsonFactory.createJSONObject(rawData);
 		}
 		catch (JSONException jsonException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"ipstack.error.invalid-response-format"
-				).msg(
-					jsonException.getMessage()
-				).severity(
-					Severity.ERROR
-				).throwable(
-					jsonException
-				).build());
-
-			_log.error(jsonException.getMessage(), jsonException);
+			MessagesUtil.error(
+				messages, getClass().getName(), jsonException, null, null, null,
+				"ipstack.error.invalid-response-format");
 		}
 
 		return null;
@@ -206,20 +190,9 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 				_http.URLtoString(url), messages);
 		}
 		catch (IOException ioException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"ipstack.error.network-error"
-				).msg(
-					ioException.getMessage()
-				).severity(
-					Severity.ERROR
-				).throwable(
-					ioException
-				).build());
-
-			_log.error(ioException.getMessage(), ioException);
+			MessagesUtil.error(
+				messages, getClass().getName(), ioException, null, null,
+				ipAddress, "ipstack.error.network-error");
 		}
 
 		return null;
@@ -233,31 +206,19 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		boolean valid = true;
 
 		if (Validator.isBlank(_ipStackConfiguration.apiKey())) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"ipstack.error.api-key-not-configured"
-				).msg(
-					"IPStack API key is not configured"
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable("IPStack API key is not configured"), null, null,
+				null, "ipstack.error.api-key-not-configured");
 
 			valid = false;
 		}
 
 		if (Validator.isBlank(_ipStackConfiguration.apiURL())) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"ipstack.error.api-url-not-configured"
-				).msg(
-					"IPStack API url is not configured"
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable("IPStack API URL is not configured"), null, null,
+				null, "ipstack.error.api-url-not-configured");
 
 			valid = false;
 		}
@@ -269,16 +230,10 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		ipAddress = StringUtil.trim(ipAddress);
 
 		if (Validator.isBlank(ipAddress)) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"ipstack.error.empty-ip-address"
-				).msg(
-					"No IP address provided"
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable("IP address empty"), null, null, null,
+				"ipstack.error.empty-ip-address");
 
 			return false;
 		}
@@ -289,38 +244,16 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 			address = (Inet4Address)InetAddress.getByName(ipAddress);
 		}
 		catch (UnknownHostException unknownHostException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"ipstack.error.invalid-ip"
-				).msg(
-					unknownHostException.getMessage()
-				).severity(
-					Severity.ERROR
-				).throwable(
-					unknownHostException
-				).build());
-
-			_log.error(unknownHostException.getMessage(), unknownHostException);
+			MessagesUtil.error(
+				messages, getClass().getName(), unknownHostException, null,
+				null, ipAddress, "ipstack.error.invalid-ip");
 
 			return false;
 		}
 		catch (SecurityException securityException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"ipstack.error.security-exception"
-				).msg(
-					securityException.getMessage()
-				).severity(
-					Severity.ERROR
-				).throwable(
-					securityException
-				).build());
-
-			_log.error(securityException.getMessage(), securityException);
+			MessagesUtil.error(
+				messages, getClass().getName(), securityException, null, null,
+				ipAddress, "ipstack.error.security-exception");
 
 			return false;
 		}
@@ -329,18 +262,12 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 			address.isLinkLocalAddress() || address.isLoopbackAddress() ||
 			address.isMulticastAddress()) {
 
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"ipstack.error.no-geolocation-data-for-private-ip-address"
-				).msg(
-					"Geolocation data is unavailable a private IP address"
-				).rootValue(
-					ipAddress
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable(
+					"Geolocation data is unavailable a private IP address"),
+				null, null, ipAddress,
+				"ipstack.error.no-geolocation-data-for-private-ip-address");
 
 			return false;
 		}
@@ -354,18 +281,10 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		if ((jsonObject == null) || !jsonObject.has("latitude") ||
 			!jsonObject.has("longitude")) {
 
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"ipstack.error.invalid-response-data"
-				).msg(
-					"Invalid IPStack response data"
-				).rootObject(
-					jsonObject
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable("Invalid IPStack response data"), jsonObject,
+				null, null, "ipstack.error.invalid-response-data");
 
 			return false;
 		}

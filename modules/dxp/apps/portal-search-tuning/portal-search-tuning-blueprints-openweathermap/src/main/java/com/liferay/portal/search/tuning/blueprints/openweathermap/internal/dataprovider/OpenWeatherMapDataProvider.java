@@ -25,10 +25,9 @@ import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.engine.cache.JSONDataProviderCache;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.openweathermap.internal.configuration.OpenWeatherMapConfiguration;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.io.IOException;
 
@@ -117,16 +116,10 @@ public class OpenWeatherMapDataProvider {
 		String rawData, Messages messages) {
 
 		if (Validator.isBlank(rawData)) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"openweathermap.error.empty-response"
-				).msg(
-					"OpenWeatherMap response was empty"
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable("OpenWeatherMap response was empty"), rawData,
+				null, null, "openweathermap.error.empty-response");
 
 			return null;
 		}
@@ -135,20 +128,9 @@ public class OpenWeatherMapDataProvider {
 			return _jsonFactory.createJSONObject(rawData);
 		}
 		catch (JSONException jsonException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"openweathermap.error.invalid-response-format"
-				).msg(
-					jsonException.getMessage()
-				).severity(
-					Severity.ERROR
-				).throwable(
-					jsonException
-				).build());
-
-			_log.error(jsonException.getMessage(), jsonException);
+			MessagesUtil.error(
+				messages, getClass().getName(), jsonException, rawData, null,
+				null, "openweathermap.error.invalid-response-format");
 		}
 
 		return null;
@@ -164,20 +146,10 @@ public class OpenWeatherMapDataProvider {
 				_http.URLtoString(url), messages);
 		}
 		catch (IOException ioException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"openweathermap.error.network-error"
-				).msg(
-					ioException.getMessage()
-				).severity(
-					Severity.ERROR
-				).throwable(
-					ioException
-				).build());
-
-			_log.error(ioException.getMessage(), ioException);
+			MessagesUtil.error(
+				messages, getClass().getName(), ioException,
+				geoLocationPoint.toString(), null, null,
+				"openweathermap.error.invalid-response-format");
 		}
 
 		return null;
@@ -196,31 +168,19 @@ public class OpenWeatherMapDataProvider {
 		boolean valid = true;
 
 		if (Validator.isBlank(_openWeatherMapConfiguration.apiKey())) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"openweathermap.error.api-key-not-configured"
-				).msg(
-					"OpenWeatherMap API key is not configured"
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable("OpenWeatherMap API key not configured"), null,
+				null, null, "openweathermap.error.api-key-not-configured");
 
 			valid = false;
 		}
 
 		if (Validator.isBlank(_openWeatherMapConfiguration.apiURL())) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"openweathermap.error.api-url-not-configured"
-				).msg(
-					"OpenWeatherMap API url is not configured"
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable("OpenWeatherMap API URL not configured"), null,
+				null, null, "openweathermap.error.api-key-not-configured");
 
 			valid = false;
 		}
@@ -232,18 +192,11 @@ public class OpenWeatherMapDataProvider {
 		JSONObject jsonObject, Messages messages) {
 
 		if ((jsonObject == null) || !jsonObject.has("weather")) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"openweathermap.error.invalid-response-data"
-				).msg(
-					"Invalid OpenWeatherMap response data"
-				).rootObject(
-					jsonObject
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable("Invalid OpenWeatherMap response data"),
+				jsonObject, null, null,
+				"openweathermap.error.invalid-response-data");
 
 			return false;
 		}
