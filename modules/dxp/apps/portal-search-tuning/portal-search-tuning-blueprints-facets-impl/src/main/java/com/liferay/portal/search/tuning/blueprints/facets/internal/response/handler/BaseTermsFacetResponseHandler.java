@@ -73,21 +73,19 @@ public abstract class BaseTermsFacetResponseHandler
 			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
 
 		for (Bucket bucket : buckets) {
-			if (bucket.getDocCount() < frequencyThreshold) {
-				continue;
-			}
-
-			if (!FacetConfigurationUtil.includeValue(
+			if ((bucket.getDocCount() < frequencyThreshold) ||
+				!FacetConfigurationUtil.includeValue(
 					bucket.getKey(), includeValues, excludeValues)) {
 
 				continue;
 			}
 
 			try {
-				if (jsonObject != null) {
-					jsonArray.put(
-						createBucketJSONObject(
-							bucket, blueprintsAttributes, resourceBundle));
+				JSONObject bucketJSONObject = createBucketJSONObject(
+					bucket, blueprintsAttributes, resourceBundle);
+
+				if (bucketJSONObject != null) {
+					jsonArray.put(bucketJSONObject);
 				}
 			}
 			catch (Exception exception) {

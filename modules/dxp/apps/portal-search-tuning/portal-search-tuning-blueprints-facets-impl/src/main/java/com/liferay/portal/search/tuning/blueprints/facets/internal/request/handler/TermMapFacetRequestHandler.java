@@ -155,7 +155,8 @@ public class TermMapFacetRequestHandler
 		}
 
 		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
-			handlerParametersJSONObject, messages, "mappings");
+			getClass().getName(), handlerParametersJSONObject, messages,
+			"mappings");
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

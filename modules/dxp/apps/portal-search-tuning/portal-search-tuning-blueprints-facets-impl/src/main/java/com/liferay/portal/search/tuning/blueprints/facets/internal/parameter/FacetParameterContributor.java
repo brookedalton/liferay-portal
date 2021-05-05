@@ -24,6 +24,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.Paramete
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsBlueprintKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.request.handler.FacetRequestHandlerFactory;
+import com.liferay.portal.search.tuning.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.request.FacetRequestHandler;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
@@ -98,8 +99,7 @@ public class FacetParameterContributor implements ParameterContributor {
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
 		JSONObject jsonObject) {
 
-		String handler = jsonObject.getString(
-			FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
+		String handler = FacetConfigurationUtil.getHandlerName(jsonObject);
 
 		try {
 			FacetRequestHandler facetRequestHandler =
@@ -125,7 +125,8 @@ public class FacetParameterContributor implements ParameterContributor {
 		Messages messages, JSONObject jsonObject) {
 
 		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
-			jsonObject, messages, FacetConfigurationKeys.HANDLER.getJsonKey());
+			getClass().getName(), jsonObject, messages,
+			FacetConfigurationKeys.FIELD.getJsonKey());
 	}
 
 	@Reference

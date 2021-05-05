@@ -190,8 +190,7 @@ public class FacetsSearchRequestBodyContributor
 
 		Parameter parameter = optional.get();
 
-		String handlerName = jsonObject.getString(
-			FacetConfigurationKeys.HANDLER.getJsonKey());
+		String handlerName = FacetConfigurationUtil.getHandlerName(jsonObject);
 
 		try {
 			if (handlerName.equals("date_range")) {

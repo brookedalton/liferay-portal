@@ -77,6 +77,11 @@ public class FacetConfigurationUtil {
 		return jsonObject.getString(FacetConfigurationKeys.FIELD.getJsonKey());
 	}
 
+	public static String getHandlerName(JSONObject jsonObject) {
+		return jsonObject.getString(
+			FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
+	}
+
 	public static List<String> getIncludeValues(JSONObject jsonObject) {
 		if (!jsonObject.has(
 				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey())) {
