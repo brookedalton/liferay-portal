@@ -17,16 +17,15 @@ package com.liferay.portal.search.tuning.blueprints.facets.internal.response.han
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.RangeAggregationResult;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -50,7 +49,7 @@ public class DateRangeFacetResponseHandler
 		AggregationResult aggregationResult,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
-		JSONObject configurationJSONObject) {
+		JSONObject jsonObject) {
 
 		RangeAggregationResult rangeAggregationResult =
 			(RangeAggregationResult)aggregationResult;
@@ -61,52 +60,38 @@ public class DateRangeFacetResponseHandler
 			return Optional.empty();
 		}
 
-		long frequencyThreshold = configurationJSONObject.getLong(
+		long frequencyThreshold = jsonObject.getLong(
 			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		List<String> excludeValues = FacetConfigurationUtil.getExcludeValues(
-			configurationJSONObject);
+			jsonObject);
 
 		List<String> includeValues = FacetConfigurationUtil.getIncludeValues(
-			configurationJSONObject);
+			jsonObject);
 
 		for (Bucket bucket : buckets) {
-			if (bucket.getDocCount() < frequencyThreshold) {
-				continue;
-			}
-
-			if (!FacetConfigurationUtil.includeValue(
+			if ((bucket.getDocCount() < frequencyThreshold) ||
+				!FacetConfigurationUtil.includeValue(
 					bucket.getKey(), includeValues, excludeValues)) {
 
 				continue;
 			}
 
-			jsonArray.put(_createBucketJSONObject(bucket, resourceBundle));
+			try {
+				jsonArray.put(
+					createBucketJSONObject(
+						bucket, blueprintsAttributes, resourceBundle));
+			}
+			catch (Exception exception) {
+				MessagesUtil.error(
+					messages, getClass().getName(), exception, jsonObject, null,
+					null, "facets.error.unknown-error");
+			}
 		}
 
-		return createResultObject(
-			jsonArray, configurationJSONObject, resourceBundle);
-	}
-
-	private JSONObject _createBucketJSONObject(
-		Bucket bucket, ResourceBundle resourceBundle) {
-
-		long frequency = bucket.getDocCount();
-
-		String value = bucket.getKey();
-
-		return JSONUtil.put(
-			FacetsJSONResponseKeys.FREQUENCY, frequency
-		).put(
-			FacetsJSONResponseKeys.TERM_NAME, value
-		).put(
-			FacetsJSONResponseKeys.TEXT,
-			getText(value, frequency, resourceBundle)
-		).put(
-			FacetsJSONResponseKeys.VALUE, value
-		);
+		return createResultObject(jsonArray, jsonObject, resourceBundle);
 	}
 
 }

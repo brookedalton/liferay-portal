@@ -16,8 +16,6 @@ package com.liferay.portal.search.tuning.blueprints.facets.internal.parameter;
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataBuilder;
@@ -27,11 +25,11 @@ import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigu
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsBlueprintKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.request.handler.FacetRequestHandlerFactory;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.request.FacetRequestHandler;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,22 +64,17 @@ public class FacetParameterContributor implements ParameterContributor {
 		JSONArray jsonArray = optional.get();
 
 		for (int i = 0; i < jsonArray.length(); i++) {
-			JSONObject configurationJSONObject = jsonArray.getJSONObject(i);
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-			boolean enabled = configurationJSONObject.getBoolean(
-				FacetConfigurationKeys.ENABLED.getJsonKey(), true);
+			if (!_isEnabled(jsonObject) ||
+				!_validateFacetConfiguration(messages, jsonObject)) {
 
-			if (!enabled) {
 				continue;
 			}
 
-			if (_validateFacetConfiguration(
-					messages, configurationJSONObject)) {
-
-				_parseFacetParameter(
-					parameterDataBuilder, blueprintsAttributes, messages,
-					configurationJSONObject);
-			}
+			_parseFacetParameter(
+				parameterDataBuilder, blueprintsAttributes, messages,
+				jsonObject);
 		}
 	}
 
@@ -95,12 +88,17 @@ public class FacetParameterContributor implements ParameterContributor {
 		return new ArrayList<>();
 	}
 
+	private boolean _isEnabled(JSONObject jsonObject) {
+		return jsonObject.getBoolean(
+			FacetConfigurationKeys.ENABLED.getJsonKey(), true);
+	}
+
 	private void _parseFacetParameter(
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJSONObject) {
+		JSONObject jsonObject) {
 
-		String handler = configurationJSONObject.getString(
+		String handler = jsonObject.getString(
 			FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
 
 		try {
@@ -109,71 +107,26 @@ public class FacetParameterContributor implements ParameterContributor {
 
 			Optional<Parameter> parameter =
 				facetRequestHandler.getParameterOptional(
-					blueprintsAttributes, messages, configurationJSONObject);
+					blueprintsAttributes, messages, jsonObject);
 
 			if (parameter.isPresent()) {
 				parameterDataBuilder.addParameter(parameter.get());
 			}
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"facets.error.unknown-handler"
-				).msg(
-					illegalArgumentException.getMessage()
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					FacetConfigurationKeys.HANDLER.getJsonKey()
-				).rootValue(
-					handler
-				).severity(
-					Severity.ERROR
-				).throwable(
-					illegalArgumentException
-				).build());
-
-			_log.error(
-				illegalArgumentException.getMessage(),
-				illegalArgumentException);
+			MessagesUtil.invalidConfigurationValueError(
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject, FacetConfigurationKeys.HANDLER.getJsonKey(),
+				handler);
 		}
 	}
 
 	private boolean _validateFacetConfiguration(
-		Messages messages, JSONObject configurationJSONObject) {
+		Messages messages, JSONObject jsonObject) {
 
-		boolean valid = true;
-
-		if (configurationJSONObject.isNull(
-				FacetConfigurationKeys.FIELD.getJsonKey())) {
-
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"facets.error.undefined-field"
-				).msg(
-					"Facet field is not defined"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					FacetConfigurationKeys.FIELD.getJsonKey()
-				).rootValue(
-					null
-				).severity(
-					Severity.ERROR
-				).build());
-
-			valid = false;
-		}
-
-		return valid;
+		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+			jsonObject, messages, FacetConfigurationKeys.HANDLER.getJsonKey());
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		FacetParameterContributor.class);
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;

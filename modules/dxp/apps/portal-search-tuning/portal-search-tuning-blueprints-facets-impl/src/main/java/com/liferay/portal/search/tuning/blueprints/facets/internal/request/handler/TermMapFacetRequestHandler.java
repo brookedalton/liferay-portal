@@ -26,9 +26,9 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayP
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.request.FacetRequestHandler;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,22 +42,22 @@ import org.osgi.service.component.annotations.Component;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, property = "name=value_aggregations",
+	immediate = true, property = "name=term_map",
 	service = FacetRequestHandler.class
 )
-public class ValueAggregationsFacetRequestHandler
+public class TermMapFacetRequestHandler
 	extends BaseFacetRequestHandler implements FacetRequestHandler {
 
 	public Optional<Parameter> getParameterOptional(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJSONObject) {
+		JSONObject jsonObject) {
 
-		if (!_validateConfiguration(configurationJSONObject, messages)) {
+		if (!_validateConfiguration(jsonObject, messages)) {
 			Optional.empty();
 		}
 
 		String parameterName = FacetConfigurationUtil.getParameterName(
-			configurationJSONObject);
+			jsonObject);
 
 		Optional<Object> valueOptional =
 			blueprintsAttributes.getAttributeOptional(parameterName);
@@ -68,10 +68,7 @@ public class ValueAggregationsFacetRequestHandler
 
 		String[] valueArray;
 
-		boolean multiValue = configurationJSONObject.getBoolean(
-			FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
-
-		if (multiValue) {
+		if (isMultiValue(jsonObject)) {
 			valueArray = GetterUtil.getStringValues(valueOptional.get());
 		}
 		else {
@@ -80,7 +77,7 @@ public class ValueAggregationsFacetRequestHandler
 			};
 		}
 
-		List<String> values = _getValues(valueArray, configurationJSONObject);
+		List<String> values = _getValues(valueArray, jsonObject);
 
 		if (values.isEmpty()) {
 			return Optional.empty();
@@ -95,32 +92,30 @@ public class ValueAggregationsFacetRequestHandler
 	}
 
 	private List<String> _getValues(
-		String[] valueArray, JSONObject configurationJSONObject) {
+		String[] valueArray, JSONObject jsonObject) {
 
 		List<String> values = new ArrayList<>();
 
-		JSONObject handlerParametersJSONObject =
-			configurationJSONObject.getJSONObject(
-				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
+		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
+			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
-		JSONArray valueAggregationsJSONArray =
-			handlerParametersJSONObject.getJSONArray("aggregations");
+		JSONArray mapJSONArray = handlerParametersJSONObject.getJSONArray(
+			"map");
 
 		for (String requestValue : valueArray) {
 			JSONArray translatedValuesJSONArray = null;
 
-			for (int i = 0; i < valueAggregationsJSONArray.length(); i++) {
+			for (int i = 0; i < mapJSONArray.length(); i++) {
 				try {
-					JSONObject jsonObject =
-						valueAggregationsJSONArray.getJSONObject(i);
+					JSONObject itemJSONObject = mapJSONArray.getJSONObject(i);
 
-					if (jsonObject.getString(
+					if (itemJSONObject.getString(
 							"key"
 						).equals(
 							requestValue
 						)) {
 
-						translatedValuesJSONArray = jsonObject.getJSONArray(
+						translatedValuesJSONArray = itemJSONObject.getJSONArray(
 							"values");
 
 						break;
@@ -146,62 +141,24 @@ public class ValueAggregationsFacetRequestHandler
 	}
 
 	private boolean _validateConfiguration(
-		JSONObject configurationJSONObject, Messages messages) {
+		JSONObject jsonObject, Messages messages) {
 
-		boolean valid = true;
-
-		JSONObject handlerParametersJSONObject =
-			configurationJSONObject.getJSONObject(
-				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
+		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
+			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
 		if (handlerParametersJSONObject == null) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"facets.error.undefined-handler-parameters"
-				).msg(
-					"Facet handler parameters are not defined"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey()
-				).rootValue(
-					null
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.requiredFieldMissingError(
+				messages, getClass().getName(), jsonObject,
+				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
-			valid = false;
+			return false;
 		}
 
-		if ((handlerParametersJSONObject == null) ||
-			!handlerParametersJSONObject.has("aggregations")) {
-
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"facets.error.undefined-handler-mappings"
-				).msg(
-					"Facet handler mappings are not defined"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					"mappings"
-				).rootValue(
-					null
-				).severity(
-					Severity.ERROR
-				).build());
-
-			valid = false;
-		}
-
-		return valid;
+		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+			handlerParametersJSONObject, messages, "mappings");
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		ValueAggregationsFacetRequestHandler.class);
+		TermMapFacetRequestHandler.class);
 
 }

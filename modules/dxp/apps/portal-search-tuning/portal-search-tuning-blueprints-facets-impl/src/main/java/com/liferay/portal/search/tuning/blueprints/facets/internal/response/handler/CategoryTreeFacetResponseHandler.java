@@ -22,9 +22,6 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
@@ -34,9 +31,8 @@ import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigu
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -63,27 +59,18 @@ public class CategoryTreeFacetResponseHandler
 		AggregationResult aggregationResult,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
-		JSONObject configurationJSONObject) {
+		JSONObject jsonObject) {
 
-		JSONObject handlerParametersJSONObject =
-			configurationJSONObject.getJSONObject(
-				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
+		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
+			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
 		if (handlerParametersJSONObject == null) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"facets.error.undefined-handler-parameters"
-				).msg(
-					"Facet handler parameters are not defined"
-				).rootObject(
-					handlerParametersJSONObject
-				).rootProperty(
-					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey()
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable("Facet handler parameters not defined"),
+				jsonObject,
+				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey(), null,
+				"facets.error.undefined-handler-parameters");
 
 			return Optional.empty();
 		}
@@ -92,22 +79,11 @@ public class CategoryTreeFacetResponseHandler
 			"root_vocabulary_id", -1);
 
 		if (vocabularyId < 0) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"facets.error.root-vocabulary-id-missing"
-				).msg(
-					"Root vocabulary id is not defined"
-				).rootObject(
-					handlerParametersJSONObject
-				).rootProperty(
-					"vocabulary_id"
-				).rootValue(
-					String.valueOf(vocabularyId)
-				).severity(
-					Severity.ERROR
-				).build());
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable("Root vocabulary id not defined"), jsonObject,
+				"vocabulary_id", String.valueOf(vocabularyId),
+				"facets.error.root-vocabulary-id-missing");
 
 			return Optional.empty();
 		}
@@ -121,7 +97,7 @@ public class CategoryTreeFacetResponseHandler
 			return Optional.empty();
 		}
 
-		long frequencyThreshold = configurationJSONObject.getLong(
+		long frequencyThreshold = jsonObject.getLong(
 			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
 
 		JSONArray jsonArray = null;
@@ -129,38 +105,17 @@ public class CategoryTreeFacetResponseHandler
 		try {
 			jsonArray = _getCategoriesJSONArray(
 				buckets, vocabularyId, frequencyThreshold,
-				blueprintsAttributes.getLocale(), messages,
-				configurationJSONObject);
+				blueprintsAttributes.getLocale(), messages, jsonObject);
 		}
 		catch (PortalException portalException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"facets.error.asset-vocabulary-not-found"
-				).msg(
-					portalException.getMessage()
-				).rootObject(
-					handlerParametersJSONObject
-				).rootProperty(
-					"vocabulary_id"
-				).rootValue(
-					String.valueOf(vocabularyId)
-				).severity(
-					Severity.ERROR
-				).throwable(
-					portalException
-				).build());
-
-			if (_log.isWarnEnabled()) {
-				_log.warn("Asset vocabulary " + vocabularyId + " not found.");
-			}
+			MessagesUtil.error(
+				messages, getClass().getName(), portalException, jsonObject,
+				null, null, "facets.error.unknown-error");
 
 			return Optional.empty();
 		}
 
-		return createResultObject(
-			jsonArray, configurationJSONObject, resourceBundle);
+		return createResultObject(jsonArray, jsonObject, resourceBundle);
 	}
 
 	private void _addChildNode(
@@ -174,22 +129,11 @@ public class CategoryTreeFacetResponseHandler
 			jsonArray, assetCategories, assetCategory, frequency, locale);
 
 		if (parentJSONObject == null) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"facets.error.asset-category-not-found"
-				).msg(
-					"Asset category not found"
-				).rootValue(
-					String.valueOf(categoryId)
-				).severity(
-					Severity.ERROR
-				).build());
-
-			if (_log.isWarnEnabled()) {
-				_log.warn("Asset category " + categoryId + " not found");
-			}
+			MessagesUtil.error(
+				messages, getClass().getName(),
+				new Throwable("Asset category not found"), null, null,
+				String.valueOf(categoryId),
+				"facets.error.asset-category-not-found");
 
 			return;
 		}
@@ -241,15 +185,8 @@ public class CategoryTreeFacetResponseHandler
 	}
 
 	private JSONObject _createNode(long value, long frequency, String name) {
-		return JSONUtil.put(
-			FacetsJSONResponseKeys.FREQUENCY, frequency
-		).put(
-			FacetsJSONResponseKeys.TERM_NAME, name
-		).put(
-			FacetsJSONResponseKeys.TEXT, getText(name, frequency, null)
-		).put(
-			FacetsJSONResponseKeys.VALUE, value
-		);
+		return createBucketJSONObject(
+			frequency, null, name, getText(name, frequency, null), value);
 	}
 
 	private void _createTree(
@@ -307,7 +244,7 @@ public class CategoryTreeFacetResponseHandler
 	private JSONArray _getCategoriesJSONArray(
 			Collection<Bucket> buckets, long vocabularyId,
 			long frequencyThreshold, Locale locale, Messages messages,
-			JSONObject configurationJSONObject)
+			JSONObject jsonObject)
 		throws PortalException {
 
 		AssetVocabulary assetVocabulary =
@@ -318,28 +255,23 @@ public class CategoryTreeFacetResponseHandler
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		List<String> excludeValues = FacetConfigurationUtil.getExcludeValues(
-			configurationJSONObject);
+			jsonObject);
 		List<String> includeValues = FacetConfigurationUtil.getIncludeValues(
-			configurationJSONObject);
+			jsonObject);
 
 		for (Bucket bucket : buckets) {
 			long frequency = bucket.getDocCount();
 
-			if (frequency < frequencyThreshold) {
-				continue;
-			}
-
-			if (!FacetConfigurationUtil.includeValue(
+			if ((frequency < frequencyThreshold) ||
+				!FacetConfigurationUtil.includeValue(
 					bucket.getKey(), includeValues, excludeValues)) {
 
 				continue;
 			}
 
-			long categoryId = Long.valueOf(bucket.getKey());
-
 			_createTree(
-				jsonArray, assetCategories, categoryId, frequency, locale,
-				messages);
+				jsonArray, assetCategories, Long.valueOf(bucket.getKey()),
+				frequency, locale, messages);
 		}
 
 		return jsonArray;
@@ -419,9 +351,6 @@ public class CategoryTreeFacetResponseHandler
 		jsonObject.put(
 			FacetsJSONResponseKeys.TEXT, getText(name, frequency, null));
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		CategoryTreeFacetResponseHandler.class);
 
 	@Reference
 	private AssetCategoryLocalService _assetCategoryLocalService;

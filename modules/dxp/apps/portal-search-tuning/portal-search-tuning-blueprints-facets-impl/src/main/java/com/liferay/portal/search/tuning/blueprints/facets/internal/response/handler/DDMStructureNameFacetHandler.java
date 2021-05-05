@@ -19,12 +19,10 @@ import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 
 import java.util.List;
@@ -54,25 +52,17 @@ public class DDMStructureNameFacetHandler
 
 		long frequency = bucket.getDocCount();
 
-		String value = bucket.getKey();
+		String structureKey = bucket.getKey();
 
-		DDMStructure ddmStructure = _getDDMStructure(value);
+		DDMStructure ddmStructure = _getDDMStructure(structureKey);
 
 		String name = ddmStructure.getName(locale, true);
 
 		Group group = _groupLocalService.getGroup(ddmStructure.getGroupId());
 
-		return JSONUtil.put(
-			FacetsJSONResponseKeys.FREQUENCY, bucket.getDocCount()
-		).put(
-			FacetsJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
-		).put(
-			FacetsJSONResponseKeys.TERM_NAME, name
-		).put(
-			FacetsJSONResponseKeys.TEXT, getText(name, frequency, null)
-		).put(
-			FacetsJSONResponseKeys.VALUE, value
-		);
+		return createBucketJSONObject(
+			bucket.getDocCount(), group.getName(locale, true), name,
+			getText(name, frequency, null), structureKey);
 	}
 
 	private DDMStructure _getDDMStructure(String ddmStructureKey) {

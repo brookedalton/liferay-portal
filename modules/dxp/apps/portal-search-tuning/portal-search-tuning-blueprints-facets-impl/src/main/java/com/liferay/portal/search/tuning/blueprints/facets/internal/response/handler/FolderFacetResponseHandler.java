@@ -19,7 +19,6 @@ import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.service.DLFolderLocalService;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -35,7 +34,6 @@ import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 
 import java.util.List;
@@ -73,24 +71,16 @@ public class FolderFacetResponseHandler
 
 		long frequency = bucket.getDocCount();
 
-		String name = document.getString(
+		String title = document.getString(
 			"localized_title_" + locale.toString());
 
 		long groupId = document.getLong(Field.GROUP_ID);
 
 		Group group = _groupLocalService.getGroup(groupId);
 
-		return JSONUtil.put(
-			FacetsJSONResponseKeys.FREQUENCY, frequency
-		).put(
-			FacetsJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
-		).put(
-			FacetsJSONResponseKeys.TERM_NAME, name
-		).put(
-			FacetsJSONResponseKeys.TEXT, getText(name, frequency, null)
-		).put(
-			FacetsJSONResponseKeys.VALUE, folderId
-		);
+		return createBucketJSONObject(
+			bucket.getDocCount(), group.getName(locale, true), title,
+			getText(title, frequency, null), folderId);
 	}
 
 	private Document _getDocument(

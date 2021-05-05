@@ -14,19 +14,14 @@
 
 package com.liferay.portal.search.tuning.blueprints.facets.internal.response.handler;
 
-import com.liferay.asset.kernel.service.AssetCategoryLocalService;
-import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
@@ -48,34 +43,19 @@ public class SiteFacetResponseHandler
 			ResourceBundle resourceBundle)
 		throws Exception {
 
-		Locale locale = blueprintsAttributes.getLocale();
-
 		long frequency = bucket.getDocCount();
 
-		String value = bucket.getKey();
-
-		long groupId = GetterUtil.getLong(value);
+		long groupId = GetterUtil.getLong(bucket.getKey());
 
 		Group group = _groupLocalService.getGroup(groupId);
 
-		String name = group.getName(locale, true);
+		String groupName = group.getName(
+			blueprintsAttributes.getLocale(), true);
 
-		return JSONUtil.put(
-			FacetsJSONResponseKeys.FREQUENCY, frequency
-		).put(
-			FacetsJSONResponseKeys.TERM_NAME, name
-		).put(
-			FacetsJSONResponseKeys.TEXT, getText(name, frequency, null)
-		).put(
-			FacetsJSONResponseKeys.VALUE, groupId
-		);
+		return createBucketJSONObject(
+			bucket.getDocCount(), null, groupName,
+			getText(groupName, frequency, null), groupId);
 	}
-
-	@Reference
-	private AssetCategoryLocalService _assetCategoryLocalService;
-
-	@Reference
-	private AssetVocabularyLocalService _assetVocabularyLocalService;
 
 	@Reference
 	private GroupLocalService _groupLocalService;

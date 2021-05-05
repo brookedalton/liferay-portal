@@ -17,13 +17,11 @@ package com.liferay.portal.search.tuning.blueprints.facets.internal.response.han
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeService;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 
 import java.util.Locale;
@@ -61,17 +59,9 @@ public class DocumentTypeFacetResponseHandler
 
 		Group group = _groupLocalService.getGroup(dlFileEntryType.getGroupId());
 
-		return JSONUtil.put(
-			FacetsJSONResponseKeys.FREQUENCY, frequency
-		).put(
-			FacetsJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
-		).put(
-			FacetsJSONResponseKeys.TERM_NAME, name
-		).put(
-			FacetsJSONResponseKeys.TEXT, getText(name, frequency, null)
-		).put(
-			FacetsJSONResponseKeys.VALUE, fileEntryTypeId
-		);
+		return createBucketJSONObject(
+			bucket.getDocCount(), group.getName(locale, true), name,
+			getText(name, frequency, null), fileEntryTypeId);
 	}
 
 	@Reference

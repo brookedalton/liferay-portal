@@ -20,11 +20,10 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.facet.Facet;
 import com.liferay.portal.kernel.search.facet.collector.FacetCollector;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
@@ -33,9 +32,8 @@ import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigu
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,7 +51,7 @@ public abstract class BaseTermsFacetResponseHandler
 		AggregationResult aggregationResult,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
-		JSONObject configurationJSONObject) {
+		JSONObject jsonObject) {
 
 		TermsAggregationResult termsAggregationResult =
 			(TermsAggregationResult)aggregationResult;
@@ -67,11 +65,11 @@ public abstract class BaseTermsFacetResponseHandler
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		List<String> excludeValues = FacetConfigurationUtil.getExcludeValues(
-			configurationJSONObject);
+			jsonObject);
 		List<String> includeValues = FacetConfigurationUtil.getIncludeValues(
-			configurationJSONObject);
+			jsonObject);
 
-		long frequencyThreshold = configurationJSONObject.getLong(
+		long frequencyThreshold = jsonObject.getLong(
 			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
 
 		for (Bucket bucket : buckets) {
@@ -86,9 +84,6 @@ public abstract class BaseTermsFacetResponseHandler
 			}
 
 			try {
-				JSONObject jsonObject = createBucketJSONObject(
-					bucket, blueprintsAttributes, resourceBundle);
-
 				if (jsonObject != null) {
 					jsonArray.put(
 						createBucketJSONObject(
@@ -96,24 +91,9 @@ public abstract class BaseTermsFacetResponseHandler
 				}
 			}
 			catch (Exception exception) {
-				messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"facets.error.could-not-create-bucket-object"
-					).msg(
-						exception.getMessage()
-					).rootObject(
-						configurationJSONObject
-					).severity(
-						Severity.ERROR
-					).throwable(
-						exception
-					).build());
-
-				if (_log.isWarnEnabled()) {
-					_log.warn(exception.getMessage(), exception);
-				}
+				MessagesUtil.error(
+					messages, getClass().getName(), exception, jsonObject, null,
+					null, "facets.error.could-not-create-bucket-object");
 			}
 		}
 
@@ -121,8 +101,7 @@ public abstract class BaseTermsFacetResponseHandler
 			return Optional.empty();
 		}
 
-		return createResultObject(
-			jsonArray, configurationJSONObject, resourceBundle);
+		return createResultObject(jsonArray, jsonObject, resourceBundle);
 	}
 
 	protected JSONObject createBucketJSONObject(
@@ -137,6 +116,8 @@ public abstract class BaseTermsFacetResponseHandler
 		return JSONUtil.put(
 			FacetsJSONResponseKeys.FREQUENCY, frequency
 		).put(
+			FacetsJSONResponseKeys.TERM_NAME, value
+		).put(
 			FacetsJSONResponseKeys.TEXT,
 			getText(value, frequency, resourceBundle)
 		).put(
@@ -144,8 +125,29 @@ public abstract class BaseTermsFacetResponseHandler
 		);
 	}
 
+	protected JSONObject createBucketJSONObject(
+		long frequency, String groupName, String termName, String text,
+		Object value) {
+
+		JSONObject jsonObject = JSONUtil.put(
+			FacetsJSONResponseKeys.FREQUENCY, frequency
+		).put(
+			FacetsJSONResponseKeys.TERM_NAME, termName
+		).put(
+			FacetsJSONResponseKeys.TEXT, text
+		).put(
+			FacetsJSONResponseKeys.VALUE, value
+		);
+
+		if (Validator.isBlank(groupName)) {
+			jsonObject.put(FacetsJSONResponseKeys.GROUP_NAME, groupName);
+		}
+
+		return jsonObject;
+	}
+
 	protected Optional<JSONObject> createResultObject(
-		JSONArray jsonArray, JSONObject configurationJSONObject,
+		JSONArray jsonArray, JSONObject jsonObject,
 		ResourceBundle resourceBundle) {
 
 		if (jsonArray.length() == 0) {
@@ -155,16 +157,15 @@ public abstract class BaseTermsFacetResponseHandler
 		return Optional.of(
 			JSONUtil.put(
 				FacetsJSONResponseKeys.HANDLER_NAME,
-				configurationJSONObject.getString(
+				jsonObject.getString(
 					FacetConfigurationKeys.HANDLER.getJsonKey(), "default")
 			).put(
 				FacetsJSONResponseKeys.LABEL,
 				LanguageUtil.get(
-					resourceBundle,
-					FacetConfigurationUtil.getLabel(configurationJSONObject))
+					resourceBundle, FacetConfigurationUtil.getLabel(jsonObject))
 			).put(
 				FacetsJSONResponseKeys.PARAMETER_NAME,
-				FacetConfigurationUtil.getParameterName(configurationJSONObject)
+				FacetConfigurationUtil.getParameterName(jsonObject)
 			).put(
 				FacetsJSONResponseKeys.VALUES, jsonArray
 			));
@@ -208,8 +209,5 @@ public abstract class BaseTermsFacetResponseHandler
 
 		return sb.toString();
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		BaseTermsFacetResponseHandler.class);
 
 }

@@ -36,26 +36,28 @@ public abstract class BaseFacetRequestHandler implements FacetRequestHandler {
 	@Override
 	public Optional<Parameter> getParameterOptional(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJSONObject) {
+		JSONObject jsonObject) {
 
 		String parameterName = FacetConfigurationUtil.getParameterName(
-			configurationJSONObject);
+			jsonObject);
 
-		Optional<Object> valueOptional =
-			blueprintsAttributes.getAttributeOptional(parameterName);
+		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
+			parameterName);
 
-		if (!valueOptional.isPresent()) {
+		if (!optional.isPresent()) {
 			return Optional.empty();
 		}
 
-		boolean multiValue = configurationJSONObject.getBoolean(
-			FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
-
-		if (multiValue) {
-			return _getMultiValueParameter(parameterName, valueOptional.get());
+		if (isMultiValue(jsonObject)) {
+			return _getMultiValueParameter(parameterName, optional.get());
 		}
 
-		return _getSingleValueParameter(parameterName, valueOptional.get());
+		return _getSingleValueParameter(parameterName, optional.get());
+	}
+
+	public boolean isMultiValue(JSONObject jsonObject) {
+		return jsonObject.getBoolean(
+			FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
 	}
 
 	private Optional<Parameter> _getMultiValueParameter(

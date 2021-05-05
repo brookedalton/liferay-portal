@@ -28,31 +28,26 @@ import java.util.List;
  */
 public class FacetConfigurationUtil {
 
-	public static String getAggregationName(
-		JSONObject configurationJSONObject) {
-
-		String name = configurationJSONObject.getString(
+	public static String getAggregationName(JSONObject jsonObject) {
+		String name = jsonObject.getString(
 			FacetConfigurationKeys.AGGREGATION_NAME.getJsonKey());
 
 		if (!Validator.isBlank(name)) {
 			return name;
 		}
 
-		return getFieldName(configurationJSONObject);
+		return getFieldName(jsonObject);
 	}
 
-	public static List<String> getExcludeValues(
-		JSONObject configurationJSONObject) {
-
-		if (!configurationJSONObject.has(
+	public static List<String> getExcludeValues(JSONObject jsonObject) {
+		if (!jsonObject.has(
 				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey())) {
 
 			return Collections.emptyList();
 		}
 
-		JSONObject handlerParametersJSONObject =
-			configurationJSONObject.getJSONObject(
-				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
+		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
+			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
 		JSONArray excludeValuesJSONArray =
 			handlerParametersJSONObject.getJSONArray(
@@ -67,34 +62,30 @@ public class FacetConfigurationUtil {
 		return JSONUtil.toStringList(excludeValuesJSONArray);
 	}
 
-	public static String getFacetName(JSONObject configurationJSONObject) {
-		String name = configurationJSONObject.getString(
+	public static String getFacetName(JSONObject jsonObject) {
+		String name = jsonObject.getString(
 			FacetConfigurationKeys.NAME.getJsonKey());
 
 		if (!Validator.isBlank(name)) {
 			return name;
 		}
 
-		return getFieldName(configurationJSONObject);
+		return getFieldName(jsonObject);
 	}
 
-	public static String getFieldName(JSONObject configurationJSONObject) {
-		return configurationJSONObject.getString(
-			FacetConfigurationKeys.FIELD.getJsonKey());
+	public static String getFieldName(JSONObject jsonObject) {
+		return jsonObject.getString(FacetConfigurationKeys.FIELD.getJsonKey());
 	}
 
-	public static List<String> getIncludeValues(
-		JSONObject configurationJSONObject) {
-
-		if (!configurationJSONObject.has(
+	public static List<String> getIncludeValues(JSONObject jsonObject) {
+		if (!jsonObject.has(
 				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey())) {
 
 			return Collections.emptyList();
 		}
 
-		JSONObject handlerParametersJSONObject =
-			configurationJSONObject.getJSONObject(
-				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
+		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
+			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
 		JSONArray excludeValuesJSONArray =
 			handlerParametersJSONObject.getJSONArray(
@@ -109,26 +100,26 @@ public class FacetConfigurationUtil {
 		return JSONUtil.toStringList(excludeValuesJSONArray);
 	}
 
-	public static String getLabel(JSONObject configurationJSONObject) {
-		String name = configurationJSONObject.getString(
+	public static String getLabel(JSONObject jsonObject) {
+		String name = jsonObject.getString(
 			FacetConfigurationKeys.LABEL.getJsonKey());
 
 		if (!Validator.isBlank(name)) {
 			return name;
 		}
 
-		return getFieldName(configurationJSONObject);
+		return getFieldName(jsonObject);
 	}
 
-	public static String getParameterName(JSONObject configurationJSONObject) {
-		String name = configurationJSONObject.getString(
+	public static String getParameterName(JSONObject jsonObject) {
+		String name = jsonObject.getString(
 			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		if (!Validator.isBlank(name)) {
 			return name;
 		}
 
-		return getFieldName(configurationJSONObject);
+		return getFieldName(jsonObject);
 	}
 
 	public static boolean includeValue(
@@ -144,6 +135,11 @@ public class FacetConfigurationUtil {
 		}
 
 		return true;
+	}
+
+	public static boolean isEnabled(JSONObject jsonObject) {
+		return jsonObject.getBoolean(
+			FacetConfigurationKeys.ENABLED.getJsonKey(), true);
 	}
 
 }

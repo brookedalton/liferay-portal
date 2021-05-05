@@ -17,9 +17,6 @@ package com.liferay.portal.search.tuning.blueprints.facets.internal.response.han
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.AggregationResult;
@@ -27,12 +24,10 @@ import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -51,7 +46,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, property = "name=value_aggregations",
+	immediate = true, property = "name=term_map",
 	service = FacetResponseHandler.class
 )
 public class ValueAggregationsFacetResponseHandler
@@ -62,7 +57,7 @@ public class ValueAggregationsFacetResponseHandler
 		AggregationResult aggregationResult,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
-		JSONObject configurationJSONObject) {
+		JSONObject jsonObject) {
 
 		TermsAggregationResult termsAggregationResult =
 			(TermsAggregationResult)aggregationResult;
@@ -70,22 +65,19 @@ public class ValueAggregationsFacetResponseHandler
 		JSONArray jsonArray = null;
 
 		try {
-			JSONObject handlerParametersJSONObject =
-				configurationJSONObject.getJSONObject(
-					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
+			JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
+				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
 			JSONArray aggregationsJSONArray =
-				handlerParametersJSONObject.getJSONArray("aggregations");
+				handlerParametersJSONObject.getJSONArray("map");
 
 			Map<String, Integer> termsMap = new HashMap<>();
 
 			List<String> excludeValues =
-				FacetConfigurationUtil.getExcludeValues(
-					configurationJSONObject);
+				FacetConfigurationUtil.getExcludeValues(jsonObject);
 
 			List<String> includeValues =
-				FacetConfigurationUtil.getIncludeValues(
-					configurationJSONObject);
+				FacetConfigurationUtil.getIncludeValues(jsonObject);
 
 			for (Bucket bucket : termsAggregationResult.getBuckets()) {
 				if (Validator.isBlank(bucket.getKey())) {
@@ -135,33 +127,19 @@ public class ValueAggregationsFacetResponseHandler
 
 			Map<String, Integer> termMapOrdered = _sort(termsMap);
 
-			long frequencyThreshold = configurationJSONObject.getLong(
+			long frequencyThreshold = jsonObject.getLong(
 				FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
 
 			jsonArray = _getTermsJSONArray(
 				termMapOrdered, frequencyThreshold, resourceBundle);
 		}
 		catch (Exception exception) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"facets.error.unknown-error"
-				).msg(
-					exception.getMessage()
-				).rootObject(
-					configurationJSONObject
-				).severity(
-					Severity.ERROR
-				).throwable(
-					exception
-				).build());
-
-			_log.error(exception.getMessage(), exception);
+			MessagesUtil.error(
+				messages, getClass().getName(), exception, jsonObject, null,
+				null, "facets.error.unknown-error");
 		}
 
-		return createResultObject(
-			jsonArray, configurationJSONObject, resourceBundle);
+		return createResultObject(jsonArray, jsonObject, resourceBundle);
 	}
 
 	private JSONArray _getTermsJSONArray(
@@ -180,16 +158,9 @@ public class ValueAggregationsFacetResponseHandler
 			String value = entry.getKey();
 
 			jsonArray.put(
-				JSONUtil.put(
-					FacetsJSONResponseKeys.FREQUENCY, frequency
-				).put(
-					FacetsJSONResponseKeys.TERM_NAME, value
-				).put(
-					FacetsJSONResponseKeys.TEXT,
-					getText(value, frequency, resourceBundle)
-				).put(
-					FacetsJSONResponseKeys.VALUE, value
-				));
+				createBucketJSONObject(
+					frequency, null, value,
+					getText(value, frequency, resourceBundle), value));
 		}
 
 		return jsonArray;
@@ -210,8 +181,5 @@ public class ValueAggregationsFacetResponseHandler
 				(oldValue, newValue) -> oldValue, LinkedHashMap::new)
 		);
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		ValueAggregationsFacetResponseHandler.class);
 
 }

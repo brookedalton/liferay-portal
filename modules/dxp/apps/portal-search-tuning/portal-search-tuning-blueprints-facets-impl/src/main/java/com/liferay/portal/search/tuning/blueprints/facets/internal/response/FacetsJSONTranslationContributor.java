@@ -68,7 +68,7 @@ public class FacetsJSONTranslationContributor
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages) {
 
-		Optional<JSONArray> configurationJSONArrayOptional =
+		Optional<JSONArray> optional =
 			_blueprintHelper.getJSONArrayConfigurationOptional(
 				blueprint,
 				"JSONArray/" + FacetsBlueprintKeys.CONFIGURATION_SECTION);
@@ -76,15 +76,13 @@ public class FacetsJSONTranslationContributor
 		Map<String, AggregationResult> aggregationResultsMap =
 			searchResponse.getAggregationResultsMap();
 
-		if (aggregationResultsMap.isEmpty() ||
-			!configurationJSONArrayOptional.isPresent()) {
-
+		if (aggregationResultsMap.isEmpty() || !optional.isPresent()) {
 			return _jsonFactory.createJSONObject();
 		}
 
 		return _processFacets(
 			aggregationResultsMap, blueprintsAttributes, resourceBundle,
-			messages, configurationJSONArrayOptional.get());
+			messages, optional.get());
 	}
 
 	private String _getHandler(JSONObject jsonObject) {
