@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
+package com.liferay.portal.search.tuning.blueprints.util.util;
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -21,8 +21,6 @@ import com.liferay.portal.search.sort.FieldSort;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONUtil;
-import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
 import java.util.List;

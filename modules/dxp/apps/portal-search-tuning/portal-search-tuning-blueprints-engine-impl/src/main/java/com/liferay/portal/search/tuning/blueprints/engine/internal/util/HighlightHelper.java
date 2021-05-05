@@ -24,6 +24,7 @@ import com.liferay.portal.search.highlight.HighlightBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.highlight.HighlightConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
 import java.util.Set;

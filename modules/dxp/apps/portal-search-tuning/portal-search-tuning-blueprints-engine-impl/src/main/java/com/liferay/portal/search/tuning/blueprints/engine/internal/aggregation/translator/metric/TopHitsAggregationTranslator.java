@@ -29,10 +29,10 @@ import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregati
 import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.util.HighlightHelper;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.SetterHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.ArrayList;
 import java.util.Iterator;
