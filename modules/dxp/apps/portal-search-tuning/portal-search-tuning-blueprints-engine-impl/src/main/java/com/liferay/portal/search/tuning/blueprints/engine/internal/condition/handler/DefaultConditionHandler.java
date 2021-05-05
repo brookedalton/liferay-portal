@@ -274,7 +274,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 	private boolean _validateCondition(
 		Messages messages, JSONObject jsonObject) {
 
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 			jsonObject, messages,
 			ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey(),
 			ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey());

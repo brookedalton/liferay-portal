@@ -53,15 +53,14 @@ public class MessagesUtil {
 		if (throwable != null) {
 			_log.error(throwable.getMessage(), throwable);
 		}
-		else {
-			StringBundler sb = new StringBundler();
 
-			_addLogMessageDetails(
-				new StringBundler(), className, rootObject, rootProperty,
-				rootValue);
+		StringBundler sb = new StringBundler();
 
-			_log.error(sb.toString());
-		}
+		_addLogMessageDetails(
+			new StringBundler(), className, rootObject, rootProperty,
+			rootValue);
+
+		_log.error(sb.toString());
 	}
 
 	public static void invalidConfigurationValueError(
@@ -214,14 +213,13 @@ public class MessagesUtil {
 		if (throwable != null) {
 			_log.error(throwable.getMessage(), throwable);
 		}
-		else {
-			StringBundler sb = new StringBundler();
 
-			_addLogMessageDetails(
-				sb, className, rootObject, rootProperty, rootValue);
+		StringBundler sb = new StringBundler();
 
-			_log.error(sb.toString());
-		}
+		_addLogMessageDetails(
+			sb, className, rootObject, rootProperty, rootValue);
+
+		_log.error(sb.toString());
 	}
 
 	public static void warning(
@@ -245,15 +243,54 @@ public class MessagesUtil {
 				Severity.WARN
 			).build());
 
-		StringBundler sb = new StringBundler();
+		if (_log.isWarnEnabled()) {
+			StringBundler sb = new StringBundler();
 
-		sb.append("Warning: ");
-		sb.append(message);
+			sb.append("Warning: ");
+			sb.append(message);
 
-		_addLogMessageDetails(
-			sb, className, rootObject, rootProperty, rootValue);
+			_addLogMessageDetails(
+				sb, className, rootObject, rootProperty, rootValue);
+
+			_log.warn(sb.toString());
+		}
+	}
+
+	public static void warning(
+		Messages messages, String className, Throwable throwable,
+		Object rootObject, String rootProperty, String rootValue,
+		String localizationKey) {
+
+		messages.addMessage(
+			new Message.Builder().className(
+				className
+			).localizationKey(
+				localizationKey
+			).msg(
+				_getMsg(throwable, className)
+			).rootObject(
+				rootObject
+			).rootProperty(
+				rootProperty
+			).rootValue(
+				rootValue
+			).severity(
+				Severity.WARN
+			).throwable(
+				throwable
+			).build());
+
+		if ((throwable != null) && _log.isWarnEnabled()) {
+			_log.warn(throwable.getMessage(), throwable);
+		}
 
 		if (_log.isWarnEnabled()) {
+			StringBundler sb = new StringBundler();
+
+			_addLogMessageDetails(
+				new StringBundler(), className, rootObject, rootProperty,
+				rootValue);
+
 			_log.warn(sb.toString());
 		}
 	}

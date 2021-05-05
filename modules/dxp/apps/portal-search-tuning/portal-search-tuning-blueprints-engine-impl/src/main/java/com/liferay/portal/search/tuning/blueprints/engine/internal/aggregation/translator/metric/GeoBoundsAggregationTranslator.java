@@ -45,7 +45,7 @@ public class GeoBoundsAggregationTranslator implements AggregationTranslator {
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				jsonObject, messages,
 				GeoBoundsAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
 

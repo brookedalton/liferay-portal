@@ -45,7 +45,7 @@ public class MaxBucketAggregationTranslator implements AggregationTranslator {
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				jsonObject, messages,
 				MaxBucketAggregationBodyConfigurationKeys.BUCKETS_PATH.
 					getJsonKey())) {

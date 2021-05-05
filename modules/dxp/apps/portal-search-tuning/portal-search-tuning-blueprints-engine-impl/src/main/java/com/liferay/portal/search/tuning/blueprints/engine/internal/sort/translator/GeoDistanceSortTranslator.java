@@ -53,7 +53,7 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 		String field = jsonObject.getString(
 			SortConfigurationKeys.FIELD.getJsonKey());
 
-		if (BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				jsonObject, messages,
 				SortConfigurationKeys.CONFIGURATION.getJsonKey())) {
 
@@ -63,7 +63,7 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 		JSONObject configurationJSONObject = jsonObject.getJSONObject(
 			SortConfigurationKeys.CONFIGURATION.getJsonKey());
 
-		if (BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				configurationJSONObject, messages, "locations")) {
 
 			return Optional.empty();

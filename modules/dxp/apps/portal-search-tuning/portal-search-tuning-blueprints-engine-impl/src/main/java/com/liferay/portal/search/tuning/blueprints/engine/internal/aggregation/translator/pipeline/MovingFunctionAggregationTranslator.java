@@ -76,7 +76,7 @@ public class MovingFunctionAggregationTranslator
 	}
 
 	private boolean _validate(JSONObject jsonObject, Messages messages) {
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 			jsonObject, messages,
 			MovingFunctionAggregationBodyConfigurationKeys.BUCKETS_PATH.
 				getJsonKey(),

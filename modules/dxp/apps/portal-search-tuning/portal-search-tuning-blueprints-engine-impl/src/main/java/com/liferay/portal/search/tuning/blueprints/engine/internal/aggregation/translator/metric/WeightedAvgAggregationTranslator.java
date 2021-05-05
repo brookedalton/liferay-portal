@@ -82,7 +82,7 @@ public class WeightedAvgAggregationTranslator implements AggregationTranslator {
 	private JSONObject _getValueJSONObject(
 		JSONObject jsonObject, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				jsonObject, messages,
 				WeightedAvgAggregationBodyConfigurationKeys.VALUE.
 					getJsonKey())) {
@@ -93,7 +93,7 @@ public class WeightedAvgAggregationTranslator implements AggregationTranslator {
 		JSONObject valueJSONObject = jsonObject.getJSONObject(
 			WeightedAvgAggregationBodyConfigurationKeys.WEIGHT.getJsonKey());
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				valueJSONObject, messages, "field")) {
 
 			return null;
@@ -105,7 +105,7 @@ public class WeightedAvgAggregationTranslator implements AggregationTranslator {
 	private JSONObject _getWeightJSONObject(
 		JSONObject jsonObject, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				jsonObject, messages,
 				WeightedAvgAggregationBodyConfigurationKeys.WEIGHT.
 					getJsonKey())) {
@@ -116,7 +116,7 @@ public class WeightedAvgAggregationTranslator implements AggregationTranslator {
 		JSONObject weightJSONObject = jsonObject.getJSONObject(
 			WeightedAvgAggregationBodyConfigurationKeys.WEIGHT.getJsonKey());
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				weightJSONObject, messages, "field")) {
 
 			return null;

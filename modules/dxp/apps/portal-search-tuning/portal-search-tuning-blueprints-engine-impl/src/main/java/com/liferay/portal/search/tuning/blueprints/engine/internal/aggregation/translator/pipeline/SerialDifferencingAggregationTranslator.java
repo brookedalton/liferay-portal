@@ -46,7 +46,7 @@ public class SerialDifferencingAggregationTranslator
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				jsonObject, messages,
 				SerialDifferencingAggregationBodyConfigurationKeys.BUCKETS_PATH.
 					getJsonKey())) {

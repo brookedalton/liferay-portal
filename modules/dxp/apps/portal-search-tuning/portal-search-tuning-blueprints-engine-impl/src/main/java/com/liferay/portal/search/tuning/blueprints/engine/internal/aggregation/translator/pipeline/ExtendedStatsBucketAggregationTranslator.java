@@ -46,7 +46,7 @@ public class ExtendedStatsBucketAggregationTranslator
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				jsonObject, messages,
 				ExtendedStatsBucketAggregationBodyConfigurationKeys.
 					BUCKETS_PATH.getJsonKey())) {

@@ -46,7 +46,7 @@ public class SignificantTermsAggregationTranslator
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				jsonObject, messages,
 				SignificantTermsAggregationBodyConfigurationKeys.FIELD.
 					getJsonKey())) {

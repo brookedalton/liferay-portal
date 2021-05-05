@@ -243,7 +243,7 @@ public class SortSearchRequestBodyContributor
 	private boolean _validateConfiguration(
 		JSONObject jsonObject, Messages messages) {
 
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 			jsonObject, messages, SortConfigurationKeys.FIELD.getJsonKey());
 	}
 

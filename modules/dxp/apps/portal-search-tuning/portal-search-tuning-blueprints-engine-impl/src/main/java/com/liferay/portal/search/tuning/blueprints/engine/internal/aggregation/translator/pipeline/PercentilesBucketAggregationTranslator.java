@@ -46,7 +46,7 @@ public class PercentilesBucketAggregationTranslator
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				jsonObject, messages,
 				PercentilesBucketAggregationBodyConfigurationKeys.BUCKETS_PATH.
 					getJsonKey())) {

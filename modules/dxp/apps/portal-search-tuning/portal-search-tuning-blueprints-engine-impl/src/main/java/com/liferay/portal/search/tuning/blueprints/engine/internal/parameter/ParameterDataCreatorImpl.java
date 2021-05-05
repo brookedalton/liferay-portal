@@ -385,7 +385,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	private boolean _validateCustomParameterConfiguration(
 		JSONObject jsonObject, Messages messages) {
 
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 			jsonObject, messages,
 			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
 			CustomParameterConfigurationKeys.TYPE.getJsonKey());
@@ -394,7 +394,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	private boolean _validateSortParameterConfiguration(
 		JSONObject jsonObject, Messages messages) {
 
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 			jsonObject, messages,
 			SortConfigurationKeys.PARAMETER_NAME.getJsonKey(),
 			SortConfigurationKeys.FIELD.getJsonKey());

@@ -140,7 +140,7 @@ public class DateParameterBuilder implements ParameterBuilder {
 	private boolean _validateConfiguration(
 		Messages messages, JSONObject jsonObject) {
 
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 			jsonObject, messages,
 			CustomParameterConfigurationKeys.DATE_FORMAT.getJsonKey());
 	}

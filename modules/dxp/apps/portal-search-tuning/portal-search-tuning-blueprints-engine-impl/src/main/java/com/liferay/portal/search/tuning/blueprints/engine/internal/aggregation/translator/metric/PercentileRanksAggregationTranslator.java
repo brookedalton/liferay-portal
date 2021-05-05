@@ -52,7 +52,7 @@ public class PercentileRanksAggregationTranslator
 		double[] values = _getValues(jsonObject);
 
 		if ((values == null) ||
-			!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+			!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				jsonObject, messages,
 				MaxAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
 

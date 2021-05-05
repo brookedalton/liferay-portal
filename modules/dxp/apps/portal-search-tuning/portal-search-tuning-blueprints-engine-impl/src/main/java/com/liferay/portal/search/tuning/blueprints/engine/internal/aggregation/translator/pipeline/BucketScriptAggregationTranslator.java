@@ -47,7 +47,7 @@ public class BucketScriptAggregationTranslator
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
+		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
 				jsonObject, messages,
 				BucketScriptAggregationBodyConfigurationKeys.BUCKETS_PATH.
 					getJsonKey(),

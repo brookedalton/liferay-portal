@@ -17,6 +17,7 @@ package com.liferay.portal.search.tuning.blueprints.util.util;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -25,22 +26,35 @@ import java.util.stream.Stream;
 public class BlueprintJSONValidationUtil {
 
 	public static boolean validateRequiredFieldsPresent(
-		JSONObject jsonObject, Messages messages, String... fields) {
+		String className, JSONObject jsonObject, Messages messages,
+		String... fields) {
+
+		if (jsonObject == null) {
+			MessagesUtil.error(
+				messages, className,
+				new Throwable(
+					"Validation for fields " + Arrays.toString(fields) +
+						" failed because the configuration object was empty"),
+				null, null, null, "core.error.empty-configuration-object");
+
+			return false;
+		}
 
 		return Stream.of(
 			fields
 		).allMatch(
-			field -> _validateFieldPresent(jsonObject, messages, field)
+			field -> _validateFieldPresent(
+				jsonObject, messages, className, field)
 		);
 	}
 
 	private static boolean _validateFieldPresent(
-		JSONObject jsonObject, Messages messages, String field) {
+		JSONObject jsonObject, Messages messages, String className,
+		String field) {
 
 		if (!jsonObject.has(field)) {
 			MessagesUtil.requiredFieldMissingError(
-				messages, BlueprintJSONValidationUtil.class.getName(),
-				jsonObject, field);
+				messages, className, jsonObject, field);
 
 			return false;
 		}
