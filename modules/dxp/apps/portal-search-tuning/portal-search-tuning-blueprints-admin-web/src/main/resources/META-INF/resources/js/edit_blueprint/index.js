@@ -547,6 +547,9 @@ function EditBlueprintForm({
 								errors={formik.errors.selectedQueryElements}
 								frameworkConfig={formik.values.frameworkConfig}
 								indexFields={indexFields}
+								isSubmitting={
+									formik.isSubmitting || previewInfo.loading
+								}
 								onBlur={formik.handleBlur}
 								onChange={formik.handleChange}
 								onDeleteElement={_handleDeleteElement}

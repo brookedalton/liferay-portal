@@ -44,6 +44,7 @@ function Element({
 	id,
 	index,
 	indexFields = [],
+	isSubmitting,
 	onBlur = () => {},
 	onChange = () => {},
 	onDeleteElement,
@@ -99,7 +100,7 @@ function Element({
 		!!error.uiConfigurationValues[config.name];
 
 	const _renderInput = (config) => {
-		const disabled = !elementTemplateJSON.enabled;
+		const disabled = !elementTemplateJSON.enabled || isSubmitting;
 		const inputId = _getInputId(id, config.name);
 		const inputName = _getInputName(config.name);
 		const typeOptions = config.typeOptions || {};
@@ -458,6 +459,7 @@ Element.propTypes = {
 	id: PropTypes.number,
 	index: PropTypes.number,
 	indexFields: PropTypes.arrayOf(PropTypes.object),
+	isSubmitting: PropTypes.bool,
 	onBlur: PropTypes.func,
 	onChange: PropTypes.func,
 	onDeleteElement: PropTypes.func,

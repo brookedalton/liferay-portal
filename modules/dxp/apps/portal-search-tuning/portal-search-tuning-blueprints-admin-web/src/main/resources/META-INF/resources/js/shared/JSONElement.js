@@ -28,6 +28,7 @@ function JSONElement({
 	error = {},
 	id,
 	index,
+	isSubmitting,
 	onDeleteElement,
 	prefixedId,
 	setFieldTouched,
@@ -136,6 +137,7 @@ function JSONElement({
 					})}
 				>
 					<JSONInput
+						disabled={isSubmitting}
 						name={_inputName(index)}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
@@ -168,6 +170,7 @@ JSONElement.propTypes = {
 	error: PropTypes.object,
 	id: PropTypes.number,
 	index: PropTypes.number,
+	isSubmitting: PropTypes.bool,
 	onDeleteElement: PropTypes.func,
 	prefixedId: PropTypes.string,
 	setFieldTouched: PropTypes.func,

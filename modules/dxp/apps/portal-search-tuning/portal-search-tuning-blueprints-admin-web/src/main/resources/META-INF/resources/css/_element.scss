@@ -151,19 +151,6 @@
 				}
 			}
 
-			.custom-json {
-				&.disabled {
-					.codemirror-editor-wrapper {
-						border-color: $lightBackground;
-
-						.CodeMirror-line,
-						.cm-string {
-							color: #a7a9bc;
-						}
-					}
-				}
-			}
-
 			.date-picker-input {
 				display: flex;
 
@@ -198,6 +185,20 @@
 
 			.slider-configuration {
 				padding: 10px;
+			}
+		}
+	}
+
+	.custom-json {
+		&.disabled {
+			.codemirror-editor-wrapper {
+				border-color: $lightBackground;
+
+				.cm-atom,
+				.cm-string,
+				.CodeMirror-line {
+					color: #a7a9bc;
+				}
 			}
 		}
 	}
