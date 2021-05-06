@@ -17,13 +17,21 @@
 <%@ include file="/init.jsp" %>
 
 <%
-ViewBlueprintsManagementToolbarDisplayContext viewBlueprintsManagementToolbarDisplayContext = (ViewBlueprintsManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.VIEW_BLUEPRINTS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
-
 ViewBlueprintsDisplayContext viewBlueprintsDisplayContext = (ViewBlueprintsDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.VIEW_BLUEPRINTS_DISPLAY_CONTEXT);
 %>
 
+<portlet:actionURL name="<%= BlueprintsAdminMVCCommandNames.DELETE_BLUEPRINT %>" var="deleteBlueprintURL">
+	<portlet:param name="redirect" value="<%= currentURL %>" />
+</portlet:actionURL>
+
 <clay:management-toolbar
-	managementToolbarDisplayContext="<%= viewBlueprintsManagementToolbarDisplayContext %>"
+	additionalProps='<%=
+		HashMapBuilder.<String, Object>put(
+			"deleteBlueprintURL", deleteBlueprintURL
+		).build()
+	%>'
+	managementToolbarDisplayContext="<%= (ViewBlueprintsManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.VIEW_BLUEPRINTS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT) %>"
+	propsTransformer="js/view_blueprints/BlueprintEntriesManagementToolbarPropsTransformer"
 	searchContainerId="blueprintEntries"
 	supportsBulkActions="<%= true %>"
 />
@@ -52,58 +60,3 @@ ViewBlueprintsDisplayContext viewBlueprintsDisplayContext = (ViewBlueprintsDispl
 		</liferay-ui:search-container>
 	</aui:form>
 </clay:container-fluid>
-
-<liferay-frontend:component
-	componentId="<%= viewBlueprintsManagementToolbarDisplayContext.getDefaultEventHandler() %>"
-	module="js/view_blueprints/BlueprintEntriesManagementToolbarDefaultEventHandler"
-/>
-
-<aui:script sandbox="<%= true %>">
-	var submitForm = function (url) {
-		var searchContainer = document.getElementById(
-			'<portlet:namespace />blueprintEntries'
-		);
-
-		if (searchContainer) {
-			Liferay.Util.postForm(document.<portlet:namespace />fm, {
-				data: {
-					actionFormInstanceIds: Liferay.Util.listCheckedExcept(
-						searchContainer,
-						'<portlet:namespace />allRowIds'
-					),
-				},
-				url: url,
-			});
-		}
-	};
-
-	var deleteEntries = function () {
-		if (
-			confirm(
-				'<liferay-ui:message key="are-you-sure-you-want-to-delete-blueprints" />'
-			)
-		) {
-			<portlet:actionURL name="<%= BlueprintsAdminMVCCommandNames.DELETE_BLUEPRINT %>" var="deleteBlueprintURL">
-				<portlet:param name="redirect" value="<%= currentURL %>" />
-			</portlet:actionURL>
-
-			submitForm('<%= deleteBlueprintURL %>');
-		}
-	};
-
-	var ACTIONS = {
-		deleteEntries: deleteEntries,
-	};
-
-	Liferay.componentReady('blueprintEntriesManagementToolbar').then(
-		(managementToolbar) => {
-			managementToolbar.on('actionItemClicked', (event) => {
-				var itemData = event.data.item.data;
-
-				if (itemData && itemData.action && ACTIONS[itemData.action]) {
-					ACTIONS[itemData.action]();
-				}
-			});
-		}
-	);
-</aui:script>

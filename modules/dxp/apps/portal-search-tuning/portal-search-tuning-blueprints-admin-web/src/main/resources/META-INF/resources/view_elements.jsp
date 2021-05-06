@@ -17,13 +17,21 @@
 <%@ include file="/init.jsp" %>
 
 <%
-ViewElementsManagementToolbarDisplayContext viewElementsManagementToolbarDisplayContext = (ViewElementsManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.VIEW_ELEMENTS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
-
 ViewElementsDisplayContext viewElementsDisplayContext = (ViewElementsDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.VIEW_ELEMENTS_DISPLAY_CONTEXT);
 %>
 
+<portlet:actionURL name="<%= BlueprintsAdminMVCCommandNames.DELETE_ELEMENT %>" var="deleteElementURL">
+	<portlet:param name="redirect" value="<%= currentURL %>" />
+</portlet:actionURL>
+
 <clay:management-toolbar
-	managementToolbarDisplayContext="<%= viewElementsManagementToolbarDisplayContext %>"
+	additionalProps='<%=
+		HashMapBuilder.<String, Object>put(
+			"deleteElementURL", deleteElementURL
+		).build()
+	%>'
+	managementToolbarDisplayContext="<%= (ViewElementsManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.VIEW_ELEMENTS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT) %>"
+	propsTransformer="js/view_elements/ElementEntriesManagementToolbarPropsTransformer"
 	searchContainerId="elementEntries"
 	supportsBulkActions="<%= true %>"
 />
@@ -52,58 +60,3 @@ ViewElementsDisplayContext viewElementsDisplayContext = (ViewElementsDisplayCont
 		</liferay-ui:search-container>
 	</aui:form>
 </clay:container-fluid>
-
-<liferay-frontend:component
-	componentId="<%= viewElementsManagementToolbarDisplayContext.getDefaultEventHandler() %>"
-	module="js/view_elements/ElementEntriesManagementToolbarDefaultEventHandler"
-/>
-
-<aui:script sandbox="<%= true %>">
-	var submitForm = function (url) {
-		var searchContainer = document.getElementById(
-			'<portlet:namespace />elementEntries'
-		);
-
-		if (searchContainer) {
-			Liferay.Util.postForm(document.<portlet:namespace />fm, {
-				data: {
-					actionFormInstanceIds: Liferay.Util.listCheckedExcept(
-						searchContainer,
-						'<portlet:namespace />allRowIds'
-					),
-				},
-				url: url,
-			});
-		}
-	};
-
-	var deleteEntries = function () {
-		if (
-			confirm(
-				'<liferay-ui:message key="are-you-sure-you-want-to-delete-elements" />'
-			)
-		) {
-			<portlet:actionURL name="<%= BlueprintsAdminMVCCommandNames.DELETE_ELEMENT %>" var="deleteElementURL">
-				<portlet:param name="redirect" value="<%= currentURL %>" />
-			</portlet:actionURL>
-
-			submitForm('<%= deleteElementURL %>');
-		}
-	};
-
-	var ACTIONS = {
-		deleteEntries: deleteEntries,
-	};
-
-	Liferay.componentReady('elementEntriesManagementToolbar').then(
-		(managementToolbar) => {
-			managementToolbar.on('actionItemClicked', (event) => {
-				var itemData = event.data.item.data;
-
-				if (itemData && itemData.action && ACTIONS[itemData.action]) {
-					ACTIONS[itemData.action]();
-				}
-			});
-		}
-	);
-</aui:script>
