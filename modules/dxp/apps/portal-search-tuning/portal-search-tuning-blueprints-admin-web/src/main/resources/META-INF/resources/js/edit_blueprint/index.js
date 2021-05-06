@@ -87,6 +87,23 @@ function EditBlueprintForm({
 	);
 
 	/**
+	 * Abstracts title and description from the existing form, as
+	 * query builder has several inputs that should not be included in
+	 * submission.
+	 * @param {FormData} formData
+	 */
+	const _appendTitleAndDescription = (formData) => {
+		for (const pair of new FormData(form.current).entries()) {
+			if (
+				pair[0].includes(`${namespace}title`) ||
+				pair[0].includes(`${namespace}description`)
+			) {
+				formData.append(pair[0], pair[1]);
+			}
+		}
+	};
+
+	/**
 	 * Formats the form values for the "configuration" parameter to send to
 	 * the server. Sets defaults so the JSON.parse calls don't break.
 	 * @param {Object} values Form values
@@ -123,7 +140,9 @@ function EditBlueprintForm({
 	};
 
 	const _handleFormikSubmit = (values) => {
-		const formData = new FormData(form.current);
+		const formData = new FormData();
+
+		_appendTitleAndDescription(formData);
 
 		try {
 			formData.append(
@@ -388,7 +407,9 @@ function EditBlueprintForm({
 			loading: true,
 		}));
 
-		const formData = new FormData(form.current);
+		const formData = new FormData();
+
+		_appendTitleAndDescription(formData);
 
 		try {
 			formData.append(
