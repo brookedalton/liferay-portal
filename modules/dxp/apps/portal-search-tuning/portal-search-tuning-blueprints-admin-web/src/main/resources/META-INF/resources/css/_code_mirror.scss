@@ -1,4 +1,8 @@
 .codemirror-editor-wrapper {
 	border: 1px solid $mainLighten74;
 	border-radius: 4px;
+
+	.cm-s-default {
+		font-size: 13px;
+	}
 }
