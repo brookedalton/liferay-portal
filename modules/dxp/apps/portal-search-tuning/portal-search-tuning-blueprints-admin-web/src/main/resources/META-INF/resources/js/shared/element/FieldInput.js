@@ -12,12 +12,14 @@
 import React from 'react';
 
 import FieldRow from './FieldRow';
+import NullableCheckbox from './NullableCheckbox';
 
 function FieldInput({
 	disabled,
 	id,
 	indexFields,
 	name,
+	nullable,
 	setFieldTouched,
 	setFieldValue,
 	showBoost,
@@ -32,20 +34,34 @@ function FieldInput({
 	};
 
 	return (
-		<div className="single-field">
-			<FieldRow
-				boost={value.boost}
-				disabled={disabled}
-				field={value.field}
-				id={id}
-				indexFields={indexFields}
-				languageIdPosition={value.languageIdPosition}
-				locale={value.locale}
-				onBlur={_handleBlur}
-				onChange={_handleChange}
-				showBoost={showBoost}
-			/>
-		</div>
+		<>
+			<div className="single-field">
+				<FieldRow
+					boost={value ? value.boost : 1}
+					disabled={disabled || value === null}
+					field={value ? value.field : ''}
+					id={id}
+					indexFields={indexFields}
+					languageIdPosition={value ? value.languageIdPosition : -1}
+					locale={value ? value.locale : ''}
+					onBlur={_handleBlur}
+					onChange={_handleChange}
+					showBoost={showBoost}
+				/>
+			</div>
+
+			{nullable && (
+				<NullableCheckbox
+					defaultValue={{
+						field: '',
+						locale: '',
+					}}
+					disabled={disabled}
+					onChange={(val) => setFieldValue(name, val)}
+					value={value}
+				/>
+			)}
+		</>
 	);
 }
 

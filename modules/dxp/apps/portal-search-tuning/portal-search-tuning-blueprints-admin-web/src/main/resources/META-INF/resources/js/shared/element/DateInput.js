@@ -16,40 +16,62 @@ import ClayIcon from '@clayui/icon';
 import moment from 'moment';
 import React from 'react';
 
-function DateInput({disabled, name, setFieldTouched, setFieldValue, value}) {
-	return (
-		<div className="date-picker-input" onBlur={() => setFieldTouched(name)}>
-			<ClayDatePicker
-				dateFormat="MM/dd/yyyy"
-				disabled={disabled}
-				onValueChange={(value) => {
-					setFieldValue(name, moment(value).unix());
-				}}
-				placeholder="MM/DD/YYYY"
-				readOnly
-				sizing="sm"
-				value={value ? moment.unix(value).format('MM/DD/YYYY') : ''}
-				years={{
-					end: 2024,
-					start: 1997,
-				}}
-			/>
+import NullableCheckbox from './NullableCheckbox';
 
-			{!!value && (
-				<ClayInput.GroupItem shrink>
-					<ClayButton
-						aria-label={Liferay.Language.get('delete')}
-						disabled={disabled}
-						displayType="unstyled"
-						monospaced
-						onClick={() => setFieldValue(name, '')}
-						small
-					>
-						<ClayIcon symbol="times-circle" />
-					</ClayButton>
-				</ClayInput.GroupItem>
+function DateInput({
+	disabled,
+	name,
+	nullable,
+	setFieldTouched,
+	setFieldValue,
+	value,
+}) {
+	return (
+		<>
+			<div
+				className="date-picker-input"
+				onBlur={() => setFieldTouched(name)}
+			>
+				<ClayDatePicker
+					dateFormat="MM/dd/yyyy"
+					disabled={disabled || value === null}
+					onValueChange={(value) => {
+						setFieldValue(name, moment(value, 'MM/DD/YYYY').unix());
+					}}
+					placeholder="MM/DD/YYYY"
+					readOnly
+					sizing="sm"
+					value={value ? moment.unix(value).format('MM/DD/YYYY') : ''}
+					years={{
+						end: 2024,
+						start: 1997,
+					}}
+				/>
+
+				{!!value && (
+					<ClayInput.GroupItem shrink>
+						<ClayButton
+							aria-label={Liferay.Language.get('delete')}
+							disabled={disabled || value === null}
+							displayType="unstyled"
+							monospaced
+							onClick={() => setFieldValue(name, '')}
+							small
+						>
+							<ClayIcon symbol="times-circle" />
+						</ClayButton>
+					</ClayInput.GroupItem>
+				)}
+			</div>
+
+			{nullable && (
+				<NullableCheckbox
+					disabled={disabled}
+					onChange={(val) => setFieldValue(name, val)}
+					value={value}
+				/>
 			)}
-		</div>
+		</>
 	);
 }
 

@@ -105,6 +105,9 @@ function Element({
 		const inputName = _getInputName(config.name);
 		const typeOptions = config.typeOptions || {};
 
+		const nullable =
+			typeOptions.nullable || uiConfigurationValues[config.name] === null;
+
 		switch (config.type) {
 			case INPUT_TYPES.DATE:
 				return (
@@ -112,6 +115,7 @@ function Element({
 						configKey={config.name}
 						disabled={disabled}
 						name={inputName}
+						nullable={nullable}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
@@ -124,6 +128,7 @@ function Element({
 						id={inputId}
 						indexFields={indexFields}
 						name={inputName}
+						nullable={nullable}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						showBoost={typeOptions.boost}
@@ -137,6 +142,7 @@ function Element({
 						id={inputId}
 						indexFields={indexFields}
 						name={inputName}
+						nullable={nullable}
 						onBlur={onBlur}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
@@ -152,6 +158,7 @@ function Element({
 						itemType={typeOptions.itemType}
 						label={config.label}
 						name={inputName}
+						nullable={nullable}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
@@ -163,6 +170,7 @@ function Element({
 						disabled={disabled}
 						label={config.label}
 						name={inputName}
+						nullable={nullable}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
@@ -174,6 +182,7 @@ function Element({
 						disabled={disabled}
 						label={config.label}
 						name={inputName}
+						nullable={nullable}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
@@ -189,8 +198,10 @@ function Element({
 						max={typeOptions.max}
 						min={typeOptions.min}
 						name={inputName}
+						nullable={nullable}
 						onBlur={onBlur}
 						onChange={onChange}
+						setFieldValue={setFieldValue}
 						step={typeOptions.step}
 						unit={typeOptions.unit}
 						value={uiConfigurationValues[config.name]}
@@ -203,8 +214,10 @@ function Element({
 						disabled={disabled}
 						label={config.label}
 						name={inputName}
+						nullable={nullable}
+						onBlur={onBlur}
+						onChange={onChange}
 						options={typeOptions.options}
-						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
 					/>
@@ -217,6 +230,7 @@ function Element({
 						max={typeOptions.max}
 						min={typeOptions.min}
 						name={inputName}
+						nullable={nullable}
 						onBlur={onBlur}
 						onChange={onChange}
 						setFieldTouched={setFieldTouched}
@@ -231,8 +245,10 @@ function Element({
 						disabled={disabled}
 						label={config.label}
 						name={inputName}
+						nullable={nullable}
 						onBlur={onBlur}
 						onChange={onChange}
+						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
 					/>
 				);

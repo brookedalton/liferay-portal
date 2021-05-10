@@ -15,6 +15,8 @@ import ClayIcon from '@clayui/icon';
 import ClaySlider from '@clayui/slider';
 import React, {useState} from 'react';
 
+import NullableCheckbox from './NullableCheckbox';
+
 function SliderInput({
 	disabled,
 	id,
@@ -22,6 +24,7 @@ function SliderInput({
 	max,
 	min,
 	name,
+	nullable,
 	onBlur,
 	onChange,
 	setFieldTouched,
@@ -41,7 +44,7 @@ function SliderInput({
 				<ClayInput.GroupItem className="arrowless-input">
 					<ClayInput
 						aria-label={label}
-						disabled={disabled}
+						disabled={disabled || value === null}
 						id={id}
 						insetAfter
 						max={max}
@@ -51,13 +54,13 @@ function SliderInput({
 						onChange={onChange}
 						step={step}
 						type="number"
-						value={value}
+						value={value === null ? '' : value}
 					/>
 
 					<ClayInput.GroupInsetItem after>
 						<ClayButton
 							aria-label={Liferay.Language.get('slider')}
-							disabled={disabled}
+							disabled={disabled || value === null}
 							displayType="unstyled"
 							onClick={() => setActive(!active)}
 						>
@@ -75,9 +78,17 @@ function SliderInput({
 						onBlur={() => setFieldTouched(name)}
 						onValueChange={_handleSliderChange}
 						step={step}
-						value={value}
+						value={value === null ? '' : value}
 					/>
 				</div>
+			)}
+
+			{nullable && (
+				<NullableCheckbox
+					disabled={disabled}
+					onChange={(val) => setFieldValue(name, val)}
+					value={value}
+				/>
 			)}
 		</>
 	);

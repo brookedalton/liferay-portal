@@ -10,43 +10,55 @@
  */
 
 import {ClaySelect} from '@clayui/form';
-import React from 'react';
+import React, {useRef} from 'react';
+
+import NullableCheckbox from './NullableCheckbox';
 
 function SelectInput({
 	disabled,
 	label,
 	name,
-	options,
-	setFieldTouched,
+	nullable,
+	onBlur,
+	onChange,
+	options = [],
 	setFieldValue,
 	value,
 }) {
-	return (
-		<ClaySelect
-			aria-label={label}
-			className="form-control-sm"
-			disabled={disabled}
-			onBlur={() => setFieldTouched(name)}
-			onChange={(event) => {
-				const value =
-					typeof options[0].value == 'boolean' ||
-					typeof options[0].value == 'number'
-						? JSON.parse(event.target.value)
-						: event.target.value;
+	const selectRef = useRef(value || (options[0] && options[0].value) || '');
 
-				setFieldValue(name, value);
-			}}
-			value={value}
-		>
-			{options &&
-				options.map((item) => (
+	return (
+		<>
+			<ClaySelect
+				aria-label={label}
+				className="form-control-sm"
+				disabled={disabled || value === null}
+				name={name}
+				onBlur={onBlur}
+				onChange={(event) => {
+					selectRef.current = event.target.value;
+					onChange(event);
+				}}
+				value={value || selectRef.current}
+			>
+				{options.map((item) => (
 					<ClaySelect.Option
 						key={item.value}
 						label={item.label}
 						value={item.value}
 					/>
 				))}
-		</ClaySelect>
+			</ClaySelect>
+
+			{nullable && (
+				<NullableCheckbox
+					defaultValue={selectRef.current}
+					disabled={disabled}
+					onChange={(val) => setFieldValue(name, val)}
+					value={value}
+				/>
+			)}
+		</>
 	);
 }
 

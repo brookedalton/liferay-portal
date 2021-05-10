@@ -25,8 +25,8 @@ describe('utils', () => {
 			expect(isDefined(undefined)).toEqual(false);
 		});
 
-		it('returns false for null', () => {
-			expect(isDefined(null)).toEqual(false);
+		it('returns true for null', () => {
+			expect(isDefined(null)).toEqual(true);
 		});
 
 		it('returns true for empty string', () => {
@@ -130,49 +130,27 @@ describe('utils', () => {
 		it('gets default value for select', () => {
 			expect(
 				getDefaultValue({
-					defaultValue: false,
+					defaultValue: 'fuzzy_value',
 					label: 'Enabled',
 					name: 'enabled',
 					type: 'select',
 					typeOptions: {
 						options: [
 							{
-								label: 'True',
-								value: true,
+								label: 'Best Value',
+								value: 'best_value',
 							},
 							{
-								label: 'False',
-								value: false,
+								label: 'Fuzzy Value',
+								value: 'fuzzy_value',
 							},
 						],
 					},
 				})
-			).toEqual(false);
+			).toEqual('fuzzy_value');
 		});
 
-		it('gets default value for empty select with boolean', () => {
-			expect(
-				getDefaultValue({
-					label: 'Enabled',
-					name: 'enabled',
-					type: 'select',
-					typeOptions: {
-						options: [
-							{
-								label: 'True',
-								value: true,
-							},
-							{
-								label: 'False',
-								value: false,
-							},
-						],
-					},
-				})
-			).toEqual(true); // Gets first value in options
-		});
-
-		it('gets default value for empty select with string', () => {
+		it('gets default value for empty select', () => {
 			expect(
 				getDefaultValue({
 					label: 'Value',

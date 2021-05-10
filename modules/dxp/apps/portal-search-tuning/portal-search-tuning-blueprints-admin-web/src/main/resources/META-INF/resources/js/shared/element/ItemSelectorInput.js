@@ -15,12 +15,15 @@ import ClayIcon from '@clayui/icon';
 import {openSelectionModal} from 'frontend-js-web';
 import React from 'react';
 
+import NullableCheckbox from './NullableCheckbox';
+
 function ItemSelectorInput({
 	disabled,
 	entityJSON,
 	itemType,
 	label,
 	name,
+	nullable,
 	setFieldTouched,
 	setFieldValue,
 	value,
@@ -65,52 +68,63 @@ function ItemSelectorInput({
 	};
 
 	return (
-		<ClayInput.Group onBlur={() => setFieldTouched(name)} small>
-			<ClayInput.GroupItem>
-				<ClayInput
-					aria-label={label}
-					disabled={disabled}
-					name={name}
-					readOnly
-					type="text"
-					value={
-						value.length > 0
-							? value.map((item) => item.label).join(', ')
-							: ''
-					}
-				/>
-			</ClayInput.GroupItem>
+		<>
+			<ClayInput.Group onBlur={() => setFieldTouched(name)} small>
+				<ClayInput.GroupItem>
+					<ClayInput
+						aria-label={label}
+						disabled={disabled || value === null}
+						name={name}
+						readOnly
+						type="text"
+						value={
+							value && value.length > 0
+								? value.map((item) => item.label).join(', ')
+								: ''
+						}
+					/>
+				</ClayInput.GroupItem>
 
-			{value.length > 0 && (
+				{value && value.length > 0 && (
+					<ClayInput.GroupItem shrink>
+						<ClayButton
+							aria-label={Liferay.Language.get('delete')}
+							className="component-action"
+							disabled={disabled || value === null}
+							displayType="unstyled"
+							onClick={() => setFieldValue(name, [])}
+						>
+							<ClayIcon symbol="times-circle" />
+						</ClayButton>
+					</ClayInput.GroupItem>
+				)}
+
 				<ClayInput.GroupItem shrink>
 					<ClayButton
-						aria-label={Liferay.Language.get('delete')}
-						className="component-action"
-						disabled={disabled}
-						displayType="unstyled"
-						onClick={() => setFieldValue(name, [])}
+						aria-label={Liferay.Language.get('select')}
+						disabled={disabled || !entityJSON || value === null}
+						displayType="secondary"
+						onClick={() => {
+							if (entityJSON) {
+								_handleMultipleEntitySelect(itemType);
+							}
+						}}
+						small
 					>
-						<ClayIcon symbol="times-circle" />
+						{Liferay.Language.get('select')}
 					</ClayButton>
 				</ClayInput.GroupItem>
-			)}
+			</ClayInput.Group>
 
-			<ClayInput.GroupItem shrink>
-				<ClayButton
-					aria-label={Liferay.Language.get('select')}
-					disabled={disabled || !entityJSON}
-					displayType="secondary"
-					onClick={() => {
-						if (entityJSON) {
-							_handleMultipleEntitySelect(itemType);
-						}
-					}}
-					small
-				>
-					{Liferay.Language.get('select')}
-				</ClayButton>
-			</ClayInput.GroupItem>
-		</ClayInput.Group>
+			{nullable && (
+				<NullableCheckbox
+					defaultValue={[]}
+					disabled={disabled}
+					onChange={(val) => setFieldValue(name, val)}
+					value={value}
+				/>
+			)}
+		</>
 	);
 }
 

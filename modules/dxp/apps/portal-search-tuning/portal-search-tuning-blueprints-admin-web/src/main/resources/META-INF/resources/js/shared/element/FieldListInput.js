@@ -15,12 +15,14 @@ import ClayIcon from '@clayui/icon';
 import React from 'react';
 
 import FieldRow from './FieldRow';
+import NullableCheckbox from './NullableCheckbox';
 
 function FieldListInput({
 	disabled,
 	id,
 	indexFields,
 	name,
+	nullable,
 	setFieldTouched,
 	setFieldValue,
 	showBoost,
@@ -46,40 +48,52 @@ function FieldListInput({
 	};
 
 	return (
-		<div className="field">
-			{value.map((item, index) => (
-				<FieldRow
-					boost={item.boost}
-					disabled={disabled}
-					field={item.field}
-					id={`${id}_${index}`}
-					index={index}
-					indexFields={indexFields}
-					key={index}
-					languageIdPosition={item.languageIdPosition}
-					locale={item.locale}
-					onBlur={_handleBlur}
-					onChange={_handleChange(index)}
-					onDelete={_handleFieldRowDelete(index)}
-					showBoost={showBoost}
-				/>
-			))}
+		<>
+			<div className="field">
+				{value &&
+					value.map((item, index) => (
+						<FieldRow
+							boost={item.boost}
+							disabled={disabled || value === null}
+							field={item.field}
+							id={`${id}_${index}`}
+							index={index}
+							indexFields={indexFields}
+							key={index}
+							languageIdPosition={item.languageIdPosition}
+							locale={item.locale}
+							onBlur={_handleBlur}
+							onChange={_handleChange(index)}
+							onDelete={_handleFieldRowDelete(index)}
+							showBoost={showBoost}
+						/>
+					))}
 
-			<ClayForm.Group className="add-remove-field">
-				<ClayButton.Group spaced>
-					<ClayButton
-						aria-label={Liferay.Language.get('add-field')}
-						disabled={disabled}
-						displayType="secondary"
-						monospaced
-						onClick={_handleFieldRowAdd}
-						small
-					>
-						<ClayIcon symbol="plus" />
-					</ClayButton>
-				</ClayButton.Group>
-			</ClayForm.Group>
-		</div>
+				<ClayForm.Group className="add-remove-field">
+					<ClayButton.Group spaced>
+						<ClayButton
+							aria-label={Liferay.Language.get('add-field')}
+							disabled={disabled || value === null}
+							displayType="secondary"
+							monospaced
+							onClick={_handleFieldRowAdd}
+							small
+						>
+							<ClayIcon symbol="plus" />
+						</ClayButton>
+					</ClayButton.Group>
+				</ClayForm.Group>
+			</div>
+
+			{nullable && (
+				<NullableCheckbox
+					defaultValue={[]}
+					disabled={disabled}
+					onChange={(val) => setFieldValue(name, val)}
+					value={value}
+				/>
+			)}
+		</>
 	);
 }
 

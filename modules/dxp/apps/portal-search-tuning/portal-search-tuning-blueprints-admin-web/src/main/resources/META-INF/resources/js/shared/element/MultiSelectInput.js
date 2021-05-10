@@ -12,10 +12,13 @@
 import ClayMultiSelect from '@clayui/multi-select';
 import React, {useState} from 'react';
 
+import NullableCheckbox from './NullableCheckbox';
+
 function MultiSelectInput({
 	disabled,
 	label,
 	name,
+	nullable,
 	setFieldTouched,
 	setFieldValue,
 	value,
@@ -23,26 +26,37 @@ function MultiSelectInput({
 	const [inputValue, setInputValue] = useState('');
 
 	return (
-		<ClayMultiSelect
-			aria-label={label}
-			disabled={disabled}
-			inputValue={inputValue}
-			items={value}
-			onBlur={() => {
-				if (inputValue) {
-					setFieldValue(name, [
-						...value,
-						{label: inputValue, value: inputValue},
-					]);
+		<>
+			<ClayMultiSelect
+				aria-label={label}
+				disabled={disabled || value === null}
+				inputValue={inputValue}
+				items={value || []}
+				onBlur={() => {
+					if (inputValue) {
+						setFieldValue(name, [
+							...value,
+							{label: inputValue, value: inputValue},
+						]);
 
-					setInputValue('');
-				}
+						setInputValue('');
+					}
 
-				setFieldTouched(name);
-			}}
-			onChange={setInputValue}
-			onItemsChange={(value) => setFieldValue(name, value)}
-		/>
+					setFieldTouched(name);
+				}}
+				onChange={setInputValue}
+				onItemsChange={(value) => setFieldValue(name, value)}
+			/>
+
+			{nullable && (
+				<NullableCheckbox
+					defaultValue={[]}
+					disabled={disabled}
+					onChange={(val) => setFieldValue(name, val)}
+					value={value}
+				/>
+			)}
+		</>
 	);
 }
 

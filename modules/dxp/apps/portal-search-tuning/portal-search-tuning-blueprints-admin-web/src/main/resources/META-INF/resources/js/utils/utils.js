@@ -34,7 +34,7 @@ export const openSuccessToast = (config) => {
 };
 
 /**
- * Function used to identify whether a required value is not null or undefined
+ * Function used to identify whether a required value is not undefined
  *
  * Examples:
  * isDefined(false)
@@ -44,12 +44,12 @@ export const openSuccessToast = (config) => {
  * isDefined('')
  * => true
  * isDefined(null)
- * => false
+ * => true
  *
  * @param {String|object} item Item to check
  * @return {boolean}
  */
-export const isDefined = (item) => item !== null && typeof item !== 'undefined';
+export const isDefined = (item) => typeof item !== 'undefined';
 
 /**
  * Checks if a value is blank. For example: `''` or `{}`.
@@ -205,6 +205,12 @@ export const getDefaultValue = (item) => {
 	const itemValue = item.defaultValue;
 	const itemTypeOptions = item.typeOptions || {};
 
+	const itemOptions = itemTypeOptions.options || [];
+
+	if (itemValue === null) {
+		return itemValue;
+	}
+
 	switch (item.type) {
 		case INPUT_TYPES.DATE:
 			return typeof itemValue == 'number'
@@ -242,14 +248,10 @@ export const getDefaultValue = (item) => {
 				? toNumber(itemValue)
 				: '';
 		case INPUT_TYPES.SELECT:
-
-			// use isDefined in case of false or 0
-
-			return isDefined(itemValue)
+			return typeof itemValue === 'string'
 				? itemValue
-				: itemTypeOptions.options &&
-				  isDefined(itemTypeOptions.options[0].value)
-				? itemTypeOptions.options[0].value
+				: itemOptions[0] && itemOptions[0].value
+				? itemOptions[0].value
 				: '';
 		case INPUT_TYPES.SLIDER:
 			return typeof itemValue == 'number'
@@ -340,7 +342,32 @@ export const getElementOutput = ({
 						uiConfigurationValues[config.name];
 					const configTypeOptions = config.typeOptions || {};
 
-					if (config.type === INPUT_TYPES.DATE) {
+					if (initialConfigValue === null) {
+
+						// Remove property entirely if null. Check for regex with leading and trailing
+						// commas first.
+
+						const nullRegex = `\\"[\\w\\._]+\\"\\:\\"\\$\\{${CONFIG_PREFIX}\\.${config.name}}\\"`;
+
+						flattenJSON = replaceStr(
+							flattenJSON,
+							new RegExp(nullRegex + `,`),
+							''
+						);
+
+						flattenJSON = replaceStr(
+							flattenJSON,
+							new RegExp(`,` + nullRegex),
+							''
+						);
+
+						flattenJSON = replaceStr(
+							flattenJSON,
+							new RegExp(nullRegex),
+							''
+						);
+					}
+					else if (config.type === INPUT_TYPES.DATE) {
 						configValue = initialConfigValue
 							? JSON.parse(
 									moment
@@ -382,6 +409,12 @@ export const getElementOutput = ({
 							localizedField = field + transformedLocale;
 						}
 
+						localizedField = replaceStr(
+							localizedField,
+							/[\\"]+/,
+							''
+						);
+
 						configValue =
 							boost && boost > 0
 								? `${localizedField}^${boost}`
@@ -418,6 +451,12 @@ export const getElementOutput = ({
 											field + transformedLocale;
 									}
 
+									localizedField = replaceStr(
+										localizedField,
+										/[\\"]+/,
+										''
+									);
+
 									return boost && boost > 0
 										? `${localizedField}^${boost}`
 										: localizedField;
@@ -452,15 +491,21 @@ export const getElementOutput = ({
 									  )
 								: initialConfigValue;
 					}
-					else {
+					else if (config.type === INPUT_TYPES.SLIDER) {
 						configValue = initialConfigValue;
+					}
+					else {
+						configValue = replaceStr(
+							initialConfigValue,
+							/[\\"]+/,
+							''
+						);
 					}
 
 					// Check whether to add quotes around output
 
 					const key =
 						typeof configValue === 'number' ||
-						typeof configValue === 'boolean' ||
 						config.type === INPUT_TYPES.ITEM_SELECTOR ||
 						config.type === INPUT_TYPES.FIELD_MAPPING_LIST ||
 						config.type === INPUT_TYPES.JSON ||

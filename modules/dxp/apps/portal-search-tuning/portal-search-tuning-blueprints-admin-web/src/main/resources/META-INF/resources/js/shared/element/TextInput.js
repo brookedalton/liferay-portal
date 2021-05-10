@@ -12,20 +12,41 @@
 import {ClayInput} from '@clayui/form';
 import React from 'react';
 
-function TextInput({disabled, label, name, onBlur, onChange, value}) {
+import NullableCheckbox from './NullableCheckbox';
+
+function TextInput({
+	disabled,
+	label,
+	name,
+	nullable,
+	onBlur,
+	onChange,
+	setFieldValue,
+	value,
+}) {
 	return (
-		<ClayInput.Group small>
-			<ClayInput.GroupItem prepend>
-				<ClayInput
-					aria-label={label}
+		<>
+			<ClayInput.Group small>
+				<ClayInput.GroupItem prepend>
+					<ClayInput
+						aria-label={label}
+						disabled={disabled || value === null}
+						name={name}
+						onBlur={onBlur}
+						onChange={onChange}
+						value={value || ''}
+					/>
+				</ClayInput.GroupItem>
+			</ClayInput.Group>
+
+			{nullable && (
+				<NullableCheckbox
 					disabled={disabled}
-					name={name}
-					onBlur={onBlur}
-					onChange={onChange}
+					onChange={(val) => setFieldValue(name, val)}
 					value={value}
 				/>
-			</ClayInput.GroupItem>
-		</ClayInput.Group>
+			)}
+		</>
 	);
 }
 

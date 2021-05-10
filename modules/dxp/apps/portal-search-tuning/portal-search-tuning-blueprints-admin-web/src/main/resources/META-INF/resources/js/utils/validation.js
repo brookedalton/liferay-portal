@@ -14,6 +14,10 @@ import {INPUT_TYPES} from './inputTypes';
 import {isDefined, sub} from './utils';
 
 export const validateBoost = (configValue, type) => {
+	if (configValue === null) {
+		return;
+	}
+
 	if (type === INPUT_TYPES.FIELD_MAPPING && configValue.boost < 0) {
 		return ERROR_MESSAGES.NEGATIVE_BOOST;
 	}
@@ -27,11 +31,11 @@ export const validateBoost = (configValue, type) => {
 };
 
 export const validateJSON = (configValue, type) => {
-	if (
-		!isDefined(configValue) ||
-		configValue == '' ||
-		type !== INPUT_TYPES.JSON
-	) {
+	if (configValue === null || !isDefined(configValue) || configValue == '') {
+		return;
+	}
+
+	if (type !== INPUT_TYPES.JSON) {
 		return;
 	}
 
@@ -44,6 +48,9 @@ export const validateJSON = (configValue, type) => {
 };
 
 export const validateNumberRange = (configValue, type, typeOptions) => {
+	if (configValue === null) {
+		return;
+	}
 	if (![INPUT_TYPES.NUMBER, INPUT_TYPES.SLIDER].includes(type)) {
 		return;
 	}
@@ -58,7 +65,7 @@ export const validateNumberRange = (configValue, type, typeOptions) => {
 };
 
 export const validateRequired = (configValue, type, required = true) => {
-	if (!required) {
+	if (!required || configValue === null) {
 		return;
 	}
 
