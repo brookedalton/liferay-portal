@@ -28,8 +28,11 @@ export default {
 								boost: '${configuration.boost}',
 								fields: '${configuration.fields}',
 								fuzziness: '${configuration.fuzziness}',
+								minimum_should_match:
+									'${configuration.minimum_should_match}',
 								operator: '${configuration.operator}',
 								query: '${keywords}',
+								slop: '${configuration.slop}',
 								type: '${configuration.type}',
 							},
 						},
@@ -124,10 +127,14 @@ export default {
 						},
 					},
 					{
+						defaultValue: 'AUTO',
+						helpText:
+							'Only use fuzziness with the following match types: most fields, best fields, bool prefix.',
 						label: 'Fuzziness',
 						name: 'fuzziness',
 						type: 'select',
 						typeOptions: {
+							nullable: true,
 							options: [
 								{
 									label: 'Auto',
@@ -155,6 +162,28 @@ export default {
 						type: 'number',
 						typeOptions: {
 							min: 0,
+						},
+					},
+					{
+						defaultValue: '1',
+						label: 'Minimum Should Match',
+						name: 'minimum_should_match',
+						type: 'text',
+						typeOptions: {
+							nullable: true,
+						},
+					},
+					{
+						defaultValue: null,
+						helpText:
+							'Only use slop with the following match types: phrase, phrase prefix.',
+						label: 'Slop',
+						name: 'slop',
+						type: 'number',
+						typeOptions: {
+							min: 0,
+							nullable: true,
+							step: 1,
 						},
 					},
 				],
