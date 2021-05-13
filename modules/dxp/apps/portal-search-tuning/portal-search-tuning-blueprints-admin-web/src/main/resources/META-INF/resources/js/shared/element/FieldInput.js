@@ -37,13 +37,13 @@ function FieldInput({
 		<>
 			<div className="single-field">
 				<FieldRow
-					boost={value ? value.boost : 1}
+					boost={value?.boost || 1}
 					disabled={disabled || value === null}
-					field={value ? value.field : ''}
+					field={value?.field || ''}
 					id={id}
 					indexFields={indexFields}
-					languageIdPosition={value ? value.languageIdPosition : -1}
-					locale={value ? value.locale : ''}
+					languageIdPosition={value?.languageIdPosition || -1}
+					locale={value?.locale || ''}
 					onBlur={_handleBlur}
 					onChange={_handleChange}
 					showBoost={showBoost}

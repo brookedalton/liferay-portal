@@ -203,9 +203,6 @@ export const toNumber = (str) => {
  */
 export const getDefaultValue = (item) => {
 	const itemValue = item.defaultValue;
-	const itemTypeOptions = item.typeOptions || {};
-
-	const itemOptions = itemTypeOptions.options || [];
 
 	if (itemValue === null) {
 		return itemValue;
@@ -250,8 +247,8 @@ export const getDefaultValue = (item) => {
 		case INPUT_TYPES.SELECT:
 			return typeof itemValue === 'string'
 				? itemValue
-				: itemOptions[0] && itemOptions[0].value
-				? itemOptions[0].value
+				: item.typeOptions?.options?.[0]?.value
+				? item.typeOptions.options[0].value
 				: '';
 		case INPUT_TYPES.SLIDER:
 			return typeof itemValue == 'number'
@@ -298,15 +295,16 @@ export const getDefaultValue = (item) => {
  * @return {object}
  */
 export const getUIConfigurationValues = (uiConfigurationJSON) => {
-	if (uiConfigurationJSON && uiConfigurationJSON.fieldSets) {
+	if (Array.isArray(uiConfigurationJSON?.fieldSets)) {
 		return uiConfigurationJSON.fieldSets.reduce((allValues, fieldSet) => {
-			const uiConfigurationValues = fieldSet.fields
-				? fieldSet.fields.reduce((acc, curr) => {
-						return {
+			const uiConfigurationValues = Array.isArray(fieldSet.fields)
+				? fieldSet.fields.reduce(
+						(acc, curr) => ({
 							...acc,
 							[`${curr.name}`]: getDefaultValue(curr),
-						};
-				  }, {})
+						}),
+						{}
+				  )
 				: {};
 
 			// gets uiConfigurationValues within each fields array
@@ -331,16 +329,15 @@ export const getElementOutput = ({
 	uiConfigurationJSON,
 	uiConfigurationValues,
 }) => {
-	if (uiConfigurationJSON && uiConfigurationJSON.fieldSets) {
+	if (Array.isArray(uiConfigurationJSON?.fieldSets)) {
 		let flattenJSON = JSON.stringify(elementTemplateJSON);
 
 		uiConfigurationJSON.fieldSets.map((fieldSet) => {
-			if (fieldSet.fields) {
+			if (Array.isArray(fieldSet.fields)) {
 				fieldSet.fields.map((config) => {
 					let configValue = '';
 					const initialConfigValue =
 						uiConfigurationValues[config.name];
-					const configTypeOptions = config.typeOptions || {};
 
 					if (initialConfigValue === null) {
 
@@ -373,7 +370,7 @@ export const getElementOutput = ({
 									moment
 										.unix(initialConfigValue)
 										.format(
-											configTypeOptions.format ||
+											config.typeOptions?.format ||
 												'YYYYMMDDHHMMSS'
 										)
 							  )
@@ -481,13 +478,13 @@ export const getElementOutput = ({
 					}
 					else if (config.type === INPUT_TYPES.NUMBER) {
 						configValue =
-							typeof configTypeOptions.unitSuffix == 'string'
+							typeof config.typeOptions?.unitSuffix == 'string'
 								? typeof initialConfigValue == 'string'
 									? initialConfigValue.concat(
-											configTypeOptions.unitSuffix
+											config.typeOptions?.unitSuffix
 									  )
 									: JSON.stringify(initialConfigValue).concat(
-											configTypeOptions.unitSuffix
+											config.typeOptions?.unitSuffix
 									  )
 								: initialConfigValue;
 					}

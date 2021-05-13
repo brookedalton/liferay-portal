@@ -237,7 +237,7 @@ function EditBlueprintForm({
 
 				const configErrors = {};
 
-				if (uiConfigurationJSON && uiConfigurationJSON.fieldSets) {
+				if (Array.isArray(uiConfigurationJSON?.fieldSets)) {
 					uiConfigurationJSON.fieldSets.map(({fields = []}) => {
 						fields.map(({name, type, typeOptions = {}}) => {
 							const configValue = uiConfigurationValues[name];
@@ -264,7 +264,7 @@ function EditBlueprintForm({
 				}
 				else if (!uiConfigurationJSON) {
 					const configValue =
-						uiConfigurationValues.elementTemplateJSON;
+						uiConfigurationValues?.elementTemplateJSON;
 
 					const configError =
 						validateRequired(configValue, INPUT_TYPES.JSON) ||
@@ -355,7 +355,7 @@ function EditBlueprintForm({
 	});
 
 	const _handleAddElement = (element) => {
-		if (formik.touched && formik.touched.selectedQueryElements) {
+		if (formik.touched?.selectedQueryElements) {
 			formik.setTouched({
 				...formik.touched,
 				selectedQueryElements: [
@@ -382,7 +382,7 @@ function EditBlueprintForm({
 			(item) => item.id == id
 		);
 
-		if (formik.touched && formik.touched.selectedQueryElements) {
+		if (formik.touched?.selectedQueryElements) {
 			formik.setTouched({
 				...formik.touched,
 				selectedQueryElements: formik.touched.selectedQueryElements.filter(

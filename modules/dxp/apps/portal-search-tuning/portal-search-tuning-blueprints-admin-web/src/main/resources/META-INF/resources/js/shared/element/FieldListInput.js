@@ -50,24 +50,23 @@ function FieldListInput({
 	return (
 		<>
 			<div className="field">
-				{value &&
-					value.map((item, index) => (
-						<FieldRow
-							boost={item.boost}
-							disabled={disabled || value === null}
-							field={item.field}
-							id={`${id}_${index}`}
-							index={index}
-							indexFields={indexFields}
-							key={index}
-							languageIdPosition={item.languageIdPosition}
-							locale={item.locale}
-							onBlur={_handleBlur}
-							onChange={_handleChange(index)}
-							onDelete={_handleFieldRowDelete(index)}
-							showBoost={showBoost}
-						/>
-					))}
+				{value?.map((item, index) => (
+					<FieldRow
+						boost={item.boost}
+						disabled={disabled || value === null}
+						field={item.field}
+						id={`${id}_${index}`}
+						index={index}
+						indexFields={indexFields}
+						key={index}
+						languageIdPosition={item.languageIdPosition}
+						locale={item.locale}
+						onBlur={_handleBlur}
+						onChange={_handleChange(index)}
+						onDelete={_handleFieldRowDelete(index)}
+						showBoost={showBoost}
+					/>
+				))}
 
 				<ClayForm.Group className="add-remove-field">
 					<ClayButton.Group spaced>

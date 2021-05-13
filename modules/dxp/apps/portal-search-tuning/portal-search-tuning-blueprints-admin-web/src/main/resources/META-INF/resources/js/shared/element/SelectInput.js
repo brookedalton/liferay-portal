@@ -25,7 +25,7 @@ function SelectInput({
 	setFieldValue,
 	value,
 }) {
-	const selectRef = useRef(value || (options[0] && options[0].value) || '');
+	const selectRef = useRef(value || options[0]?.value || '');
 
 	return (
 		<>

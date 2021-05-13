@@ -82,10 +82,7 @@ function QueryBuilder({
 			const elementOutput = getElementOutput(element);
 
 			return (
-				elementOutput.clauses &&
-				elementOutput.clauses[0] &&
-				elementOutput.clauses[0].occur &&
-				elementOutput.clauses[0].occur === 'must' &&
+				elementOutput.clauses?.[0]?.occur === 'must' &&
 				elementOutput.enabled
 			);
 		});

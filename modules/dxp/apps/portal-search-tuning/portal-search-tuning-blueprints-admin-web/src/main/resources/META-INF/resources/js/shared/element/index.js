@@ -87,17 +87,12 @@ function Element({
 		!isEmpty(elementTemplateJSON.description[locale]);
 
 	const _hasConfigurationValues =
-		!!uiConfigurationJSON &&
-		uiConfigurationJSON.fieldSets &&
-		uiConfigurationJSON.fieldSets.some(
-			(item) => item.fields && item.fields.length > 0
-		);
+		Array.isArray(uiConfigurationJSON?.fieldSets) &&
+		uiConfigurationJSON.fieldSets.some((item) => item.fields?.length > 0);
 
 	const _hasError = (config) =>
-		touched.uiConfigurationValues &&
-		touched.uiConfigurationValues[config.name] &&
-		error.uiConfigurationValues &&
-		!!error.uiConfigurationValues[config.name];
+		touched.uiConfigurationValues?.[config.name] &&
+		!!error.uiConfigurationValues?.[config.name];
 
 	const _renderInput = (config) => {
 		const disabled = !elementTemplateJSON.enabled || isSubmitting;
@@ -384,7 +379,7 @@ function Element({
 			{!collapse && _hasConfigurationValues && (
 				<ClayList className="configuration-form-list">
 					{uiConfigurationJSON.fieldSets.map((fieldSet) => {
-						if (fieldSet.fields) {
+						if (Array.isArray(fieldSet.fields)) {
 							return fieldSet.fields.map((config) => (
 								<ClayList.Item
 									className={config.type}
@@ -401,11 +396,9 @@ function Element({
 											>
 												{config.label}
 
-												{config.typeOptions &&
-													isDefined(
-														config.typeOptions
-															.required
-													) &&
+												{isDefined(
+													config.typeOptions?.required
+												) &&
 													!config.typeOptions
 														.required && (
 														<span className="optional-text">
