@@ -68,16 +68,20 @@ export default {
 						type: 'number',
 					},
 					{
-						format: 'YYYYMMDD',
 						label: 'Create Date: From',
 						name: 'start_date',
 						type: 'date',
+						typeOptions: {
+							format: 'YYYYMMDD',
+						},
 					},
 					{
-						format: 'YYYYMMDD',
 						label: 'Create Date: To',
 						name: 'end_date',
 						type: 'date',
+						typeOptions: {
+							format: 'YYYYMMDD',
+						},
 					},
 					{
 						defaultValue: 10,
