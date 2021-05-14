@@ -117,6 +117,12 @@ function ResultListItem({item}) {
 							_renderListRow(property, item[property])
 						)}
 
+						<div className="list-group-header">
+							<span className="list-group-header-title">
+								{Liferay.Language.get('document-fields')}
+							</span>
+						</div>
+
 						{Object.keys(item.document)
 							.sort()
 							.map((property) =>

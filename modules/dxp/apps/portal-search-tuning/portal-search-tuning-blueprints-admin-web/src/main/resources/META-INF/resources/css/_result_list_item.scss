@@ -4,6 +4,16 @@
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 
+	.list-group-header {
+		background-color: unset;
+		border-left: 0;
+		border-right: 0;
+		border-top: 0;
+		font-size: 11px;
+		padding-left: 0;
+		padding-top: 12px;
+	}
+
 	.row.justify-content-start {
 		padding: 0 12px;
 
