@@ -339,10 +339,14 @@ export const getElementOutput = ({
 					const initialConfigValue =
 						uiConfigurationValues[config.name];
 
-					if (initialConfigValue === null) {
+					if (
+						initialConfigValue === null ||
+						(config.type === INPUT_TYPES.SELECT &&
+							initialConfigValue === '')
+					) {
 
-						// Remove property entirely if null. Check for regex with leading and trailing
-						// commas first.
+						// Remove property entirely if null (or blank for a select inputs).
+						// Check for regex with leading and trailing commas first.
 
 						const nullRegex = `\\"[\\w\\._]+\\"\\:\\"\\$\\{${CONFIG_PREFIX}\\.${config.name}}\\"`;
 

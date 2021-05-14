@@ -69,7 +69,7 @@ export const validateRequired = (configValue, type, required = true) => {
 		return;
 	}
 
-	if (configValue === '') {
+	if (configValue === '' && type !== INPUT_TYPES.SELECT) {
 		return ERROR_MESSAGES.REQUIRED;
 	}
 

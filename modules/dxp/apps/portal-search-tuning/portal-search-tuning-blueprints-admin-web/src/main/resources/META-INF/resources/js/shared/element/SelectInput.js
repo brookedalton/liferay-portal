@@ -10,9 +10,7 @@
  */
 
 import {ClaySelect} from '@clayui/form';
-import React, {useRef} from 'react';
-
-import NullableCheckbox from './NullableCheckbox';
+import React from 'react';
 
 function SelectInput({
 	disabled,
@@ -22,24 +20,18 @@ function SelectInput({
 	onBlur,
 	onChange,
 	options = [],
-	setFieldValue,
 	value,
 }) {
-	const selectRef = useRef(value || options[0]?.value || '');
-
 	return (
 		<>
 			<ClaySelect
 				aria-label={label}
 				className="form-control-sm"
-				disabled={disabled || value === null}
+				disabled={disabled}
 				name={name}
 				onBlur={onBlur}
-				onChange={(event) => {
-					selectRef.current = event.target.value;
-					onChange(event);
-				}}
-				value={value || selectRef.current}
+				onChange={onChange}
+				value={value}
 			>
 				{options.map((item) => (
 					<ClaySelect.Option
@@ -48,16 +40,11 @@ function SelectInput({
 						value={item.value}
 					/>
 				))}
-			</ClaySelect>
 
-			{nullable && (
-				<NullableCheckbox
-					defaultValue={selectRef.current}
-					disabled={disabled}
-					onChange={(val) => setFieldValue(name, val)}
-					value={value}
-				/>
-			)}
+				{(nullable || value === '') && (
+					<ClaySelect.Option key="" label="" value="" />
+				)}
+			</ClaySelect>
 		</>
 	);
 }
