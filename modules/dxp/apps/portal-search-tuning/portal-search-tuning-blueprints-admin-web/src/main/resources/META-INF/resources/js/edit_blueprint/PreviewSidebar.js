@@ -27,7 +27,7 @@ import CodeMirrorEditor from '../shared/CodeMirrorEditor';
 import PreviewModal from '../shared/PreviewModal';
 import SearchInput from '../shared/SearchInput';
 import useDidUpdateEffect from '../utils/useDidUpdateEffect';
-import {sub} from '../utils/utils';
+import {openSuccessToast, sub} from '../utils/utils';
 import ErrorListItem from './ErrorListItem';
 import ResultListItem from './ResultListItem';
 
@@ -52,6 +52,30 @@ function PreviewSidebar({
 	useDidUpdateEffect(() => {
 		_handleFetch();
 	}, [activeDelta, activePage]);
+
+	const _copyResultsToClipboard = () => {
+		navigator.clipboard.writeText(JSON.stringify(results, null, 2));
+
+		openSuccessToast({
+			message: Liferay.Language.get('copied-to-clipboard'),
+		});
+	};
+
+	const _downloadResultsToTxtFile = () => {
+		const element = document.createElement('a');
+		element.href = URL.createObjectURL(
+			new Blob([JSON.stringify(results, null, 2)], {
+				type: 'text/plain',
+			})
+		);
+		element.download = 'results.txt';
+		document.body.appendChild(element);
+		element.click();
+
+		openSuccessToast({
+			message: Liferay.Language.get('downloaded-json'),
+		});
+	};
 
 	const _handleDeltaChange = (delta) => () => {
 		setActiveDelta(delta);
@@ -146,12 +170,42 @@ function PreviewSidebar({
 				<ClayManagementToolbar.Item>
 					<PreviewModal
 						body={
-							<div className="json-modal">
-								<CodeMirrorEditor
-									folded
-									readOnly
-									value={JSON.stringify(results, null, 2)}
-								/>
+							<div className="preview-sidebar-modal">
+								<ClayButton.Group spaced>
+									<ClayButton
+										displayType="secondary"
+										onClick={_copyResultsToClipboard}
+										small
+									>
+										<span className="inline-item inline-item-before">
+											<ClayIcon symbol="copy" />
+										</span>
+
+										{Liferay.Language.get(
+											'copy-to-clipboard'
+										)}
+									</ClayButton>
+
+									<ClayButton
+										displayType="secondary"
+										onClick={_downloadResultsToTxtFile}
+										small
+									>
+										<span className="inline-item inline-item-before">
+											<ClayIcon symbol="download" />
+										</span>
+
+										{Liferay.Language.get('download-json')}
+									</ClayButton>
+								</ClayButton.Group>
+
+								<div className="json-modal">
+									<CodeMirrorEditor
+										folded
+										readOnly
+										value={JSON.stringify(results, null, 2)}
+									/>
+								</div>
 							</div>
 						}
 						size="lg"
