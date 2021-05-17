@@ -33,6 +33,10 @@ function SelectInput({
 				onChange={onChange}
 				value={value}
 			>
+				{(nullable || value === '') && (
+					<ClaySelect.Option key="nullableOption" label="" value="" />
+				)}
+
 				{options.map((item) => (
 					<ClaySelect.Option
 						key={item.value}
@@ -40,10 +44,6 @@ function SelectInput({
 						value={item.value}
 					/>
 				))}
-
-				{(nullable || value === '') && (
-					<ClaySelect.Option key="" label="" value="" />
-				)}
 			</ClaySelect>
 		</>
 	);
