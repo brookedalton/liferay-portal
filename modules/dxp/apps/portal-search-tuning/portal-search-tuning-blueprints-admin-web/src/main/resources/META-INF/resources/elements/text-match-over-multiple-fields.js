@@ -156,15 +156,6 @@ export default {
 						},
 					},
 					{
-						defaultValue: 1,
-						label: 'Boost',
-						name: 'boost',
-						type: 'number',
-						typeOptions: {
-							min: 0,
-						},
-					},
-					{
 						defaultValue: '1',
 						label: 'Minimum Should Match',
 						name: 'minimum_should_match',
@@ -184,6 +175,15 @@ export default {
 							min: 0,
 							nullable: true,
 							step: 1,
+						},
+					},
+					{
+						defaultValue: 1,
+						label: 'Boost',
+						name: 'boost',
+						type: 'number',
+						typeOptions: {
+							min: 0,
 						},
 					},
 				],
