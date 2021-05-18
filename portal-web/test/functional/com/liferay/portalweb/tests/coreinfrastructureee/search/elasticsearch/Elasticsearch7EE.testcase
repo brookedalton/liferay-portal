@@ -161,6 +161,7 @@ definition {
 
 	@priority = "5"
 	test PortalClusterSmokeTest {
+		property portal.acceptance = "brooke";
 		property app.server.bundles.size = "1";
 		property cluster.enabled = "true";
 		property portal.upstream = "quarantine";
