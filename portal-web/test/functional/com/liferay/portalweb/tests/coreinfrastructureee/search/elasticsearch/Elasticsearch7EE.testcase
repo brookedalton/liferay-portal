@@ -225,7 +225,9 @@ definition {
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
-		Clustering.shutdownSpecificServer(nodePort = "8");
+		Clustering.shutdownSpecificServer(nodePort = "8080");
+
+		Navigator.openSpecificURL(url = "http://localhost:9080");
 
 		SearchPortlets.searchEmbedded(searchTerm = "Apple");
 
