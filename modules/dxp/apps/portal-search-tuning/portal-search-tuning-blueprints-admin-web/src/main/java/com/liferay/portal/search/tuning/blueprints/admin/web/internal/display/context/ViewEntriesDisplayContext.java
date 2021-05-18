@@ -84,6 +84,9 @@ public abstract class ViewEntriesDisplayContext<R> {
 		portletURL.setProperty(
 			"mvcRenderCommandName", getMVCRenderCommandName());
 
+		portletURL.setParameter(
+			"mvcRenderCommandName", getMVCRenderCommandName());
+
 		portletURL.setParameter(BlueprintsAdminWebKeys.TAB, tab);
 
 		return portletURL;
