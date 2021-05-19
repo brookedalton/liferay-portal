@@ -16,7 +16,7 @@ import getCN from 'classnames';
 import {useFormik} from 'formik';
 import {fetch, navigate} from 'frontend-js-web';
 import {PropTypes} from 'prop-types';
-import React, {useContext, useRef, useState} from 'react';
+import React, {useContext, useMemo, useRef, useState} from 'react';
 
 import ErrorBoundary from '../shared/ErrorBoundary';
 import PageToolbar from '../shared/PageToolbar';
@@ -531,7 +531,7 @@ function EditBlueprintForm({
 								'no-query-elements-found'
 							)}
 							onAddElement={_handleAddElement}
-							onClose={() => setShowSidebar(false)}
+							onToggle={setShowSidebar}
 							title={Liferay.Language.get('add-query-elements')}
 							visible={showSidebar}
 						/>
@@ -584,7 +584,7 @@ function EditBlueprintForm({
 				initialTitle={initialTitle}
 				isSubmitting={formik.isSubmitting}
 				onCancel={redirectURL}
-				onChangeTab={(tab) => setTab(tab)}
+				onChangeTab={setTab}
 				onSubmit={(event) => {
 					event.preventDefault();
 
@@ -601,41 +601,46 @@ function EditBlueprintForm({
 				tab={tab}
 				tabs={TABS}
 			>
-				<ClayToolbar.Item>
-					<ClayButton
-						borderless
-						className={getCN({
-							active: showPreview,
-						})}
-						displayType="secondary"
-						onClick={() => {
-							setShowSidebar(false);
-							setShowPreview(!showPreview);
-						}}
-						small
-					>
-						{Liferay.Language.get('preview')}
+				{useMemo(
+					() => (
+						<ClayToolbar.Item>
+							<ClayButton
+								borderless
+								className={getCN({
+									active: showPreview,
+								})}
+								displayType="secondary"
+								onClick={() => {
+									setShowSidebar(false);
+									setShowPreview(!showPreview);
+								}}
+								small
+							>
+								{Liferay.Language.get('preview')}
 
-						{previewInfo.results.errors &&
-							!!previewInfo.results.errors.length && (
-								<span className="inline-item inline-item-after">
-									<ClayBadge
-										displayType="danger"
-										label={
-											previewInfo.results.errors.length
-										}
-									/>
-								</span>
-							)}
-					</ClayButton>
-				</ClayToolbar.Item>
+								{!!previewInfo.results.errors?.length && (
+									<span className="inline-item inline-item-after">
+										<ClayBadge
+											displayType="danger"
+											label={
+												previewInfo.results.errors
+													.length
+											}
+										/>
+									</span>
+								)}
+							</ClayButton>
+						</ClayToolbar.Item>
+					),
+					[showPreview, previewInfo.results.errors?.length]
+				)}
 			</PageToolbar>
 
 			<PreviewSidebar
 				loading={previewInfo.loading}
-				onClose={() => setShowPreview(false)}
 				onFetchResults={_handleFetchPreviewSearch}
 				onFocusElement={_handleFocusElement}
+				onToggle={setShowPreview}
 				results={previewInfo.results}
 				visible={showPreview}
 			/>

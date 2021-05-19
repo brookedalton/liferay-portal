@@ -35,9 +35,9 @@ const DELTAS = [10, 20, 30, 50];
 
 function PreviewSidebar({
 	loading,
-	onClose,
 	onFetchResults,
 	onFocusElement,
+	onToggle,
 	results,
 	visible,
 }) {
@@ -244,7 +244,7 @@ function PreviewSidebar({
 				<ClayButton
 					aria-label={Liferay.Language.get('dropdown')}
 					displayType="unstyled"
-					onClick={onClose}
+					onClick={() => onToggle(false)}
 					small
 				>
 					<ClayIcon symbol="times" />
@@ -302,8 +302,9 @@ function PreviewSidebar({
 
 PreviewSidebar.propTypes = {
 	loading: PropTypes.bool,
-	onClose: PropTypes.func,
 	onFetchResults: PropTypes.func,
+	onFocusElement: PropTypes.func,
+	onToggle: PropTypes.func,
 	results: PropTypes.object,
 	visible: PropTypes.bool,
 };

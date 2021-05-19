@@ -137,7 +137,7 @@ function AddElementSidebar({
 	elements = [],
 	emptyMessage,
 	onAddElement,
-	onClose,
+	onToggle,
 	title,
 	visible,
 }) {
@@ -236,7 +236,7 @@ function AddElementSidebar({
 				<ClayButton
 					aria-label={Liferay.Language.get('close')}
 					displayType="unstyled"
-					onClick={onClose}
+					onClick={() => onToggle(false)}
 					small
 				>
 					<ClayIcon symbol="times" />
@@ -281,7 +281,7 @@ AddElementSidebar.propTypes = {
 	elements: PropTypes.arrayOf(PropTypes.object),
 	emptyMessage: PropTypes.string,
 	onAddElement: PropTypes.func,
-	onClose: PropTypes.func,
+	onToggle: PropTypes.func,
 	title: PropTypes.string,
 	visible: PropTypes.bool,
 };
