@@ -68,6 +68,9 @@ public class SanitizeKeywordsProcessor implements KeywordsProcessor {
 
 		keywords = keywords.replaceAll("\"", "\\\\\"");
 
+		keywords = keywords.replaceAll("\\[", "&#91;");
+		keywords = keywords.replaceAll("\\]", "&#93;");
+
 		return keywords;
 	}
 
