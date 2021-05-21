@@ -55,17 +55,17 @@ function PreviewSidebar({
 		_handleFetch();
 	}, [activeDelta, activePage]);
 
-	const _handleDeltaChange = (delta) => () => {
-		setActiveDelta(delta);
-		setActivePage(1);
-	};
-
-	const _onCopyToClipboard = () => {
+	const _handleCopyToClipboard = () => {
 		navigator.clipboard.writeText(JSON.stringify(results, null, 2));
 
 		openSuccessToast({
 			message: Liferay.Language.get('copied-to-clipboard'),
 		});
+	};
+
+	const _handleDeltaChange = (delta) => () => {
+		setActiveDelta(delta);
+		setActivePage(1);
 	};
 
 	const _renderErrors = () => (
@@ -160,7 +160,7 @@ function PreviewSidebar({
 								<ClayButton.Group spaced>
 									<ClayButton
 										displayType="secondary"
-										onClick={_onCopyToClipboard}
+										onClick={_handleCopyToClipboard}
 										small
 									>
 										<span className="inline-item inline-item-before">
