@@ -16,6 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.CollectionMode;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregation;
@@ -25,8 +26,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.u
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
-import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -48,19 +47,12 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
-
-			return Optional.empty();
-		}
-
 		TermsAggregation aggregation = _aggregations.terms(
 			aggregationName,
 			jsonObject.getString(
 				TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
 
-		_setCollectMode(aggregation, jsonObject, messages);
+		_setCollectMode(aggregation, jsonObject);
 
 		_setterHelper.setStringValue(
 			jsonObject,
@@ -111,31 +103,17 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 	}
 
 	private void _setCollectMode(
-		TermsAggregation aggregation, JSONObject jsonObject,
-		Messages messages) {
-
-		if (!jsonObject.has(
-				TermsAggregationBodyConfigurationKeys.COLLECT_MODE.
-					getJsonKey())) {
-
-			return;
-		}
+		TermsAggregation aggregation, JSONObject jsonObject) {
 
 		String collectModeString = jsonObject.getString(
 			TermsAggregationBodyConfigurationKeys.COLLECT_MODE.getJsonKey());
 
-		try {
-			aggregation.setCollectionMode(
-				CollectionMode.valueOf(
-					StringUtil.toUpperCase(collectModeString)));
+		if (Validator.isBlank(collectModeString)) {
+			return;
 		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			MessagesUtil.invalidConfigurationValueError(
-				messages, getClass().getName(), illegalArgumentException,
-				jsonObject,
-				TermsAggregationBodyConfigurationKeys.COLLECT_MODE.getJsonKey(),
-				collectModeString);
-		}
+
+		aggregation.setCollectionMode(
+			CollectionMode.valueOf(StringUtil.toUpperCase(collectModeString)));
 	}
 
 	@Reference

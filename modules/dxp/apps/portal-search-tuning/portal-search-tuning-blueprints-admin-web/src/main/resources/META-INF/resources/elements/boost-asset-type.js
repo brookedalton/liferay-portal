@@ -35,7 +35,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Boost the given asset type over others',
 		},

@@ -144,8 +144,8 @@ export const INITIAL_CONFIGURATION = {
 			source_includes: [],
 		},
 	},
-	aggregation_configuration: [],
-	facet_configuration: [],
+	aggregation_configuration: {},
+	facet_configuration: {},
 	framework_configuration: {
 		apply_indexer_clauses: false,
 		searchable_asset_types: SEARCHABLE_ASSET_TYPES,
@@ -178,7 +178,7 @@ export const mockSearchResults = (itemsPerPage = 10) => {
 
 	return {
 		aggregations: {},
-		facets: [],
+		facets: {},
 		hits,
 		meta: {
 			executionTime: '0.061',

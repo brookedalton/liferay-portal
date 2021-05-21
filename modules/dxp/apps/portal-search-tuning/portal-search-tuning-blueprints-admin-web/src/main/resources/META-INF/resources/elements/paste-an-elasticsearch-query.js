@@ -28,7 +28,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Paste any Elasticsearch query body in the element as is',
 		},

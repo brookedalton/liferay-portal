@@ -15,11 +15,10 @@
 package com.liferay.portal.search.tuning.blueprints.engine.parameter;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.visitor.EvaluationVisitor;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.visitor.ToStringVisitor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,7 +33,7 @@ public class FloatParameter implements Parameter {
 	}
 
 	@Override
-	public boolean accept(ConditionEvaluationVisitor visitor)
+	public boolean accept(EvaluationVisitor visitor)
 		throws ParameterEvaluationException {
 
 		return visitor.visit(this);
@@ -58,25 +57,6 @@ public class FloatParameter implements Parameter {
 	@Override
 	public String getName() {
 		return _name;
-	}
-
-	@Override
-	public List<EvaluationType> getSupportedEvaluationTypes() {
-		List<EvaluationType> evaluationTypes = new ArrayList<>();
-
-		evaluationTypes.add(EvaluationType.EQ);
-		evaluationTypes.add(EvaluationType.EXISTS);
-		evaluationTypes.add(EvaluationType.NE);
-		evaluationTypes.add(EvaluationType.GT);
-		evaluationTypes.add(EvaluationType.GTE);
-		evaluationTypes.add(EvaluationType.LT);
-		evaluationTypes.add(EvaluationType.LTE);
-		evaluationTypes.add(EvaluationType.IN);
-		evaluationTypes.add(EvaluationType.NOT_IN);
-		evaluationTypes.add(EvaluationType.IN_RANGE);
-		evaluationTypes.add(EvaluationType.NOT_IN_RANGE);
-
-		return evaluationTypes;
 	}
 
 	@Override

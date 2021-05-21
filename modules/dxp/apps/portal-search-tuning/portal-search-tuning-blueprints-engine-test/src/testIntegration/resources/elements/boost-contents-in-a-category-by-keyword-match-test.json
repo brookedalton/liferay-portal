@@ -19,15 +19,12 @@
 				}
 			}
 		],
-		"conditions": [
-			{
-				"configuration": {
-					"evaluation_type": "any_word_in",
-					"parameter_name": "${keywords}",
-					"value": "${configuration.keywords}"
-				}
+		"conditions": {
+			"contains": {
+				"parameter_name": "${keywords}",
+				"value": "${configuration.keywords}"
 			}
-		],
+		},
 		"description": {
 			"en_US": "Show Web Contents in a category higher in the results, if searchphrase contains any of the given keywords"
 		},

@@ -23,7 +23,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.u
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -46,32 +45,19 @@ public class DateHistogramAggregationTranslator
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				DateHistogramAggregationBodyConfigurationKeys.FIELD.
-					getJsonKey())) {
-
-			return Optional.empty();
-		}
-
 		DateHistogramAggregation aggregation = _aggregations.dateHistogram(
 			aggregationName,
 			jsonObject.getString(
 				DateHistogramAggregationBodyConfigurationKeys.FIELD.
 					getJsonKey()));
 
-		_setBounds(aggregation, jsonObject);
+		_aggregationHelper.setLongBounds(jsonObject, aggregation::setBounds);
 
 		_setterHelper.setStringValue(
 			jsonObject,
 			DateHistogramAggregationBodyConfigurationKeys.
 				DATE_HISTOGRAM_INTERVAL.getJsonKey(),
 			aggregation::setDateHistogramInterval);
-
-		_setterHelper.setLongValue(
-			jsonObject,
-			DateHistogramAggregationBodyConfigurationKeys.INTERVAL.getJsonKey(),
-			aggregation::setInterval);
 
 		_setterHelper.setBooleanValue(
 			jsonObject,
@@ -101,42 +87,6 @@ public class DateHistogramAggregationTranslator
 			jsonObject, aggregation::setScript, messages);
 
 		return _aggregationHelper.wrap(aggregation);
-	}
-
-	private void _setBounds(
-		DateHistogramAggregation aggregation, JSONObject jsonObject) {
-
-		if (jsonObject.has(
-				DateHistogramAggregationBodyConfigurationKeys.EXTENDED_BOUNDS.
-					getJsonKey())) {
-
-			_setBoundValues(
-				aggregation,
-				jsonObject.getJSONObject(
-					DateHistogramAggregationBodyConfigurationKeys.
-						EXTENDED_BOUNDS.getJsonKey()));
-		}
-		else if (jsonObject.has(
-					DateHistogramAggregationBodyConfigurationKeys.HARD_BOUNDS.
-						getJsonKey())) {
-
-			_setBoundValues(
-				aggregation,
-				jsonObject.getJSONObject(
-					DateHistogramAggregationBodyConfigurationKeys.HARD_BOUNDS.
-						getJsonKey()));
-		}
-	}
-
-	private void _setBoundValues(
-		DateHistogramAggregation aggregation, JSONObject jsonObject) {
-
-		if (!jsonObject.has("min") || !jsonObject.has("max")) {
-			return;
-		}
-
-		aggregation.setBounds(
-			jsonObject.getLong("min"), jsonObject.getLong("max"));
 	}
 
 	@Reference

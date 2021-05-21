@@ -994,7 +994,7 @@ describe('utils', () => {
 					elementTemplateJSON: {
 						category: 'custom',
 						clauses: [],
-						conditions: [],
+						conditions: {},
 						description: 'Editable JSON text area',
 						enabled: true,
 						icon: 'custom-field',
@@ -1005,7 +1005,7 @@ describe('utils', () => {
 			).toEqual({
 				category: 'custom',
 				clauses: [],
-				conditions: [],
+				conditions: {},
 				description: 'Editable JSON text area',
 				enabled: true,
 				icon: 'custom-field',

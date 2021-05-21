@@ -29,6 +29,7 @@ public class Message implements Serializable {
 		_localizationKey = message._localizationKey;
 		_msg = message._msg;
 		_throwable = message._throwable;
+		_rootConfiguration = message._rootConfiguration;
 		_rootObject = message._rootObject;
 		_rootProperty = message._rootProperty;
 		_rootValue = message._rootValue;
@@ -49,6 +50,10 @@ public class Message implements Serializable {
 
 	public String getMsg() {
 		return _msg;
+	}
+
+	public Object getRootConfiguration() {
+		return _rootConfiguration;
 	}
 
 	public Object getRootObject() {
@@ -77,7 +82,7 @@ public class Message implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(19);
+		StringBundler sb = new StringBundler(21);
 
 		sb.append("Message [_className=");
 		sb.append(_className);
@@ -87,6 +92,8 @@ public class Message implements Serializable {
 		sb.append(_localizationKey);
 		sb.append(", _msg=");
 		sb.append(_msg);
+		sb.append(", _rootConfiguration=");
+		sb.append(_rootConfiguration);
 		sb.append(", _rootObject=");
 		sb.append(_rootObject);
 		sb.append(", _rootProperty=");
@@ -140,6 +147,12 @@ public class Message implements Serializable {
 			return this;
 		}
 
+		public Builder rootConfiguration(String rootConfiguration) {
+			_message._rootConfiguration = rootConfiguration;
+
+			return this;
+		}
+
 		public Builder rootObject(Object object) {
 			_message._rootObject = object;
 
@@ -183,6 +196,7 @@ public class Message implements Serializable {
 	private String _elementId;
 	private String _localizationKey;
 	private String _msg;
+	private String _rootConfiguration;
 	private Object _rootObject;
 	private String _rootProperty;
 	private String _rootValue;

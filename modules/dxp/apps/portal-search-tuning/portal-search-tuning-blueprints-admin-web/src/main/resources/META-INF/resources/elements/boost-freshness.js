@@ -41,7 +41,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Give a gaussian boost to contents modified recently',
 		},

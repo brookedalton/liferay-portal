@@ -19,7 +19,6 @@ import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.kernel.service.AssetCategoryLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalServiceUtil;
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Role;
@@ -29,7 +28,6 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.RoleTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -104,17 +102,14 @@ public class BoostContentsInCategoryForAUserSegmentTest
 	}
 
 	@Override
-	protected JSONArray getConditions() {
-		return createJSONArray().put(
+	protected JSONObject getConditions() {
+		return JSONUtil.put(
+			"contains",
 			JSONUtil.put(
-				"configuration",
-				JSONUtil.put(
-					"evaluation_type", EvaluationType.CONTAINS.getjsonValue()
-				).put(
-					"parameter_name", "${user.user_segment_entry_ids}"
-				).put(
-					"value", _segmentsEntry.getSegmentsEntryId()
-				)));
+				"parameter_name", "${user.user_segment_entry_ids}"
+			).put(
+				"value", _segmentsEntry.getSegmentsEntryId()
+			));
 	}
 
 	@Override

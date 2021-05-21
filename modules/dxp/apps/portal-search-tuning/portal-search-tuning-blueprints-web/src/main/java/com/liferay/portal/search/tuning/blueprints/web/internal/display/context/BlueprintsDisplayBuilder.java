@@ -14,12 +14,10 @@
 
 package com.liferay.portal.search.tuning.blueprints.web.internal.display.context;
 
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.sort.SortConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.ResourceRequestKeys;
@@ -30,6 +28,7 @@ import com.liferay.portal.search.tuning.blueprints.web.internal.util.BlueprintsW
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
@@ -61,6 +60,14 @@ public class BlueprintsDisplayBuilder {
 	public BlueprintsDisplayContext build() {
 		return new BlueprintsDisplayContext(
 			_getData(), _isConfigured(_renderRequest));
+	}
+
+	private void _addSortOption(
+		Map<String, String> optionsMap, JSONObject jsonObject) {
+
+		optionsMap.put(
+			jsonObject.getString("label"),
+			jsonObject.getString("parameter_name"));
 	}
 
 	private Map<String, Object> _getContext() {
@@ -112,25 +119,21 @@ public class BlueprintsDisplayBuilder {
 
 		Blueprint blueprint = blueprintOptional.get();
 
-		Optional<JSONArray> configurationJSONArrayOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_blueprintHelper.getSortParameterConfigurationOptional(blueprint);
 
-		if (!configurationJSONArrayOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return optionsMap;
 		}
 
-		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
+		JSONObject configurationJSONObject =
+			configurationJSONObjectOptional.get();
 
-		for (int i = 0; i < configurationJSONArray.length(); i++) {
-			JSONObject configurationJSONObject =
-				configurationJSONArray.getJSONObject(i);
+		Set<String> keySet = configurationJSONObject.keySet();
 
-			optionsMap.put(
-				configurationJSONObject.getString(
-					SortConfigurationKeys.LABEL.getJsonKey()),
-				configurationJSONObject.getString(
-					SortConfigurationKeys.PARAMETER_NAME.getJsonKey()));
-		}
+		keySet.forEach(
+			key -> _addSortOption(
+				optionsMap, configurationJSONObject.getJSONObject(key)));
 
 		return optionsMap;
 	}

@@ -34,6 +34,11 @@ import java.util.Optional;
 public abstract class BaseFacetRequestHandler implements FacetRequestHandler {
 
 	@Override
+	public String getAggregationType() {
+		return "terms";
+	}
+
+	@Override
 	public Optional<Parameter> getParameterOptional(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
 		JSONObject jsonObject) {

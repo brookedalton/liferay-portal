@@ -24,7 +24,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.u
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -47,20 +46,12 @@ public class BucketScriptAggregationTranslator
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				BucketScriptAggregationBodyConfigurationKeys.BUCKETS_PATH.
-					getJsonKey(),
-				BucketScriptAggregationBodyConfigurationKeys.SCRIPT.
-					getJsonKey())) {
-
-			return Optional.empty();
-		}
-
 		Optional<Script> scriptOptional = _aggregationHelper.getScript(
-			jsonObject, messages);
+			jsonObject.get(
+				BucketScriptAggregationBodyConfigurationKeys.SCRIPT.
+					getJsonKey()));
 
-		if (scriptOptional.isPresent()) {
+		if (!scriptOptional.isPresent()) {
 			return Optional.empty();
 		}
 

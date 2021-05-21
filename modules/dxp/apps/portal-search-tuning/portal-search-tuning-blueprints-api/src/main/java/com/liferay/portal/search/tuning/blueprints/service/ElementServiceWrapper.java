@@ -147,12 +147,13 @@ public class ElementServiceWrapper
 				long elementId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration,
+				String configuration, boolean hidden,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _elementService.updateElement(
-			elementId, titleMap, descriptionMap, configuration, serviceContext);
+			elementId, titleMap, descriptionMap, configuration, hidden,
+			serviceContext);
 	}
 
 	@Override

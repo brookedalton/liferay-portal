@@ -41,15 +41,12 @@ export default {
 				},
 			},
 		],
-		conditions: [
-			{
-				configuration: {
-					evaluation_type: 'eq',
-					parameter_name: '${user.user_is_signed_in}',
-					value: false,
-				},
+		conditions: {
+			equals: {
+				parameter_name: '${user.user_is_signed_in}',
+				value: false,
 			},
-		],
+		},
 		description: {
 			en_US: 'Hide contents in a category if user is not logged in',
 		},

@@ -41,15 +41,12 @@
 						}
 					}
 				],
-				"conditions": [
-					{
-						"configuration": {
-							"evaluation_type": "eq",
-							"parameter_name": "${context.is_staging_group}",
-							"value": false
-						}
+				"conditions": {
+					"equals": {
+						"parameter_name": "${context.is_staging_group}",
+						"value": false
 					}
-				],
+				},
 				"description": {
 					"en_US": "Show only published contents on live sites, published and staged contents on staging sites"
 				},

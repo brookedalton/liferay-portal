@@ -43,7 +43,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Limit search to contents that have been published',
 		},

@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.PageConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.sort.SortConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.builder.ParameterBuilder;
@@ -42,7 +41,6 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReference;
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReferenceUtil;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
@@ -50,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.osgi.service.component.annotations.Component;
@@ -216,13 +215,9 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		}
 
 		for (int i = 0; i < configurationJSONArray.length(); i++) {
-			JSONObject jsonObject = configurationJSONArray.getJSONObject(i);
-
-			if (_validateCustomParameterConfiguration(jsonObject, messages)) {
-				_addCustomParameter(
-					parameterDataBuilder, blueprintsAttributes, jsonObject,
-					messages);
-			}
+			_addCustomParameter(
+				parameterDataBuilder, blueprintsAttributes,
+				configurationJSONArray.getJSONObject(i), messages);
 		}
 	}
 
@@ -303,30 +298,31 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		Optional<JSONArray> jsonArrayOptional =
+		Optional<JSONObject> jsonObjectOptional =
 			_blueprintHelper.getSortParameterConfigurationOptional(blueprint);
 
-		if (!jsonArrayOptional.isPresent()) {
+		if (!jsonObjectOptional.isPresent()) {
 			return;
 		}
 
-		JSONArray jsonArray = jsonArrayOptional.get();
+		JSONObject jsonObject = jsonObjectOptional.get();
 
-		for (int i = 0; i < jsonArray.length(); i++) {
-			JSONObject jsonObject = jsonArray.getJSONObject(i);
+		Set<String> keySet = jsonObject.keySet();
 
-			if (_validateSortParameterConfiguration(jsonObject, messages)) {
+		keySet.forEach(
+			key -> {
+				JSONObject sortJSONObject = jsonObject.getJSONObject(key);
+
 				ParameterBuilder parameterBuilder =
 					_parameterBuilderFactory.getBuilder("string");
 
 				Optional<Parameter> parameterOptional = parameterBuilder.build(
-					blueprintsAttributes, jsonObject, messages);
+					blueprintsAttributes, sortJSONObject, messages);
 
 				if (parameterOptional.isPresent()) {
 					parameterDataBuilder.addParameter(parameterOptional.get());
 				}
-			}
-		}
+			});
 	}
 
 	private String _executeKeywordsProcessors(
@@ -380,24 +376,6 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 				}
 			}
 		}
-	}
-
-	private boolean _validateCustomParameterConfiguration(
-		JSONObject jsonObject, Messages messages) {
-
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-			jsonObject, messages,
-			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
-			CustomParameterConfigurationKeys.TYPE.getJsonKey());
-	}
-
-	private boolean _validateSortParameterConfiguration(
-		JSONObject jsonObject, Messages messages) {
-
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-			jsonObject, messages,
-			SortConfigurationKeys.PARAMETER_NAME.getJsonKey(),
-			SortConfigurationKeys.FIELD.getJsonKey());
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

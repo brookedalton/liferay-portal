@@ -17,8 +17,6 @@ package com.liferay.portal.search.tuning.blueprints.facets.internal.request.hand
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
@@ -27,8 +25,6 @@ import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigu
 import com.liferay.portal.search.tuning.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.request.FacetRequestHandler;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
-import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,10 +47,6 @@ public class TermMapFacetRequestHandler
 	public Optional<Parameter> getParameterOptional(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
 		JSONObject jsonObject) {
-
-		if (!_validateConfiguration(jsonObject, messages)) {
-			Optional.empty();
-		}
 
 		String parameterName = FacetConfigurationUtil.getParameterName(
 			jsonObject);
@@ -96,33 +88,28 @@ public class TermMapFacetRequestHandler
 
 		List<String> values = new ArrayList<>();
 
-		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
+		JSONObject parametersJSONObject = jsonObject.getJSONObject(
+			FacetConfigurationKeys.PARAMETERS.getJsonKey());
 
-		JSONArray mapJSONArray = handlerParametersJSONObject.getJSONArray(
-			"map");
+		JSONArray mapJSONArray = parametersJSONObject.getJSONArray("map");
 
 		for (String requestValue : valueArray) {
 			JSONArray translatedValuesJSONArray = null;
 
 			for (int i = 0; i < mapJSONArray.length(); i++) {
-				try {
-					JSONObject itemJSONObject = mapJSONArray.getJSONObject(i);
+				JSONObject itemJSONObject = mapJSONArray.getJSONObject(i);
 
-					if (itemJSONObject.getString(
-							"key"
-						).equals(
-							requestValue
-						)) {
+				if ((itemJSONObject == null) || !itemJSONObject.has("key") ||
+					!itemJSONObject.has("values")) {
 
-						translatedValuesJSONArray = itemJSONObject.getJSONArray(
-							"values");
-
-						break;
-					}
+					continue;
 				}
-				catch (Exception exception) {
-					_log.error(exception.getMessage(), exception);
+
+				if (requestValue.equals(itemJSONObject.getString("key"))) {
+					translatedValuesJSONArray = itemJSONObject.getJSONArray(
+						"values");
+
+					break;
 				}
 			}
 
@@ -139,27 +126,5 @@ public class TermMapFacetRequestHandler
 
 		return values;
 	}
-
-	private boolean _validateConfiguration(
-		JSONObject jsonObject, Messages messages) {
-
-		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
-
-		if (handlerParametersJSONObject == null) {
-			MessagesUtil.requiredFieldMissingError(
-				messages, getClass().getName(), jsonObject,
-				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
-
-			return false;
-		}
-
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
-			getClass().getName(), handlerParametersJSONObject, messages,
-			"mappings");
-	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		TermMapFacetRequestHandler.class);
 
 }

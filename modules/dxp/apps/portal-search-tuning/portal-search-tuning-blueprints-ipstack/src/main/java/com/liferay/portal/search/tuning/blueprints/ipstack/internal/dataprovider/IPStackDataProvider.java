@@ -161,9 +161,9 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 			MessagesUtil.error(
 				messages, getClass().getName(),
 				new Throwable(
-					"IPStack response empty from [ " +
+					"IPStack response was empty. Source URL [ " +
 						_ipStackConfiguration.apiURL() + " ]"),
-				null, null, null, "ipstack.error.empty-response");
+				null, null, null, "ipstack.error.response-was-empty");
 
 			return null;
 		}
@@ -174,7 +174,7 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		catch (JSONException jsonException) {
 			MessagesUtil.error(
 				messages, getClass().getName(), jsonException, null, null, null,
-				"ipstack.error.invalid-response-format");
+				"ipstack.error.response-format-was-invalid");
 		}
 
 		return null;
@@ -208,8 +208,8 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		if (Validator.isBlank(_ipStackConfiguration.apiKey())) {
 			MessagesUtil.error(
 				messages, getClass().getName(),
-				new Throwable("IPStack API key is not configured"), null, null,
-				null, "ipstack.error.api-key-not-configured");
+				new Throwable("IPStack API key must be configured"), null, null,
+				null, "ipstack.error.api-key-must-be-configured");
 
 			valid = false;
 		}
@@ -217,8 +217,8 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		if (Validator.isBlank(_ipStackConfiguration.apiURL())) {
 			MessagesUtil.error(
 				messages, getClass().getName(),
-				new Throwable("IPStack API URL is not configured"), null, null,
-				null, "ipstack.error.api-url-not-configured");
+				new Throwable("IPStack API URL must be configured"), null, null,
+				null, "ipstack.error.api-url-must-be-configured");
 
 			valid = false;
 		}
@@ -265,9 +265,10 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 			MessagesUtil.error(
 				messages, getClass().getName(),
 				new Throwable(
-					"Geolocation data is unavailable a private IP address"),
+					"Geolocation data unavailable for IP address [ " +
+						ipAddress + " ]"),
 				null, null, ipAddress,
-				"ipstack.error.no-geolocation-data-for-private-ip-address");
+				"ipstack.error.geolocation-data-unavailable-for-ip-address");
 
 			return false;
 		}
@@ -283,8 +284,10 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 
 			MessagesUtil.error(
 				messages, getClass().getName(),
-				new Throwable("Invalid IPStack response data"), jsonObject,
-				null, null, "ipstack.error.invalid-response-data");
+				new Throwable(
+					"IPStack response data was invalid [ " + jsonObject + " ]"),
+				jsonObject, null, null,
+				"ipstack.error.response-data-was-invalid");
 
 			return false;
 		}

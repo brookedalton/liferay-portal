@@ -54,6 +54,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
@@ -88,7 +89,8 @@ public class ElementModelImpl
 		{"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
 		{"modifiedDate", Types.TIMESTAMP}, {"status", Types.INTEGER},
 		{"title", Types.VARCHAR}, {"description", Types.VARCHAR},
-		{"configuration", Types.CLOB}, {"type_", Types.INTEGER}
+		{"configuration", Types.CLOB}, {"hidden_", Types.BOOLEAN},
+		{"readOnly", Types.BOOLEAN}, {"type_", Types.INTEGER}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -108,11 +110,13 @@ public class ElementModelImpl
 		TABLE_COLUMNS_MAP.put("title", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("configuration", Types.CLOB);
+		TABLE_COLUMNS_MAP.put("hidden_", Types.BOOLEAN);
+		TABLE_COLUMNS_MAP.put("readOnly", Types.BOOLEAN);
 		TABLE_COLUMNS_MAP.put("type_", Types.INTEGER);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table Element (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,elementId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,status INTEGER,title STRING null,description STRING null,configuration TEXT null,type_ INTEGER)";
+		"create table Element (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,elementId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,status INTEGER,title STRING null,description STRING null,configuration TEXT null,hidden_ BOOLEAN,readOnly BOOLEAN,type_ INTEGER)";
 
 	public static final String TABLE_SQL_DROP = "drop table Element";
 
@@ -214,6 +218,8 @@ public class ElementModelImpl
 		model.setTitle(soapModel.getTitle());
 		model.setDescription(soapModel.getDescription());
 		model.setConfiguration(soapModel.getConfiguration());
+		model.setHidden(soapModel.getHidden());
+		model.setReadOnly(soapModel.getReadOnly());
 		model.setType(soapModel.getType());
 
 		return model;
@@ -406,6 +412,12 @@ public class ElementModelImpl
 		attributeSetterBiConsumers.put(
 			"configuration",
 			(BiConsumer<Element, String>)Element::setConfiguration);
+		attributeGetterFunctions.put("hidden", Element::getHidden);
+		attributeSetterBiConsumers.put(
+			"hidden", (BiConsumer<Element, Boolean>)Element::setHidden);
+		attributeGetterFunctions.put("readOnly", Element::getReadOnly);
+		attributeSetterBiConsumers.put(
+			"readOnly", (BiConsumer<Element, Boolean>)Element::setReadOnly);
 		attributeGetterFunctions.put("type", Element::getType);
 		attributeSetterBiConsumers.put(
 			"type", (BiConsumer<Element, Integer>)Element::setType);
@@ -879,6 +891,36 @@ public class ElementModelImpl
 
 	@JSON
 	@Override
+	public Boolean getHidden() {
+		return _hidden;
+	}
+
+	@Override
+	public void setHidden(Boolean hidden) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_hidden = hidden;
+	}
+
+	@JSON
+	@Override
+	public Boolean getReadOnly() {
+		return _readOnly;
+	}
+
+	@Override
+	public void setReadOnly(Boolean readOnly) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_readOnly = readOnly;
+	}
+
+	@JSON
+	@Override
 	public int getType() {
 		return _type;
 	}
@@ -922,7 +964,9 @@ public class ElementModelImpl
 		for (Map.Entry<String, Object> entry :
 				_columnOriginalValues.entrySet()) {
 
-			if (entry.getValue() != getColumnValue(entry.getKey())) {
+			if (!Objects.equals(
+					entry.getValue(), getColumnValue(entry.getKey()))) {
+
 				_columnBitmask |= _columnBitmasks.get(entry.getKey());
 			}
 		}
@@ -1063,6 +1107,8 @@ public class ElementModelImpl
 		elementImpl.setTitle(getTitle());
 		elementImpl.setDescription(getDescription());
 		elementImpl.setConfiguration(getConfiguration());
+		elementImpl.setHidden(getHidden());
+		elementImpl.setReadOnly(getReadOnly());
 		elementImpl.setType(getType());
 
 		elementImpl.resetOriginalValues();
@@ -1225,6 +1271,18 @@ public class ElementModelImpl
 			elementCacheModel.configuration = null;
 		}
 
+		Boolean hidden = getHidden();
+
+		if (hidden != null) {
+			elementCacheModel.hidden = hidden;
+		}
+
+		Boolean readOnly = getReadOnly();
+
+		if (readOnly != null) {
+			elementCacheModel.readOnly = readOnly;
+		}
+
 		elementCacheModel.type = getType();
 
 		return elementCacheModel;
@@ -1316,6 +1374,8 @@ public class ElementModelImpl
 	private String _description;
 	private String _descriptionCurrentLanguageId;
 	private String _configuration;
+	private Boolean _hidden;
+	private Boolean _readOnly;
 	private int _type;
 
 	public <T> T getColumnValue(String columnName) {
@@ -1360,6 +1420,8 @@ public class ElementModelImpl
 		_columnOriginalValues.put("title", _title);
 		_columnOriginalValues.put("description", _description);
 		_columnOriginalValues.put("configuration", _configuration);
+		_columnOriginalValues.put("hidden_", _hidden);
+		_columnOriginalValues.put("readOnly", _readOnly);
 		_columnOriginalValues.put("type_", _type);
 	}
 
@@ -1369,6 +1431,7 @@ public class ElementModelImpl
 		Map<String, String> attributeNames = new HashMap<>();
 
 		attributeNames.put("uuid_", "uuid");
+		attributeNames.put("hidden_", "hidden");
 		attributeNames.put("type_", "type");
 
 		_attributeNames = Collections.unmodifiableMap(attributeNames);
@@ -1411,7 +1474,11 @@ public class ElementModelImpl
 
 		columnBitmasks.put("configuration", 4096L);
 
-		columnBitmasks.put("type_", 8192L);
+		columnBitmasks.put("hidden_", 8192L);
+
+		columnBitmasks.put("readOnly", 16384L);
+
+		columnBitmasks.put("type_", 32768L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

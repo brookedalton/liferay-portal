@@ -41,10 +41,9 @@ public class WrapperClauseTranslator implements ClauseTranslator {
 	public Optional<Query> translate(
 		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
 
-		String query = jsonObject.getString(
-			WrapperQueryConfigurationKeys.QUERY.getJsonKey());
-
-		WrapperQuery wrapperQuery = _queries.wrapper(query);
+		WrapperQuery wrapperQuery = _queries.wrapper(
+			jsonObject.getString(
+				WrapperQueryConfigurationKeys.QUERY.getJsonKey()));
 
 		return Optional.of(wrapperQuery);
 	}

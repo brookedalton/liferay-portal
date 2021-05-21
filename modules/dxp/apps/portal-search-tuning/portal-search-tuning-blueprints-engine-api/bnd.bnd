@@ -8,5 +8,6 @@ Export-Package:\
 	com.liferay.portal.search.tuning.blueprints.engine.constants,\
 	com.liferay.portal.search.tuning.blueprints.engine.exception,\
 	com.liferay.portal.search.tuning.blueprints.engine.parameter,\
+	com.liferay.portal.search.tuning.blueprints.engine.parameter.visitor,\
 	com.liferay.portal.search.tuning.blueprints.engine.template.variable,\
 	com.liferay.portal.search.tuning.blueprints.engine.util

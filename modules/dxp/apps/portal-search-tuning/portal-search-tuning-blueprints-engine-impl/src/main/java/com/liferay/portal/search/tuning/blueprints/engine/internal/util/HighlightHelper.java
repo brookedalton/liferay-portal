@@ -104,12 +104,12 @@ public class HighlightHelper {
 	private void _setFieldConfigs(
 		HighlightBuilder highlightBuilder, JSONObject jsonObject) {
 
-		if (!jsonObject.has(HighlightConfigurationKeys.FIELDS.getJsonKey())) {
-			return;
-		}
-
 		JSONObject fieldsJSONObject = jsonObject.getJSONObject(
 			HighlightConfigurationKeys.FIELDS.getJsonKey());
+
+		if (fieldsJSONObject == null) {
+			return;
+		}
 
 		Set<String> keySet = fieldsJSONObject.keySet();
 

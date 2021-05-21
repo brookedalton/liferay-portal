@@ -43,7 +43,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US:
 				'Boost contents tagged close to my location with a Gaussian function',

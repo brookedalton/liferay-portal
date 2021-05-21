@@ -170,7 +170,7 @@ public class ElementServiceImpl extends ElementServiceBaseImpl {
 	public Element updateElement(
 			long elementId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,
-			ServiceContext serviceContext)
+			boolean hidden, ServiceContext serviceContext)
 		throws PortalException {
 
 		_elementModelResourcePermission.check(
@@ -178,7 +178,7 @@ public class ElementServiceImpl extends ElementServiceBaseImpl {
 
 		return _elementLocalService.updateElement(
 			getUserId(), elementId, titleMap, descriptionMap, configuration,
-			serviceContext);
+			hidden, serviceContext);
 	}
 
 	private long _getCompanyGroupId(ServiceContext serviceContext)

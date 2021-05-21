@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 public enum AdvancedConfigurationKeys {
 
-	QUERY_PROCESSING("query_processing"), SOURCE("source");
+	SOURCE("source");
 
 	public static AdvancedConfigurationKeys findByJsonKey(String jsonKey) {
 		Stream<AdvancedConfigurationKeys> stream = Arrays.stream(

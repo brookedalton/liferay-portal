@@ -76,7 +76,7 @@ public class ElementCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(29);
+		StringBundler sb = new StringBundler(33);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -104,6 +104,10 @@ public class ElementCacheModel
 		sb.append(description);
 		sb.append(", configuration=");
 		sb.append(configuration);
+		sb.append(", hidden=");
+		sb.append(hidden);
+		sb.append(", readOnly=");
+		sb.append(readOnly);
 		sb.append(", type=");
 		sb.append(type);
 		sb.append("}");
@@ -173,6 +177,8 @@ public class ElementCacheModel
 			elementImpl.setConfiguration(configuration);
 		}
 
+		elementImpl.setHidden(hidden);
+		elementImpl.setReadOnly(readOnly);
 		elementImpl.setType(type);
 
 		elementImpl.resetOriginalValues();
@@ -202,6 +208,10 @@ public class ElementCacheModel
 		title = objectInput.readUTF();
 		description = objectInput.readUTF();
 		configuration = (String)objectInput.readObject();
+
+		hidden = objectInput.readBoolean();
+
+		readOnly = objectInput.readBoolean();
 
 		type = objectInput.readInt();
 	}
@@ -258,6 +268,10 @@ public class ElementCacheModel
 			objectOutput.writeObject(configuration);
 		}
 
+		objectOutput.writeBoolean(hidden);
+
+		objectOutput.writeBoolean(readOnly);
+
 		objectOutput.writeInt(type);
 	}
 
@@ -274,6 +288,8 @@ public class ElementCacheModel
 	public String title;
 	public String description;
 	public String configuration;
+	public boolean hidden;
+	public boolean readOnly;
 	public int type;
 
 }

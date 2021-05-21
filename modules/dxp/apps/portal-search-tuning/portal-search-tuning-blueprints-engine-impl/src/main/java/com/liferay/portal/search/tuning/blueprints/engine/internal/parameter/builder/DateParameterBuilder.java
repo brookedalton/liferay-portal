@@ -27,7 +27,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.attributes.ut
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -52,10 +51,6 @@ public class DateParameterBuilder implements ParameterBuilder {
 	public Optional<Parameter> build(
 		BlueprintsAttributes blueprintsAttributes,
 		JSONObject configurationJSONObject, Messages messages) {
-
-		if (!_validateConfiguration(messages, configurationJSONObject)) {
-			return Optional.empty();
-		}
 
 		String parameterName = configurationJSONObject.getString(
 			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
@@ -135,14 +130,6 @@ public class DateParameterBuilder implements ParameterBuilder {
 		TimeZone defaultTimeZone = TimeZoneUtil.getDefault();
 
 		return optional.orElse(defaultTimeZone.getID());
-	}
-
-	private boolean _validateConfiguration(
-		Messages messages, JSONObject jsonObject) {
-
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-			jsonObject, messages,
-			CustomParameterConfigurationKeys.DATE_FORMAT.getJsonKey());
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

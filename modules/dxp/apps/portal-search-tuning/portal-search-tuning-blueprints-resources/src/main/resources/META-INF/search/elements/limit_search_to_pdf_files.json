@@ -18,8 +18,8 @@
 						}
 					}
 				],
-				"conditions": [
-				],
+				"conditions": {
+				},
 				"description": {
 					"en_US": "Limit search to PDF files"
 				},

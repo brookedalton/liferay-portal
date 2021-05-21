@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -40,12 +39,6 @@ public interface BlueprintHelper {
 	public int getDefaultSize(Blueprint blueprint);
 
 	public Optional<JSONArray> getDefaultSortConfigurationOptional(
-		Blueprint blueprint);
-
-	public Optional<List<String>> getExcludedQueryContributorsOptional(
-		Blueprint blueprint);
-
-	public Optional<List<String>> getExcludedQueryPostProcessorsOptional(
 		Blueprint blueprint);
 
 	public Optional<JSONObject> getFrameworkConfigurationOptional(
@@ -78,7 +71,7 @@ public interface BlueprintHelper {
 	public Optional<JSONObject> getSortConfigurationOptional(
 		Blueprint blueprint);
 
-	public Optional<JSONArray> getSortParameterConfigurationOptional(
+	public Optional<JSONObject> getSortParameterConfigurationOptional(
 		Blueprint blueprint);
 
 	public Optional<JSONObject> getSuggestConfigurationOptional(

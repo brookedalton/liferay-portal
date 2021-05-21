@@ -25,7 +25,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.util.C
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -48,13 +47,6 @@ public class FiltersAggregationTranslator implements AggregationTranslator {
 	public Optional<AggregationWrapper> translate(
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
-
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				FiltersAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
-
-			return Optional.empty();
-		}
 
 		FiltersAggregation aggregation = _aggregations.filters(
 			aggregationName,
@@ -81,14 +73,12 @@ public class FiltersAggregationTranslator implements AggregationTranslator {
 		FiltersAggregation aggregation, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!jsonObject.has(
-				FiltersAggregationBodyConfigurationKeys.FILTERS.getJsonKey())) {
-
-			return;
-		}
-
 		JSONObject filtersJSONObject = jsonObject.getJSONObject(
 			FiltersAggregationBodyConfigurationKeys.FILTERS.getJsonKey());
+
+		if (filtersJSONObject == null) {
+			return;
+		}
 
 		Set<String> keySet = filtersJSONObject.keySet();
 

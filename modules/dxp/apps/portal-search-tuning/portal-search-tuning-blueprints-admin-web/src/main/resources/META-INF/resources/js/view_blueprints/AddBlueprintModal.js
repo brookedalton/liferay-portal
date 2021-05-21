@@ -133,8 +133,8 @@ const AddBlueprintModal = ({
 			`${namespace}configuration`,
 			JSON.stringify({
 				advanced_configuration: DEFAULT_ADVANCED_CONFIGURATION,
-				aggregation_configuration: [],
-				facet_configuration: [],
+				aggregation_configuration: {},
+				facet_configuration: {},
 				framework_configuration: {
 					apply_indexer_clauses:
 						framework === FRAMEWORK_TYPES.DEFAULT,

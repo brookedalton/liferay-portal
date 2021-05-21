@@ -47,7 +47,7 @@ public class FacetRequestHandlerFactoryImpl
 			serviceComponentReference = _facetRequestHandlers.get(name);
 
 		if (serviceComponentReference == null) {
-			serviceComponentReference = _facetRequestHandlers.get("default");
+			serviceComponentReference = _facetRequestHandlers.get("terms");
 
 			if (_log.isWarnEnabled()) {
 				StringBundler sb = new StringBundler(3);

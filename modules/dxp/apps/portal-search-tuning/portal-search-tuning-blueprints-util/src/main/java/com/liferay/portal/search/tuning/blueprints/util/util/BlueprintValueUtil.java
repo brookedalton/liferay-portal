@@ -14,16 +14,10 @@
 
 package com.liferay.portal.search.tuning.blueprints.util.util;
 
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 
 import java.util.Map;
 import java.util.Optional;
@@ -35,35 +29,6 @@ import java.util.stream.Stream;
  * @author Petteri Karttunen
  */
 public class BlueprintValueUtil {
-
-	public static JSONArray getConditionValueJSONArray(
-			JSONObject conditionJSONObject)
-		throws ParameterEvaluationException {
-
-		Object object = conditionJSONObject.get(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
-
-		if (!(object instanceof JSONArray)) {
-			throw new ParameterEvaluationException(
-				new Message.Builder().className(
-					BlueprintValueUtil.class.getName()
-				).localizationKey(
-					"core.error.expected-array-clause-condition-match-value"
-				).msg(
-					"Excepted an array clause condition match value"
-				).rootObject(
-					conditionJSONObject
-				).rootProperty(
-					ConditionConfigurationKeys.VALUE.getJsonKey()
-				).rootValue(
-					object.toString()
-				).severity(
-					Severity.ERROR
-				).build());
-		}
-
-		return (JSONArray)object;
-	}
 
 	public static String mapToString(Map<?, ?> map) {
 		Set<?> set = map.keySet();

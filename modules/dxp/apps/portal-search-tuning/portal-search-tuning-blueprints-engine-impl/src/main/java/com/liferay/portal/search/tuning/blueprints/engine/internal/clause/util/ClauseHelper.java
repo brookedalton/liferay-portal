@@ -38,6 +38,10 @@ public class ClauseHelper {
 	public Optional<Query> getClause(
 		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
 
+		if (jsonObject == null) {
+			return Optional.empty();
+		}
+
 		String type = _getType(jsonObject);
 
 		try {

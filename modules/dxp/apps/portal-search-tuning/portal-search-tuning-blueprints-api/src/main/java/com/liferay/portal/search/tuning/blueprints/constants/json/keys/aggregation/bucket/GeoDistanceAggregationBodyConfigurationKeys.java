@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 public enum GeoDistanceAggregationBodyConfigurationKeys {
 
 	DISTANCE_TYPE("distance_type"), FIELD("field"), KEYED("keyed"),
-	MISSING("missing"), ORIGIN("origin"), SCRIPT("script"), UNIT("unit");
+	ORIGIN("origin"), SCRIPT("script"), UNIT("unit");
 
 	public static GeoDistanceAggregationBodyConfigurationKeys findByJsonKey(
 		String jsonKey) {

@@ -55,7 +55,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Hide assets which are marked not searchable',
 		},

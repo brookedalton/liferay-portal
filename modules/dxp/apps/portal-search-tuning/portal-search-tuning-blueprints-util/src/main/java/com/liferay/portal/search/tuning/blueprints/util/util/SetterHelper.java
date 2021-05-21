@@ -14,17 +14,19 @@
 
 package com.liferay.portal.search.tuning.blueprints.util.util;
 
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.sort.FieldSort;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import org.osgi.service.component.annotations.Component;
@@ -68,28 +70,35 @@ public class SetterHelper {
 	}
 
 	public void setFieldSorts(
-		JSONObject jsonObject, Consumer<FieldSort> setter, Messages messages) {
+		JSONObject jsonObject, Consumer<FieldSort[]> setter,
+		Messages messages) {
 
 		if (!jsonObject.has("sort")) {
 			return;
 		}
 
-		JSONObject sortJSONObject = jsonObject.getJSONObject("sort");
-
-		Set<String> keySet = sortJSONObject.keySet();
+		JSONArray sortJSONArray = jsonObject.getJSONArray("sort");
 
 		List<FieldSort> sorts = new ArrayList<>();
 
-		for (String key : keySet) {
-			JSONObject orderJSONObject = sortJSONObject.getJSONObject(key);
+		for (int i = 0; i < sortJSONArray.length(); i++) {
+			JSONObject orderJSONObject = sortJSONArray.getJSONObject(i);
 
-			if (orderJSONObject.has("order")) {
+			Iterator<String> iterator = orderJSONObject.keys();
+
+			String field = iterator.next();
+
+			JSONObject fieldJSONObject = orderJSONObject.getJSONObject(field);
+
+			if (fieldJSONObject.has("order")) {
 				_addFieldSortWithOrder(
-					sorts, key, jsonObject, orderJSONObject, messages);
+					sorts, field, jsonObject, fieldJSONObject, messages);
 			}
 			else {
-				setter.accept(_sorts.field(key));
+				sorts.add(_sorts.field(field));
 			}
+
+			setter.accept(sorts.toArray(new FieldSort[0]));
 		}
 	}
 
@@ -155,12 +164,13 @@ public class SetterHelper {
 
 	private void _addFieldSortWithOrder(
 		List<FieldSort> sorts, String fieldName, JSONObject jsonObject,
-		JSONObject orderJSONObject, Messages messages) {
+		JSONObject fieldJSONObject, Messages messages) {
 
-		String order = orderJSONObject.getString("order");
+		String order = fieldJSONObject.getString("order");
 
 		try {
-			SortOrder sortOrder = SortOrder.valueOf(order);
+			SortOrder sortOrder = SortOrder.valueOf(
+				StringUtil.toUpperCase(order));
 
 			sorts.add(_sorts.field(fieldName, sortOrder));
 		}

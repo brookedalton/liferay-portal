@@ -22,7 +22,8 @@ import java.util.stream.Stream;
  */
 public enum ParameterConfigurationKeys {
 
-	CUSTOM("custom"), KEYWORDS("keywords"), PAGE("page"), SIZE("size");
+	CUSTOM("custom"), KEYWORDS("keywords"), PAGE("page"), SIZE("size"),
+	SORT("sort");
 
 	public static ParameterConfigurationKeys findByJsonKey(String jsonKey) {
 		Stream<ParameterConfigurationKeys> stream = Arrays.stream(

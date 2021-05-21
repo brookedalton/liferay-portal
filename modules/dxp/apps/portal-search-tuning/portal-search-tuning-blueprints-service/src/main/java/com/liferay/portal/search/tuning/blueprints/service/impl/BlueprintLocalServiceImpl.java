@@ -26,13 +26,15 @@ import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
+import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.base.BlueprintLocalServiceBaseImpl;
-import com.liferay.portal.search.tuning.blueprints.validation.BlueprintValidator;
+import com.liferay.portal.search.tuning.blueprints.validator.BlueprintValidator;
 
 import java.io.Serializable;
 
@@ -73,7 +75,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 
 		User user = _userLocalService.getUser(userId);
 
-		_blueprintValidator.validate(titleMap, configuration);
+		_validate(titleMap, configuration, serviceContext);
 
 		long blueprintId = counterLocalService.increment(
 			Blueprint.class.getName());
@@ -193,7 +195,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 
 		Blueprint blueprint = getBlueprint(blueprintId);
 
-		_blueprintValidator.validate(titleMap, configuration);
+		_validate(titleMap, configuration, serviceContext);
 
 		blueprint.setDescriptionMap(descriptionMap);
 		blueprint.setModifiedDate(serviceContext.getModifiedDate(new Date()));
@@ -245,6 +247,18 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 			).put(
 				WorkflowConstants.CONTEXT_USER_URL, userURL
 			).build());
+	}
+
+	private void _validate(
+			Map<Locale, String> titleMap, String configuration,
+			ServiceContext serviceContext)
+		throws BlueprintValidationException {
+
+		if (!GetterUtil.getBoolean(
+				serviceContext.getAttribute("skip.blueprint.validation"))) {
+
+			_blueprintValidator.validateBlueprint(titleMap, configuration);
+		}
 	}
 
 	@Reference

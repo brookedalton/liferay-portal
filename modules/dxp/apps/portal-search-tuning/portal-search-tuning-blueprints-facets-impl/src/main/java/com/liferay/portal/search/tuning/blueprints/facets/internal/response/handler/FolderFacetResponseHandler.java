@@ -35,6 +35,7 @@ import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 import java.util.List;
 import java.util.Locale;
@@ -56,7 +57,7 @@ public class FolderFacetResponseHandler
 	@Override
 	protected JSONObject createBucketJSONObject(
 			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
-			ResourceBundle resourceBundle)
+			ResourceBundle resourceBundle, Messages messages)
 		throws Exception {
 
 		Locale locale = blueprintsAttributes.getLocale();

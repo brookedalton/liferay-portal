@@ -26,6 +26,8 @@ import java.util.Optional;
  */
 public interface FacetRequestHandler {
 
+	public String getAggregationType();
+
 	public Optional<Parameter> getParameterOptional(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
 		JSONObject jsonObject);

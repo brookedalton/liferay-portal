@@ -36,7 +36,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Boost contents matching all the words in the search phrase',
 		},

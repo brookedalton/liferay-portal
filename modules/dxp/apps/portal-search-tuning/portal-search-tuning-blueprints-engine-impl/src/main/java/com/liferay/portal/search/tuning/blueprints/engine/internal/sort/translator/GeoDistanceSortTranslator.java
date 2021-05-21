@@ -26,10 +26,8 @@ import com.liferay.portal.search.sort.Sort;
 import com.liferay.portal.search.sort.SortMode;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.sort.SortConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.sort.SortTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Optional;
@@ -41,31 +39,19 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, property = "name=geo_distance",
+	immediate = true, property = "name=_geo_distance",
 	service = SortTranslator.class
 )
 public class GeoDistanceSortTranslator implements SortTranslator {
 
 	@Override
 	public Optional<Sort> translate(
-		JSONObject jsonObject, SortOrder sortOrder, Messages messages) {
+		JSONObject jsonObject, String field, SortOrder sortOrder,
+		Messages messages) {
 
-		String field = jsonObject.getString(
-			SortConfigurationKeys.FIELD.getJsonKey());
+		JSONArray jsonArray = jsonObject.getJSONArray("locations");
 
-		if (BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				SortConfigurationKeys.CONFIGURATION.getJsonKey())) {
-
-			return Optional.empty();
-		}
-
-		JSONObject configurationJSONObject = jsonObject.getJSONObject(
-			SortConfigurationKeys.CONFIGURATION.getJsonKey());
-
-		if (BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				configurationJSONObject, messages, "locations")) {
-
+		if ((jsonArray == null) || (jsonArray.length() == 0)) {
 			return Optional.empty();
 		}
 
@@ -73,13 +59,13 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 
 		geoDistanceSort.setSortOrder(sortOrder);
 
-		_setLocations(geoDistanceSort, configurationJSONObject);
+		_setLocations(geoDistanceSort, jsonObject);
 
-		_setDistanceUnit(geoDistanceSort, configurationJSONObject);
+		_setDistanceUnit(geoDistanceSort, jsonObject);
 
-		_setGeoDistanceType(geoDistanceSort, configurationJSONObject, messages);
+		_setGeoDistanceType(geoDistanceSort, jsonObject, messages);
 
-		_setSortMode(geoDistanceSort, configurationJSONObject, messages);
+		_setSortMode(geoDistanceSort, jsonObject);
 
 		return Optional.of(geoDistanceSort);
 	}
@@ -89,17 +75,19 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 
 		String geoDistanceUnit = jsonObject.getString("unit");
 
-		if (!Validator.isBlank(geoDistanceUnit)) {
-			geoDistanceUnit = StringUtil.toLowerCase(geoDistanceUnit);
+		if (Validator.isBlank(geoDistanceUnit)) {
+			return;
+		}
 
-			for (DistanceUnit distanceUnit : DistanceUnit.values()) {
-				String unit = distanceUnit.getUnit();
+		geoDistanceUnit = StringUtil.toLowerCase(geoDistanceUnit);
 
-				if (unit.equals(geoDistanceUnit)) {
-					geoDistanceSort.setDistanceUnit(distanceUnit);
+		for (DistanceUnit distanceUnit : DistanceUnit.values()) {
+			String unit = distanceUnit.getUnit();
 
-					break;
-				}
+			if (unit.equals(geoDistanceUnit)) {
+				geoDistanceSort.setDistanceUnit(distanceUnit);
+
+				break;
 			}
 		}
 	}
@@ -111,17 +99,18 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 		String distanceType = jsonObject.getString(
 			"distance_type", GeoDistanceType.ARC.name());
 
-		if (!Validator.isBlank(distanceType)) {
-			try {
-				geoDistanceSort.setGeoDistanceType(
-					GeoDistanceType.valueOf(
-						StringUtil.toUpperCase(distanceType)));
-			}
-			catch (IllegalArgumentException illegalArgumentException) {
-				MessagesUtil.invalidConfigurationValueError(
-					messages, getClass().getName(), illegalArgumentException,
-					jsonObject, "distance_type", distanceType);
-			}
+		if (Validator.isBlank(distanceType)) {
+			return;
+		}
+
+		try {
+			geoDistanceSort.setGeoDistanceType(
+				GeoDistanceType.valueOf(StringUtil.toUpperCase(distanceType)));
+		}
+		catch (IllegalArgumentException illegalArgumentException) {
+			MessagesUtil.invalidConfigurationValueError(
+				messages, getClass().getName(), illegalArgumentException,
+				jsonObject, "distance_type", distanceType);
 		}
 	}
 
@@ -145,22 +134,16 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 	}
 
 	private void _setSortMode(
-		GeoDistanceSort geoDistanceSort, JSONObject jsonObject,
-		Messages messages) {
+		GeoDistanceSort geoDistanceSort, JSONObject jsonObject) {
 
 		String mode = jsonObject.getString("mode");
 
-		if (!Validator.isBlank(mode)) {
-			try {
-				geoDistanceSort.setSortMode(
-					SortMode.valueOf(StringUtil.toUpperCase(mode)));
-			}
-			catch (IllegalArgumentException illegalArgumentException) {
-				MessagesUtil.invalidConfigurationValueError(
-					messages, getClass().getName(), illegalArgumentException,
-					jsonObject, "mode", mode);
-			}
+		if (Validator.isBlank(mode)) {
+			return;
 		}
+
+		geoDistanceSort.setSortMode(
+			SortMode.valueOf(StringUtil.toUpperCase(mode)));
 	}
 
 	@Reference

@@ -145,6 +145,10 @@ public interface ElementLocalService
 	public PersistedModel deletePersistedModel(PersistedModel persistedModel)
 		throws PortalException;
 
+	@Indexable(type = IndexableType.DELETE)
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
+	public Element deleteSystemElement(Element element) throws PortalException;
+
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> T dslQuery(DSLQuery dslQuery);
 
@@ -366,7 +370,7 @@ public interface ElementLocalService
 	public Element updateElement(
 			long userId, long elementId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,
-			ServiceContext serviceContext)
+			boolean hidden, ServiceContext serviceContext)
 		throws PortalException;
 
 	@Indexable(type = IndexableType.REINDEX)

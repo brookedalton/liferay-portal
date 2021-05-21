@@ -54,7 +54,7 @@ export const CUSTOM_JSON_ELEMENT = {
 	elementTemplateJSON: {
 		category: 'custom',
 		clauses: [],
-		conditions: [],
+		conditions: {},
 		description: Liferay.Language.get('editable-json-text-area'),
 		enabled: true,
 		icon: 'custom-field',
@@ -62,17 +62,7 @@ export const CUSTOM_JSON_ELEMENT = {
 	},
 };
 
-export const DEFAULT_ADVANCED_CONFIGURATION = {
-	query_processing: {
-		exclude_query_contributors: [],
-		exclude_query_post_processors: [],
-	},
-	source: {
-		fetch_source: true,
-		source_excludes: [],
-		source_includes: [],
-	},
-};
+export const DEFAULT_ADVANCED_CONFIGURATION = {};
 
 export const DEFAULT_BASELINE_ELEMENTS = [
 	TEXT_MATCH_OVER_MULTIPLE_FIELDS,
@@ -87,21 +77,11 @@ export const DEFAULT_BASELINE_ELEMENTS = [
 
 export const DEFAULT_EDIT_ELEMENT = TEXT_MATCH_OVER_MULTIPLE_FIELDS;
 
-export const DEFAULT_HIGHLIGHT_CONFIGURATION = {
-	fields: {
-		'content${context.language_id}': {},
-		'title${context.language_id}': {},
-	},
-	fragment_size: 50,
-	number_of_fragments: 10,
-	post_tags: ['</liferay-hl>'],
-	pre_tags: ['<liferay-hl>'],
-	require_field_match: true,
-};
+export const DEFAULT_HIGHLIGHT_CONFIGURATION = {};
 
 export const DEFAULT_PARAMETER_CONFIGURATION = {};
 
-export const DEFAULT_SORT_CONFIGURATION = {};
+export const DEFAULT_SORT_CONFIGURATION = [];
 
 export const QUERY_ELEMENTS = [
 	TEXT_MATCH_OVER_MULTIPLE_FIELDS,

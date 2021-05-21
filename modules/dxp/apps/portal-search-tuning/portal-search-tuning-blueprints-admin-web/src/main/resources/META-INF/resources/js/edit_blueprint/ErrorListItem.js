@@ -69,7 +69,7 @@ function ErrorListItem({item, onFocusElement}) {
 				</div>
 			)}
 
-			{itemKeys.length > ERROR_OMIT_KEYS.length && (
+			{itemKeys.includes('rootProperty') && (
 				<ClayButtonWithIcon
 					borderless
 					className="collapse-button text-danger"
@@ -80,7 +80,7 @@ function ErrorListItem({item, onFocusElement}) {
 				/>
 			)}
 
-			{!collapse && itemKeys.length > ERROR_OMIT_KEYS.length && (
+			{!collapse && itemKeys.includes('rootProperty') && (
 				<ClayAlert.Footer>
 					{itemKeys.map(
 						(property) =>

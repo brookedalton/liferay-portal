@@ -99,7 +99,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Show only contents with a valid display date',
 		},

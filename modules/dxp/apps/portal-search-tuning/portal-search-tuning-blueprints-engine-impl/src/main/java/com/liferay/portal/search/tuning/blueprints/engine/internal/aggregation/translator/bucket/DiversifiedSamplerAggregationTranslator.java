@@ -23,7 +23,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.u
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -35,7 +34,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, property = "name=diversified_sampler",
+	enabled = false, immediate = true, property = "name=diversified_sampler",
 	service = AggregationTranslator.class
 )
 public class DiversifiedSamplerAggregationTranslator
@@ -45,14 +44,6 @@ public class DiversifiedSamplerAggregationTranslator
 	public Optional<AggregationWrapper> translate(
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
-
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				DiversifiedSamplerAggregationBodyConfigurationKeys.FIELD.
-					getJsonKey())) {
-
-			return Optional.empty();
-		}
 
 		DiversifiedSamplerAggregation aggregation =
 			_aggregations.diversifiedSampler(

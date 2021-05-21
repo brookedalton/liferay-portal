@@ -17,7 +17,6 @@ package com.liferay.portal.search.tuning.blueprints.facets.internal.searchreques
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.DateRangeAggregation;
@@ -35,10 +34,13 @@ import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.Sear
 import com.liferay.portal.search.tuning.blueprints.engine.template.variable.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsBlueprintKeys;
+import com.liferay.portal.search.tuning.blueprints.facets.internal.request.handler.FacetRequestHandlerFactory;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.util.FacetConfigurationUtil;
+import com.liferay.portal.search.tuning.blueprints.facets.spi.request.FacetRequestHandler;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
@@ -47,6 +49,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -66,40 +69,34 @@ public class FacetsSearchRequestBodyContributor
 		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
 		ParameterData parameterData, Messages messages) {
 
-		Optional<JSONArray> optional =
-			_blueprintHelper.getJSONArrayConfigurationOptional(
+		Optional<JSONObject> optional =
+			_blueprintHelper.getJSONObjectConfigurationOptional(
 				blueprint,
-				"JSONArray/" + FacetsBlueprintKeys.CONFIGURATION_SECTION);
+				"JSONObject/" + FacetsBlueprintKeys.CONFIGURATION_SECTION);
 
 		if (!optional.isPresent()) {
 			return;
 		}
 
-		_contribute(
+		_processFacets(
 			searchRequestBuilder, optional.get(), parameterData, messages);
 	}
 
 	private void _addAggregation(
-		SearchRequestBuilder searchRequestBuilder, JSONObject jsonObject,
-		Messages messages) {
+		SearchRequestBuilder searchRequestBuilder, String type,
+		JSONObject jsonObject, Messages messages) {
 
-		String aggregationType = jsonObject.getString(
-			FacetConfigurationKeys.AGGREGATION_TYPE.getJsonKey(), "terms");
+		FacetRequestHandler facetRequestHandler =
+			_facetRequestHandlerFactory.getHandler(type);
 
-		if (aggregationType.contentEquals("terms")) {
+		String aggregationType = facetRequestHandler.getAggregationType();
+
+		if (aggregationType.equals("terms")) {
 			_addTermsAggregation(searchRequestBuilder, jsonObject);
 		}
-		else if (aggregationType.contentEquals("date_range")) {
+		else if (aggregationType.equals("date_range")) {
 			_addDateRangeAggregation(
 				searchRequestBuilder, jsonObject, messages);
-		}
-		else {
-			MessagesUtil.warning(
-				messages, getClass().getName(), "Unknown aggregation type",
-				jsonObject,
-				FacetConfigurationKeys.AGGREGATION_TYPE.getJsonKey(),
-				aggregationType,
-				"core.error.unusupported-facet-aggregation-type");
 		}
 	}
 
@@ -107,20 +104,12 @@ public class FacetsSearchRequestBodyContributor
 		SearchRequestBuilder searchRequestBuilder, JSONObject jsonObject,
 		Messages messages) {
 
-		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
+		JSONObject parametersJSONObject = jsonObject.getJSONObject(
+			FacetConfigurationKeys.PARAMETERS.getJsonKey());
 
-		if ((handlerParametersJSONObject == null) ||
-			!handlerParametersJSONObject.has("ranges")) {
+		JSONArray rangesJSONArray = parametersJSONObject.getJSONArray("ranges");
 
-			return;
-		}
-
-		JSONArray rangesJSONArray = handlerParametersJSONObject.getJSONArray(
-			"ranges");
-
-		String dateFormat = handlerParametersJSONObject.getString(
-			"date_format");
+		String dateFormat = parametersJSONObject.getString("date_format");
 
 		DateRangeAggregation dateRangeAggregation = _aggregations.dateRange(
 			FacetConfigurationUtil.getAggregationName(jsonObject),
@@ -145,10 +134,10 @@ public class FacetsSearchRequestBodyContributor
 		SearchRequestBuilder searchRequestBuilder, JSONObject jsonObject,
 		Object value, Messages messages) {
 
-		Optional<FilterMode> filterModeOptional = _getFilterMode(
+		FilterMode filterMode = FacetConfigurationUtil.getFilterMode(
 			jsonObject, messages);
 
-		if (!filterModeOptional.isPresent()) {
+		if (filterMode == null) {
 			return;
 		}
 
@@ -156,7 +145,7 @@ public class FacetsSearchRequestBodyContributor
 			jsonObject, GetterUtil.getString(value), messages);
 
 		if (query.hasClauses()) {
-			if (FilterMode.PRE.equals(filterModeOptional.get())) {
+			if (FilterMode.PRE.equals(filterMode)) {
 				searchRequestBuilder.addComplexQueryPart(
 					_complexQueryPartBuilderFactory.builder(
 					).query(
@@ -177,9 +166,47 @@ public class FacetsSearchRequestBodyContributor
 		}
 	}
 
+	private void _addFacet(
+		SearchRequestBuilder searchRequestBuilder, String facetName,
+		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
+
+		JSONObject nameJSONObject = jsonObject.getJSONObject(facetName);
+
+		Optional<String> optional1 = BlueprintJSONUtil.getFirstKeyOptional(
+			nameJSONObject);
+
+		if (!optional1.isPresent()) {
+			return;
+		}
+
+		String type = optional1.get();
+
+		JSONObject typeJSONObject = nameJSONObject.getJSONObject(type);
+
+		if (!FacetConfigurationUtil.isEnabled(typeJSONObject)) {
+			return;
+		}
+
+		Optional<JSONObject> optional2 =
+			_blueprintTemplateVariableParser.parseObject(
+				typeJSONObject, parameterData, messages);
+
+		if (!optional2.isPresent()) {
+			return;
+		}
+
+		JSONObject parsedJSONObject = optional2.get();
+
+		_addAggregation(searchRequestBuilder, type, parsedJSONObject, messages);
+
+		_addFilter(
+			searchRequestBuilder, type, parsedJSONObject, parameterData,
+			messages);
+	}
+
 	private void _addFilter(
-		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
-		JSONObject jsonObject, Messages messages) {
+		SearchRequestBuilder searchRequestBuilder, String type,
+		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
 
 		Optional<Parameter> optional = parameterData.getByNameOptional(
 			FacetConfigurationUtil.getParameterName(jsonObject));
@@ -190,10 +217,8 @@ public class FacetsSearchRequestBodyContributor
 
 		Parameter parameter = optional.get();
 
-		String handlerName = FacetConfigurationUtil.getHandlerName(jsonObject);
-
 		try {
-			if (handlerName.equals("date_range")) {
+			if (type.equals("date_range")) {
 				_addDateRangeFacetFilter(
 					searchRequestBuilder, jsonObject, parameter.getValue(),
 					messages);
@@ -207,7 +232,7 @@ public class FacetsSearchRequestBodyContributor
 		catch (Exception exception) {
 			MessagesUtil.error(
 				messages, getClass().getName(), exception, jsonObject, null,
-				null, "facets.error.unknown-error-in-creating-filter");
+				null, "facets.error.unknown-error");
 		}
 	}
 
@@ -243,26 +268,25 @@ public class FacetsSearchRequestBodyContributor
 		SearchRequestBuilder searchRequestBuilder, JSONObject jsonObject,
 		Object value, Messages messages) {
 
-		Optional<FilterMode> filterModeOptional = _getFilterMode(
+		FilterMode filterMode = FacetConfigurationUtil.getFilterMode(
 			jsonObject, messages);
 
-		if (!filterModeOptional.isPresent()) {
+		if (filterMode == null) {
 			return;
 		}
 
-		Optional<Operator> operatorOptional = _getOperator(
+		Operator operator = FacetConfigurationUtil.getOperator(
 			jsonObject, messages);
 
-		if (!operatorOptional.isPresent()) {
+		if (operator == null) {
 			return;
 		}
 
 		BooleanQuery query = _getTermFilterQuery(
-			operatorOptional.get(),
-			FacetConfigurationUtil.getFieldName(jsonObject), value);
+			operator, FacetConfigurationUtil.getFieldName(jsonObject), value);
 
 		if (query.hasClauses()) {
-			if (FilterMode.PRE.equals(filterModeOptional.get())) {
+			if (FilterMode.PRE.equals(filterMode)) {
 				searchRequestBuilder.addComplexQueryPart(
 					_complexQueryPartBuilderFactory.builder(
 					).query(
@@ -283,39 +307,6 @@ public class FacetsSearchRequestBodyContributor
 		}
 	}
 
-	private void _contribute(
-		SearchRequestBuilder searchRequestBuilder, JSONArray jsonArray,
-		ParameterData parameterData, Messages messages) {
-
-		for (int i = 0; i < jsonArray.length(); i++) {
-			JSONObject configurationJSONObject = jsonArray.getJSONObject(i);
-
-			Optional<JSONObject> parsedConfigurationJSONObjectOptional =
-				_blueprintTemplateVariableParser.parseObject(
-					configurationJSONObject, parameterData, messages);
-
-			if (!parsedConfigurationJSONObjectOptional.isPresent()) {
-				continue;
-			}
-
-			JSONObject parsedConfigurationJSONObject =
-				parsedConfigurationJSONObjectOptional.get();
-
-			if (!FacetConfigurationUtil.isEnabled(
-					parsedConfigurationJSONObject)) {
-
-				continue;
-			}
-
-			_addAggregation(
-				searchRequestBuilder, parsedConfigurationJSONObject, messages);
-
-			_addFilter(
-				searchRequestBuilder, parameterData,
-				parsedConfigurationJSONObject, messages);
-		}
-	}
-
 	private BooleanQuery _getDateRangeFilterQuery(
 		JSONObject jsonObject, String value, Messages messages) {
 
@@ -323,20 +314,12 @@ public class FacetsSearchRequestBodyContributor
 
 		String field = FacetConfigurationUtil.getFieldName(jsonObject);
 
-		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
+		JSONObject parametersJSONObject = jsonObject.getJSONObject(
+			FacetConfigurationKeys.PARAMETERS.getJsonKey());
 
-		if ((handlerParametersJSONObject == null) ||
-			!handlerParametersJSONObject.has("ranges")) {
+		JSONArray rangesJSONArray = parametersJSONObject.getJSONArray("ranges");
 
-			return booleanQuery;
-		}
-
-		JSONArray rangesJSONArray = handlerParametersJSONObject.getJSONArray(
-			"ranges");
-
-		String dateFormatString = handlerParametersJSONObject.getString(
-			"date_format");
+		String dateFormatString = parametersJSONObject.getString("date_format");
 
 		for (int i = 0; i < rangesJSONArray.length(); i++) {
 			JSONObject rangeJSONObject = rangesJSONArray.getJSONObject(i);
@@ -395,50 +378,6 @@ public class FacetsSearchRequestBodyContributor
 		return str;
 	}
 
-	private Optional<FilterMode> _getFilterMode(
-		JSONObject jsonObject, Messages messages) {
-
-		String s = jsonObject.getString(
-			FacetConfigurationKeys.FILTER_MODE.getJsonKey(),
-			FilterMode.PRE.getjsonValue());
-
-		try {
-			FilterMode filterMode = FilterMode.valueOf(
-				StringUtil.toUpperCase(s));
-
-			return Optional.of(filterMode);
-		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			MessagesUtil.invalidConfigurationValueError(
-				messages, getClass().getName(), illegalArgumentException,
-				jsonObject, FacetConfigurationKeys.FILTER_MODE.getJsonKey(), s);
-		}
-
-		return Optional.empty();
-	}
-
-	private Optional<Operator> _getOperator(
-		JSONObject jsonObject, Messages messages) {
-
-		String s = jsonObject.getString(
-			FacetConfigurationKeys.MULTI_VALUE_OPERATOR.getJsonKey(),
-			Operator.AND.getjsonValue());
-
-		try {
-			Operator operator = Operator.valueOf(StringUtil.toUpperCase(s));
-
-			return Optional.of(operator);
-		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			MessagesUtil.invalidConfigurationValueError(
-				messages, getClass().getName(), illegalArgumentException,
-				jsonObject,
-				FacetConfigurationKeys.MULTI_VALUE_OPERATOR.getJsonKey(), s);
-		}
-
-		return Optional.empty();
-	}
-
 	private BooleanQuery _getTermFilterQuery(
 		Operator operator, String field, Object value) {
 
@@ -470,6 +409,18 @@ public class FacetsSearchRequestBodyContributor
 		return query;
 	}
 
+	private void _processFacets(
+		SearchRequestBuilder searchRequestBuilder, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
+
+		Set<String> keySet = jsonObject.keySet();
+
+		keySet.forEach(
+			facetName -> _addFacet(
+				searchRequestBuilder, facetName, jsonObject, parameterData,
+				messages));
+	}
+
 	@Reference
 	private Aggregations _aggregations;
 
@@ -481,6 +432,9 @@ public class FacetsSearchRequestBodyContributor
 
 	@Reference
 	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
+
+	@Reference(target = "(type=internal)")
+	private FacetRequestHandlerFactory _facetRequestHandlerFactory;
 
 	@Reference
 	private Queries _queries;

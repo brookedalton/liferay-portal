@@ -47,6 +47,12 @@ public class BlueprintsAdminMVCCommandNames {
 
 	public static final String SELECT_USERS = "/users/select";
 
+	public static final String VALIDATE_BLUEPRINT =
+		"/blueprints/validate_blueprint";
+
+	public static final String VALIDATE_ELEMENT =
+		"/blueprints/validate_element";
+
 	public static final String VIEW_BLUEPRINTS = "/blueprints";
 
 	public static final String VIEW_ELEMENTS = "/blueprints/elements";

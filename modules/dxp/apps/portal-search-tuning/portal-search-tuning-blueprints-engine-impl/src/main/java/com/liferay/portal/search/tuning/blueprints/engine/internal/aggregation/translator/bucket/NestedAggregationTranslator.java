@@ -23,7 +23,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.u
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -44,13 +43,6 @@ public class NestedAggregationTranslator implements AggregationTranslator {
 	public Optional<AggregationWrapper> translate(
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
-
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				NestedAggregationBodyConfigurationKeys.PATH.getJsonKey())) {
-
-			return Optional.empty();
-		}
 
 		NestedAggregation aggregation = _aggregations.nested(
 			aggregationName,

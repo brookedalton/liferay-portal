@@ -26,8 +26,8 @@
 						}
 					}
 				],
-				"conditions": [
-				],
+				"conditions": {
+				},
 				"description": {
 					"en_US": "Hide contents tagged with"
 				},

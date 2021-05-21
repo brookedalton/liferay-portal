@@ -57,6 +57,10 @@ public class SearchResponseJSONTranslatorImpl
 
 		JSONObject responseJSONObject = _jsonFactory.createJSONObject();
 
+		if (searchResponse == null) {
+			return responseJSONObject;
+		}
+
 		for (Map.Entry
 				<String, ServiceComponentReference<JSONTranslationContributor>>
 					entry : _jsonTranslationContributors.entrySet()) {
@@ -95,6 +99,8 @@ public class SearchResponseJSONTranslatorImpl
 				_language.get(resourceBundle, message.getLocalizationKey())
 			).put(
 				"msg", message.getMsg()
+			).put(
+				"rootConfiguration", message.getRootConfiguration()
 			).put(
 				"rootObject", message.getRootObject()
 			).put(

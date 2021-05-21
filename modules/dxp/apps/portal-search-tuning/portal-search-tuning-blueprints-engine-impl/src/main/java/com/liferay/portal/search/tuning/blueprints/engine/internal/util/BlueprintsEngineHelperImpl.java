@@ -80,11 +80,13 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			blueprintsAttributes.getCompanyId(),
 			blueprintsAttributes.getLocale());
 
+		SearchResponse searchResponse = _searchExecutor.execute(
+			searchRequestBuilder, parameterData, blueprint, messages);
+
 		_blueprintsSearchRequestHelper.checkEngineErrors(
 			blueprint.getBlueprintId(), messages);
 
-		return _searchExecutor.execute(
-			searchRequestBuilder, parameterData, blueprint, messages);
+		return searchResponse;
 	}
 
 	@Override

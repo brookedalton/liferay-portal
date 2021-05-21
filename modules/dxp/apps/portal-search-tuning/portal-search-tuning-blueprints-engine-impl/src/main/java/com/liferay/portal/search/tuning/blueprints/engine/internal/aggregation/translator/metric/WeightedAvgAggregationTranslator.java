@@ -20,11 +20,9 @@ import com.liferay.portal.search.aggregation.metrics.WeightedAvgAggregation;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.WeightedAvgAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.ScriptHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -46,14 +44,11 @@ public class WeightedAvgAggregationTranslator implements AggregationTranslator {
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		JSONObject valueJSONObject = _getValueJSONObject(jsonObject, messages);
+		JSONObject valueJSONObject = jsonObject.getJSONObject(
+			WeightedAvgAggregationBodyConfigurationKeys.VALUE.getJsonKey());
 
-		JSONObject weightJSONObject = _getWeightJSONObject(
-			jsonObject, messages);
-
-		if ((valueJSONObject == null) || (weightJSONObject == null)) {
-			return Optional.empty();
-		}
+		JSONObject weightJSONObject = jsonObject.getJSONObject(
+			WeightedAvgAggregationBodyConfigurationKeys.WEIGHT.getJsonKey());
 
 		WeightedAvgAggregation aggregation = _aggregations.weightedAvg(
 			aggregationName, valueJSONObject.getString("field"),
@@ -79,60 +74,11 @@ public class WeightedAvgAggregationTranslator implements AggregationTranslator {
 		return _aggregationHelper.wrap(aggregation);
 	}
 
-	private JSONObject _getValueJSONObject(
-		JSONObject jsonObject, Messages messages) {
-
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				WeightedAvgAggregationBodyConfigurationKeys.VALUE.
-					getJsonKey())) {
-
-			return null;
-		}
-
-		JSONObject valueJSONObject = jsonObject.getJSONObject(
-			WeightedAvgAggregationBodyConfigurationKeys.WEIGHT.getJsonKey());
-
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				valueJSONObject, messages, "field")) {
-
-			return null;
-		}
-
-		return valueJSONObject;
-	}
-
-	private JSONObject _getWeightJSONObject(
-		JSONObject jsonObject, Messages messages) {
-
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				WeightedAvgAggregationBodyConfigurationKeys.WEIGHT.
-					getJsonKey())) {
-
-			return null;
-		}
-
-		JSONObject weightJSONObject = jsonObject.getJSONObject(
-			WeightedAvgAggregationBodyConfigurationKeys.WEIGHT.getJsonKey());
-
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				weightJSONObject, messages, "field")) {
-
-			return null;
-		}
-
-		return weightJSONObject;
-	}
-
 	@Reference
 	private AggregationHelper _aggregationHelper;
 
 	@Reference
 	private Aggregations _aggregations;
-
-	@Reference
-	private ScriptHelper _scriptHelper;
 
 	@Reference
 	private SetterHelper _setterHelper;

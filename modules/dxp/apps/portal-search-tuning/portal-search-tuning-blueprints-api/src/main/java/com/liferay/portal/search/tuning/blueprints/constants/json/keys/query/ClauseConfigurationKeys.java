@@ -22,7 +22,8 @@ import java.util.stream.Stream;
  */
 public enum ClauseConfigurationKeys {
 
-	CONTEXT("context"), OCCUR("occur"), QUERY("query"), TYPE("type"),
+	CONTEXT("context"), OCCUR("occur"), QUERY("query"),
+	QUERY_WEIGHT("query_weight"), RESCORE_QUERY_WEIGHT("rescore_query_weight"),
 	WINDOW_SIZE("window_size");
 
 	public static ClauseConfigurationKeys findByJsonKey(String jsonKey) {

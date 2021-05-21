@@ -137,6 +137,11 @@ public class BlueprintsAdminRequestUtil {
 			portletRequest, BlueprintsAdminWebKeys.ELEMENT_TYPE);
 	}
 
+	public static boolean getHidden(PortletRequest portletRequest) {
+		return ParamUtil.getBoolean(
+			portletRequest, BlueprintsAdminWebKeys.HIDDEN);
+	}
+
 	public static HttpServletRequest getHttpServletRequest(
 		PortletRequest portletRequest) {
 

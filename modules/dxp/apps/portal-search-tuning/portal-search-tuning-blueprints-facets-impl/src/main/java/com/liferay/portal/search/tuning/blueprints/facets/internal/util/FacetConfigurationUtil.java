@@ -17,8 +17,12 @@ package com.liferay.portal.search.tuning.blueprints.facets.internal.util;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.tuning.blueprints.constants.json.values.FilterMode;
+import com.liferay.portal.search.tuning.blueprints.constants.json.values.Operator;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,65 +44,49 @@ public class FacetConfigurationUtil {
 	}
 
 	public static List<String> getExcludeValues(JSONObject jsonObject) {
-		if (!jsonObject.has(
-				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey())) {
+		JSONObject parametersJSONObject = jsonObject.getJSONObject(
+			FacetConfigurationKeys.PARAMETERS.getJsonKey());
 
+		if (parametersJSONObject == null) {
 			return Collections.emptyList();
 		}
 
-		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
+		JSONArray excludeValuesJSONArray = parametersJSONObject.getJSONArray(
+			FacetConfigurationKeys.EXCLUDE_VALUES.getJsonKey());
 
-		JSONArray excludeValuesJSONArray =
-			handlerParametersJSONObject.getJSONArray(
-				FacetConfigurationKeys.EXCLUDE_VALUES.getJsonKey());
-
-		if ((excludeValuesJSONArray == null) ||
-			(excludeValuesJSONArray.length() == 0)) {
-
+		if (excludeValuesJSONArray == null) {
 			Collections.emptyList();
 		}
 
 		return JSONUtil.toStringList(excludeValuesJSONArray);
 	}
 
-	public static String getFacetName(JSONObject jsonObject) {
-		String name = jsonObject.getString(
-			FacetConfigurationKeys.NAME.getJsonKey());
-
-		if (!Validator.isBlank(name)) {
-			return name;
-		}
-
-		return getFieldName(jsonObject);
-	}
-
 	public static String getFieldName(JSONObject jsonObject) {
 		return jsonObject.getString(FacetConfigurationKeys.FIELD.getJsonKey());
 	}
 
-	public static String getHandlerName(JSONObject jsonObject) {
-		return jsonObject.getString(
-			FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
+	public static FilterMode getFilterMode(
+		JSONObject jsonObject, Messages messages) {
+
+		String s = jsonObject.getString(
+			FacetConfigurationKeys.FILTER_MODE.getJsonKey(),
+			FilterMode.PRE.getjsonValue());
+
+		return FilterMode.valueOf(StringUtil.toUpperCase(s));
 	}
 
 	public static List<String> getIncludeValues(JSONObject jsonObject) {
-		if (!jsonObject.has(
-				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey())) {
+		JSONObject parametersJSONObject = jsonObject.getJSONObject(
+			FacetConfigurationKeys.PARAMETERS.getJsonKey());
 
+		if (parametersJSONObject == null) {
 			return Collections.emptyList();
 		}
 
-		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
+		JSONArray excludeValuesJSONArray = parametersJSONObject.getJSONArray(
+			FacetConfigurationKeys.INCLUDE_VALUES.getJsonKey());
 
-		JSONArray excludeValuesJSONArray =
-			handlerParametersJSONObject.getJSONArray(
-				FacetConfigurationKeys.INCLUDE_VALUES.getJsonKey());
-
-		if ((excludeValuesJSONArray == null) ||
-			(excludeValuesJSONArray.length() == 0)) {
-
+		if (excludeValuesJSONArray == null) {
 			Collections.emptyList();
 		}
 
@@ -114,6 +102,16 @@ public class FacetConfigurationUtil {
 		}
 
 		return getFieldName(jsonObject);
+	}
+
+	public static Operator getOperator(
+		JSONObject jsonObject, Messages messages) {
+
+		String s = jsonObject.getString(
+			FacetConfigurationKeys.MULTI_VALUE_OPERATOR.getJsonKey(),
+			Operator.AND.getjsonValue());
+
+		return Operator.valueOf(StringUtil.toUpperCase(s));
 	}
 
 	public static String getParameterName(JSONObject jsonObject) {

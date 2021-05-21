@@ -84,8 +84,14 @@ public class AggsSearchRequestBodyContributor
 		if (!parentAggregationWrapper.isPipeline()) {
 			Aggregation aggregation = parentAggregationWrapper.getAggregation();
 
-			aggregation.addChildAggregation(
-				childAggregationWrapper.getAggregation());
+			if (childAggregationWrapper.isPipeline()) {
+				aggregation.addPipelineAggregation(
+					childAggregationWrapper.getPipelineAggregation());
+			}
+			else {
+				aggregation.addChildAggregation(
+					childAggregationWrapper.getAggregation());
+			}
 		}
 	}
 
@@ -117,6 +123,64 @@ public class AggsSearchRequestBodyContributor
 			AggregationConfigurationKeys.ENABLED.getJsonKey(), true);
 	}
 
+	private void _processAggregation(
+		SearchRequestBuilder searchRequestBuilder,
+		AggregationWrapper parentAggregationWrapper, String aggregationName,
+		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
+
+		JSONObject nameJSONObject = jsonObject.getJSONObject(aggregationName);
+
+		Optional<String> typeOptional = BlueprintJSONUtil.getFirstKeyOptional(
+			nameJSONObject);
+
+		if (!typeOptional.isPresent()) {
+			return;
+		}
+
+		String type = typeOptional.get();
+
+		JSONObject typeJSONObject = nameJSONObject.getJSONObject(type);
+
+		AggregationWrapper aggregationWrapper;
+
+		try {
+			Optional<AggregationWrapper> aggregationWrapperOptional =
+				_getAggregationOptional(
+					aggregationName, type, typeJSONObject, parameterData,
+					messages);
+
+			if (!aggregationWrapperOptional.isPresent()) {
+				return;
+			}
+
+			aggregationWrapper = aggregationWrapperOptional.get();
+		}
+		catch (IllegalArgumentException illegalArgumentException) {
+			MessagesUtil.invalidConfigurationValueError(
+				messages, getClass().getName(), illegalArgumentException,
+				nameJSONObject, null, type);
+
+			return;
+		}
+
+		if (!aggregationWrapper.isPipeline()) {
+			JSONObject aggsJSONObject = nameJSONObject.getJSONObject("aggs");
+
+			if (aggsJSONObject != null) {
+				_processAggregations(
+					searchRequestBuilder, aggregationWrapper, aggsJSONObject,
+					parameterData, messages);
+			}
+		}
+
+		if (parentAggregationWrapper == null) {
+			_addAggregation(searchRequestBuilder, aggregationWrapper);
+		}
+		else {
+			_addChildAggregation(parentAggregationWrapper, aggregationWrapper);
+		}
+	}
+
 	private void _processAggregations(
 		SearchRequestBuilder searchRequestBuilder,
 		AggregationWrapper parentAggregationWrapper,
@@ -126,58 +190,9 @@ public class AggsSearchRequestBodyContributor
 		Set<String> keySet = aggregationJSONObject.keySet();
 
 		keySet.forEach(
-			name -> {
-				JSONObject nameJSONObject = aggregationJSONObject.getJSONObject(
-					name);
-
-				Optional<String> typeOptional =
-					BlueprintJSONUtil.getFirstKeyOptional(nameJSONObject);
-
-				if (!typeOptional.isPresent()) {
-					return;
-				}
-
-				String type = typeOptional.get();
-
-				JSONObject typeJSONObject = nameJSONObject.getJSONObject(type);
-
-				AggregationWrapper aggregationWrapper;
-
-				try {
-					Optional<AggregationWrapper> aggregationWrapperOptional =
-						_getAggregationOptional(
-							name, type, typeJSONObject, parameterData,
-							messages);
-
-					aggregationWrapper = aggregationWrapperOptional.get();
-				}
-				catch (IllegalArgumentException illegalArgumentException) {
-					MessagesUtil.invalidConfigurationValueError(
-						messages, getClass().getName(),
-						illegalArgumentException, nameJSONObject, null, type);
-
-					return;
-				}
-
-				if (!aggregationWrapper.isPipeline()) {
-					JSONObject aggsJSONObject = typeJSONObject.getJSONObject(
-						"aggs");
-
-					if (aggsJSONObject != null) {
-						_processAggregations(
-							searchRequestBuilder, aggregationWrapper,
-							aggsJSONObject, parameterData, messages);
-					}
-				}
-
-				if (parentAggregationWrapper == null) {
-					_addAggregation(searchRequestBuilder, aggregationWrapper);
-				}
-				else {
-					_addChildAggregation(
-						parentAggregationWrapper, aggregationWrapper);
-				}
-			});
+			aggregationName -> _processAggregation(
+				searchRequestBuilder, parentAggregationWrapper, aggregationName,
+				aggregationJSONObject, parameterData, messages));
 	}
 
 	@Reference

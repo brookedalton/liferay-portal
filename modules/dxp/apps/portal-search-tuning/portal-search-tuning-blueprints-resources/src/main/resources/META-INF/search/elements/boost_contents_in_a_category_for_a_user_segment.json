@@ -21,17 +21,14 @@
 						}
 					}
 				],
-				"conditions": [
-					{
-						"configuration": {
-							"evaluation_type": "contains",
-							"parameter_name": "${user.user_segment_entry_ids}",
-							"value": [
-								"${configuration.user_segment_id}"
-							]
-						}
+				"conditions": {
+					"contains": {
+						"parameter_name": "${user.user_segment_entry_ids}",
+						"value": [
+							"${configuration.user_segment_id}"
+						]
 					}
-				],
+				},
 				"description": {
 					"en_US": "Boost contents in a category for users belonging to a user segment"
 				},

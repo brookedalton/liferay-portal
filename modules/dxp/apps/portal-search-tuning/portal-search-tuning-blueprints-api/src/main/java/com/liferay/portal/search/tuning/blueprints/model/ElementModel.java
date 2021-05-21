@@ -455,6 +455,34 @@ public interface ElementModel
 	public void setConfiguration(String configuration);
 
 	/**
+	 * Returns the hidden of this element.
+	 *
+	 * @return the hidden of this element
+	 */
+	public Boolean getHidden();
+
+	/**
+	 * Sets the hidden of this element.
+	 *
+	 * @param hidden the hidden of this element
+	 */
+	public void setHidden(Boolean hidden);
+
+	/**
+	 * Returns the read only of this element.
+	 *
+	 * @return the read only of this element
+	 */
+	public Boolean getReadOnly();
+
+	/**
+	 * Sets the read only of this element.
+	 *
+	 * @param readOnly the read only of this element
+	 */
+	public void setReadOnly(Boolean readOnly);
+
+	/**
 	 * Returns the type of this element.
 	 *
 	 * @return the type of this element

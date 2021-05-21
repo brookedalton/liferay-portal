@@ -184,14 +184,9 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 	protected String getStringFieldContent(
 		Document document, String field, Locale locale) {
 
-		String fieldName = null;
-		String value = null;
+		String fieldName = _buildLocalizedFieldName(field, locale);
 
-		if (Validator.isNull(value)) {
-			fieldName = _buildLocalizedFieldName(field, locale);
-
-			value = document.getString(fieldName);
-		}
+		String value = document.getString(fieldName);
 
 		if (Validator.isNull(value)) {
 			fieldName = _buildLocalizedFieldName2(field, locale);

@@ -35,7 +35,6 @@ import com.liferay.portal.search.tuning.blueprints.service.ElementService;
 import java.io.IOException;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -96,9 +95,9 @@ public class CopyElementMVCActionCommand extends BaseMVCActionCommand {
 				elementValidationException.getMessage(),
 				elementValidationException);
 
-			List<String> errors = elementValidationException.getErrors();
-
-			errors.forEach(key -> SessionErrors.add(actionRequest, key));
+			SessionErrors.add(
+				actionRequest, BlueprintsAdminWebKeys.ERROR,
+				elementValidationException.getMessage());
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);

@@ -45,7 +45,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US:
 				'Enables filtering results with time parameter (requires configuring parameter ‘time’ of type ‘date’)',

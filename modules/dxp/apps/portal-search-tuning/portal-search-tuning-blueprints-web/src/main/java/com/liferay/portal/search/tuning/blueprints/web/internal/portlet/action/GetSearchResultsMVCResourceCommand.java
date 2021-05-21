@@ -38,7 +38,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedPara
 import com.liferay.portal.search.tuning.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineHelper;
 import com.liferay.portal.search.tuning.blueprints.keyword.index.util.KeywordIndexHelper;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.misspellings.processor.MisspellingsProcessor;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
@@ -126,13 +125,6 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			_log.error(
 				blueprintsEngineException.getMessage(),
 				blueprintsEngineException);
-
-			List<Message> errorMessages =
-				blueprintsEngineException.getMessages();
-
-			Stream<Message> stream = errorMessages.stream();
-
-			stream.forEach(message -> _log.error(message));
 
 			responseJSONObject = JSONUtil.put(
 				JSONKeys.ERRORS, blueprintsEngineException.getMessage());

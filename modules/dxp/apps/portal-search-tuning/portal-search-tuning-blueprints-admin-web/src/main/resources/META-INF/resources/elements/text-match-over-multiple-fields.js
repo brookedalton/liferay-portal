@@ -40,7 +40,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Search for a text match over multiple text fields',
 		},

@@ -32,7 +32,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Limit search scope to the sites user is member of',
 		},

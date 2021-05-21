@@ -4,5 +4,4 @@ Bundle-Version: 1.0.0
 Export-Package:\
 	com.liferay.portal.search.tuning.blueprints.util.attributes,\
 	com.liferay.portal.search.tuning.blueprints.util.component,\
-	com.liferay.portal.search.tuning.blueprints.util.importer,\
 	com.liferay.portal.search.tuning.blueprints.util.util

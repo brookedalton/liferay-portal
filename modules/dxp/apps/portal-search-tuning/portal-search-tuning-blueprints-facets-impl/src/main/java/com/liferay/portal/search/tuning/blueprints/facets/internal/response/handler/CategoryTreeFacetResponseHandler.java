@@ -56,37 +56,10 @@ public class CategoryTreeFacetResponseHandler
 
 	@Override
 	public Optional<JSONObject> getResultOptional(
-		AggregationResult aggregationResult,
+		AggregationResult aggregationResult, String type,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
 		JSONObject jsonObject) {
-
-		JSONObject handlerParametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
-
-		if (handlerParametersJSONObject == null) {
-			MessagesUtil.error(
-				messages, getClass().getName(),
-				new Throwable("Facet handler parameters not defined"),
-				jsonObject,
-				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey(), null,
-				"facets.error.undefined-handler-parameters");
-
-			return Optional.empty();
-		}
-
-		Long vocabularyId = handlerParametersJSONObject.getLong(
-			"root_vocabulary_id", -1);
-
-		if (vocabularyId < 0) {
-			MessagesUtil.error(
-				messages, getClass().getName(),
-				new Throwable("Root vocabulary id not defined"), jsonObject,
-				"vocabulary_id", String.valueOf(vocabularyId),
-				"facets.error.root-vocabulary-id-missing");
-
-			return Optional.empty();
-		}
 
 		TermsAggregationResult termsAggregationResult =
 			(TermsAggregationResult)aggregationResult;
@@ -97,15 +70,19 @@ public class CategoryTreeFacetResponseHandler
 			return Optional.empty();
 		}
 
+		JSONObject parametersJSONObject = jsonObject.getJSONObject(
+			FacetConfigurationKeys.PARAMETERS.getJsonKey());
+
 		long frequencyThreshold = jsonObject.getLong(
-			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
+			FacetConfigurationKeys.MIN_DOC_COUNT.getJsonKey(), 1);
 
 		JSONArray jsonArray = null;
 
 		try {
 			jsonArray = _getCategoriesJSONArray(
-				buckets, vocabularyId, frequencyThreshold,
-				blueprintsAttributes.getLocale(), messages, jsonObject);
+				buckets, parametersJSONObject.getLong("root_vocabulary_id"),
+				frequencyThreshold, blueprintsAttributes.getLocale(), messages,
+				jsonObject);
 		}
 		catch (PortalException portalException) {
 			MessagesUtil.error(
@@ -115,7 +92,7 @@ public class CategoryTreeFacetResponseHandler
 			return Optional.empty();
 		}
 
-		return createResultObject(jsonArray, jsonObject, resourceBundle);
+		return createResultObject(jsonArray, type, jsonObject, resourceBundle);
 	}
 
 	private void _addChildNode(

@@ -18,18 +18,14 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.condition.util.ConditionUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.FloatParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.visitor.EvaluationVisitor;
 
 import java.util.Date;
 
@@ -37,10 +33,10 @@ import java.util.Date;
  * @author Petteri Karttunen
  */
 public class EqualsVisitor
-	extends BaseEvaluationVisitor implements ConditionEvaluationVisitor {
+	extends BaseEvaluationVisitor implements EvaluationVisitor {
 
-	public EqualsVisitor(JSONObject conditionJSONObject, boolean not) {
-		super(conditionJSONObject, not);
+	public EqualsVisitor(JSONObject conditionJSONObject) {
+		super(conditionJSONObject);
 	}
 
 	@Override
@@ -52,9 +48,7 @@ public class EqualsVisitor
 
 		Boolean parameterValue = parameter.getValue();
 
-		if (returnValue(
-				value.booleanValue() == parameterValue.booleanValue())) {
-
+		if (value.booleanValue() == parameterValue.booleanValue()) {
 			return true;
 		}
 
@@ -65,11 +59,11 @@ public class EqualsVisitor
 	public boolean visit(DateParameter parameter)
 		throws ParameterEvaluationException {
 
-		Date date = ConditionUtil.getDateValue(conditionJSONObject);
+		Date date = getDateValue(conditionJSONObject);
 
 		Date parameterValue = parameter.getValue();
 
-		return returnValue(parameterValue.equals(date));
+		return parameterValue.equals(date);
 	}
 
 	@Override
@@ -79,59 +73,35 @@ public class EqualsVisitor
 		Double value = conditionJSONObject.getDouble(
 			ConditionConfigurationKeys.VALUE.getJsonKey());
 
-		return returnValue(parameter.equalsTo(value));
+		return parameter.equalsTo(value);
 	}
 
 	@Override
 	public boolean visit(FloatParameter parameter)
 		throws ParameterEvaluationException {
 
-		return returnValue(
-			parameter.equalsTo(
-				GetterUtil.getFloat(
-					conditionJSONObject.get(
-						ConditionConfigurationKeys.VALUE.getJsonKey()))));
-	}
-
-	@Override
-	public boolean visit(IntegerArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		return parameter.equalsTo(
+			GetterUtil.getFloat(
+				conditionJSONObject.get(
+					ConditionConfigurationKeys.VALUE.getJsonKey())));
 	}
 
 	@Override
 	public boolean visit(IntegerParameter parameter)
 		throws ParameterEvaluationException {
 
-		return returnValue(
-			parameter.equalsTo(
-				conditionJSONObject.getInt(
-					ConditionConfigurationKeys.VALUE.getJsonKey())));
-	}
-
-	@Override
-	public boolean visit(LongArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		return parameter.equalsTo(
+			conditionJSONObject.getInt(
+				ConditionConfigurationKeys.VALUE.getJsonKey()));
 	}
 
 	@Override
 	public boolean visit(LongParameter parameter)
 		throws ParameterEvaluationException {
 
-		return returnValue(
-			parameter.equalsTo(
-				conditionJSONObject.getLong(
-					ConditionConfigurationKeys.VALUE.getJsonKey())));
-	}
-
-	@Override
-	public boolean visit(StringArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		return parameter.equalsTo(
+			conditionJSONObject.getLong(
+				ConditionConfigurationKeys.VALUE.getJsonKey()));
 	}
 
 	@Override
@@ -140,10 +110,9 @@ public class EqualsVisitor
 
 		String parameterValue = parameter.getValue();
 
-		return returnValue(
-			parameterValue.equals(
-				conditionJSONObject.getString(
-					ConditionConfigurationKeys.VALUE.getJsonKey())));
+		return parameterValue.equals(
+			conditionJSONObject.getString(
+				ConditionConfigurationKeys.VALUE.getJsonKey()));
 	}
 
 }

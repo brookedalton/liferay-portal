@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -92,19 +91,16 @@ public class BoostContentsInCategoryForAPeriodOfTimeTest
 	}
 
 	@Override
-	protected JSONArray getConditions() {
-		return createJSONArray().put(
+	protected JSONObject getConditions() {
+		return JSONUtil.put(
+			"in_range",
 			JSONUtil.put(
-				"configuration",
-				JSONUtil.put(
-					"date_format", "yyyyMMdd"
-				).put(
-					"evaluation_type", EvaluationType.IN_RANGE.getjsonValue()
-				).put(
-					"parameter_name", "${time.current_date}"
-				).put(
-					"value", _getStartDateEndDateJSONArray()
-				)));
+				"date_format", "yyyyMMdd"
+			).put(
+				"parameter_name", "${time.current_date}"
+			).put(
+				"value", _getStartDateEndDateJSONArray()
+			));
 	}
 
 	@Override

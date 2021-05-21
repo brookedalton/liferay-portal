@@ -92,7 +92,7 @@ public class MessagesUtil {
 
 		StringBundler sb = new StringBundler(7);
 
-		sb.append("Invalid or unknown configuration value.");
+		sb.append("Invalid configuration value.");
 
 		_addLogMessageDetails(
 			sb, className, rootObject, rootProperty, rootValue);
@@ -104,15 +104,21 @@ public class MessagesUtil {
 		Messages messages, String className, String correctType,
 		Object rootObject, String rootProperty, String rootValue) {
 
+		StringBundler sb = new StringBundler();
+
+		sb.append("[ ");
+		sb.append(rootProperty);
+		sb.append(" ] has to be of type [ ");
+		sb.append(correctType);
+		sb.append(" ] ");
+
 		messages.addMessage(
 			new Message.Builder().className(
 				className
 			).localizationKey(
-				"core.error.invalid-configuration-value-type"
+				"core.error.invalid-value-type"
 			).msg(
-				StringBundler.concat(
-					"Invalid type in configuration value  ", rootValue, ". ",
-					correctType, " expected.")
+				sb.toString()
 			).rootObject(
 				rootObject
 			).rootProperty(
@@ -122,12 +128,6 @@ public class MessagesUtil {
 			).severity(
 				Severity.ERROR
 			).build());
-
-		StringBundler sb = new StringBundler();
-
-		sb.append("Invalid configuration value type. ");
-		sb.append(correctType);
-		sb.append(" expected.");
 
 		_addLogMessageDetails(
 			sb, className, rootObject, rootProperty, rootValue);
@@ -144,7 +144,7 @@ public class MessagesUtil {
 			).localizationKey(
 				"core.error.required-field-missing"
 			).msg(
-				"A required field " + field + "is missing"
+				"[ " + field + " ] must be defined."
 			).rootObject(
 				rootObject
 			).rootProperty(
@@ -155,9 +155,9 @@ public class MessagesUtil {
 
 		StringBundler sb = new StringBundler(5);
 
-		sb.append("A required field ");
+		sb.append("[ ");
 		sb.append(field);
-		sb.append(" is missing.");
+		sb.append(" ] must be defined ");
 
 		_addLogMessageDetails(sb, className, rootObject, field, null);
 
@@ -300,18 +300,21 @@ public class MessagesUtil {
 		String rootProperty, String rootValue) {
 
 		if (className != null) {
-			sb.append(" Reporting class: ");
+			sb.append(" Reporting class: [ ");
 			sb.append(className);
+			sb.append(" ]");
 		}
 
 		if (rootValue != null) {
-			sb.append(" Root value: ");
+			sb.append(" Root value: [ ");
 			sb.append(rootValue);
+			sb.append(" ]");
 		}
 
 		if (rootProperty != null) {
-			sb.append(" Root property: ");
+			sb.append(" Root property: [ ");
 			sb.append(rootProperty);
+			sb.append(" ]");
 		}
 
 		if (rootObject != null) {

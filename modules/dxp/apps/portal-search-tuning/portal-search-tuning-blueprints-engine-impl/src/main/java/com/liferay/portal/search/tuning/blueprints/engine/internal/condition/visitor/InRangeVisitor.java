@@ -20,18 +20,12 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.FloatParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintValueUtil;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.visitor.EvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.text.DateFormat;
@@ -43,25 +37,17 @@ import java.util.Date;
  * @author Petteri Karttunen
  */
 public class InRangeVisitor
-	extends BaseEvaluationVisitor implements ConditionEvaluationVisitor {
+	extends BaseEvaluationVisitor implements EvaluationVisitor {
 
-	public InRangeVisitor(JSONObject conditionJSONObject, boolean not) {
-		super(conditionJSONObject, not);
-	}
-
-	@Override
-	public boolean visit(BooleanParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+	public InRangeVisitor(JSONObject conditionJSONObject) {
+		super(conditionJSONObject);
 	}
 
 	@Override
 	public boolean visit(DateParameter parameter)
 		throws ParameterEvaluationException {
 
-		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			conditionJSONObject);
+		JSONArray jsonArray = getConditionValueJSONArray(conditionJSONObject);
 
 		_checkRangeValue(jsonArray);
 
@@ -74,11 +60,12 @@ public class InRangeVisitor
 		if (Validator.isNull(dateFormatString)) {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
-					getClass().getName(), new Throwable("Date format missing"),
+					getClass().getName(),
+					new Throwable("Date format must be defined"),
 					conditionJSONObject,
 					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey(),
 					dateFormatString,
-					"core.error.clause-condition-date-format-missing"));
+					"core.error.date-format-must-be-defined"));
 		}
 
 		try {
@@ -100,7 +87,7 @@ public class InRangeVisitor
 				inRange = true;
 			}
 
-			return returnValue(inRange);
+			return inRange;
 		}
 		catch (Exception exception) {
 			throw new ParameterEvaluationException(
@@ -115,8 +102,7 @@ public class InRangeVisitor
 	public boolean visit(DoubleParameter parameter)
 		throws ParameterEvaluationException {
 
-		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			conditionJSONObject);
+		JSONArray jsonArray = getConditionValueJSONArray(conditionJSONObject);
 
 		_checkRangeValue(jsonArray);
 
@@ -133,15 +119,14 @@ public class InRangeVisitor
 			inRange = true;
 		}
 
-		return returnValue(inRange);
+		return inRange;
 	}
 
 	@Override
 	public boolean visit(FloatParameter parameter)
 		throws ParameterEvaluationException {
 
-		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			conditionJSONObject);
+		JSONArray jsonArray = getConditionValueJSONArray(conditionJSONObject);
 
 		_checkRangeValue(jsonArray);
 
@@ -158,22 +143,14 @@ public class InRangeVisitor
 			inRange = true;
 		}
 
-		return returnValue(inRange);
-	}
-
-	@Override
-	public boolean visit(IntegerArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		return inRange;
 	}
 
 	@Override
 	public boolean visit(IntegerParameter parameter)
 		throws ParameterEvaluationException {
 
-		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			conditionJSONObject);
+		JSONArray jsonArray = getConditionValueJSONArray(conditionJSONObject);
 
 		_checkRangeValue(jsonArray);
 
@@ -190,22 +167,14 @@ public class InRangeVisitor
 			inRange = true;
 		}
 
-		return returnValue(inRange);
-	}
-
-	@Override
-	public boolean visit(LongArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		return inRange;
 	}
 
 	@Override
 	public boolean visit(LongParameter parameter)
 		throws ParameterEvaluationException {
 
-		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			conditionJSONObject);
+		JSONArray jsonArray = getConditionValueJSONArray(conditionJSONObject);
 
 		_checkRangeValue(jsonArray);
 
@@ -219,21 +188,7 @@ public class InRangeVisitor
 			inRange = true;
 		}
 
-		return returnValue(inRange);
-	}
-
-	@Override
-	public boolean visit(StringArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean visit(StringParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		return inRange;
 	}
 
 	private void _checkRangeValue(JSONArray jsonArray)
@@ -245,8 +200,7 @@ public class InRangeVisitor
 					getClass().getName(), new Throwable("Invalid range value"),
 					conditionJSONObject,
 					ConditionConfigurationKeys.VALUE.getJsonKey(),
-					jsonArray.toString(),
-					"core.error.invalid-clause-condition-range-value"));
+					jsonArray.toString(), "core.error.invalid-range-value"));
 		}
 	}
 

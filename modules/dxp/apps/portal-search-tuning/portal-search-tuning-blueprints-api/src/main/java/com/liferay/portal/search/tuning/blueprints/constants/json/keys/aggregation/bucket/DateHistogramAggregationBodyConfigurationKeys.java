@@ -24,9 +24,8 @@ public enum DateHistogramAggregationBodyConfigurationKeys {
 
 	DATE_HISTOGRAM_INTERVAL("date_histogram_interval"),
 	EXTENDED_BOUNDS("extended_bounds"), FIELD("field"),
-	HARD_BOUNDS("hard_bounds"), INTERVAL("interval"), KEYED("keyed"),
-	MIN_DOC_COUNT("min_doc_count"), MISSING("missing"), OFFSET("offset"),
-	ORDER("order"), SCRIPT("script");
+	HARD_BOUNDS("hard_bounds"), KEYED("keyed"), MIN_DOC_COUNT("min_doc_count"),
+	MISSING("missing"), OFFSET("offset"), ORDER("order"), SCRIPT("script");
 
 	public static DateHistogramAggregationBodyConfigurationKeys findByJsonKey(
 		String jsonKey) {

@@ -27,10 +27,12 @@ import com.liferay.portal.search.aggregation.bucket.Order;
 import com.liferay.portal.search.aggregation.bucket.Range;
 import com.liferay.portal.search.aggregation.pipeline.GapPolicy;
 import com.liferay.portal.search.aggregation.pipeline.PipelineAggregation;
+import com.liferay.portal.search.geolocation.DistanceUnit;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.script.Script;
 import com.liferay.portal.search.significance.SignificanceHeuristic;
 import com.liferay.portal.search.significance.SignificanceHeuristics;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.bucket.DateHistogramAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.util.ClauseHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.util.ScriptHelper;
@@ -65,6 +67,10 @@ public class AggregationHelper {
 
 		Object object = bodyJSONObject.get("buckets_path");
 
+		if (Objects.isNull(object)) {
+			return bucketsPathMap;
+		}
+
 		if (object instanceof JSONObject) {
 			JSONObject bucketsPathJSONObject = (JSONObject)object;
 
@@ -86,55 +92,126 @@ public class AggregationHelper {
 		return bucketsPathMap;
 	}
 
-	public GapPolicy getGapPolicy(
-		JSONObject bodyJSONObject, Messages messages) {
+	public DistanceUnit getDistanceUnit(String s) {
+		s = StringUtil.toLowerCase(s);
 
-		if (!bodyJSONObject.has("gap_policy")) {
-			return null;
-		}
+		for (DistanceUnit distanceUnit : DistanceUnit.values()) {
+			String unit = distanceUnit.getUnit();
 
-		String s = bodyJSONObject.getString("gap_policy");
-
-		try {
-			return GapPolicy.valueOf(StringUtil.toUpperCase(s));
-		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			MessagesUtil.invalidConfigurationValueError(
-				messages, getClass().getName(), illegalArgumentException,
-				bodyJSONObject, "gap_policy", s);
+			if (unit.equals(s)) {
+				return distanceUnit;
+			}
 		}
 
 		return null;
 	}
 
-	public Optional<Script> getScript(Object object, Messages messages) {
-		if (Objects.isNull(object)) {
-			return Optional.empty();
+	public GapPolicy getGapPolicy(
+		JSONObject bodyJSONObject, Messages messages) {
+
+		String gapPolicy = bodyJSONObject.getString("gap_policy");
+
+		if (Validator.isBlank(gapPolicy)) {
+			return null;
 		}
 
-		if (object instanceof String) {
-			return _scriptHelper.getScript((String)object, messages);
-		}
-		else if (object instanceof JSONObject) {
-			return _scriptHelper.getScript((JSONObject)object, messages);
+		return GapPolicy.valueOf(StringUtil.toUpperCase(gapPolicy));
+	}
+
+	public Integer getHdrSignificantValueDigits(JSONObject jsonObject) {
+		JSONObject hdrJSONObject = jsonObject.getJSONObject("hdr");
+
+		if (hdrJSONObject == null) {
+			return null;
 		}
 
-		return Optional.empty();
+		return hdrJSONObject.getInt("number_of_significant_value_digits");
+	}
+
+	public Optional<Script> getScript(Object object) {
+		return _scriptHelper.getScript(object);
+	}
+
+	public SignificanceHeuristic getSignificanceHeuristics(
+		JSONObject bodyJSONObject, Messages messages) {
+
+		if (bodyJSONObject.has("chi_square")) {
+			JSONObject jsonObject = bodyJSONObject.getJSONObject("chi_square");
+
+			if (jsonObject != null) {
+				return _significanceHeuristics.chiSquare(
+					_getBackGroundIsSuperset(jsonObject),
+					_getIncludeNegatives(jsonObject));
+			}
+		}
+
+		if (bodyJSONObject.has("gnd")) {
+			JSONObject jsonObject = bodyJSONObject.getJSONObject("gnd");
+
+			if (jsonObject != null) {
+				return _significanceHeuristics.gnd(
+					_getBackGroundIsSuperset(jsonObject));
+			}
+		}
+
+		if (bodyJSONObject.has("jlh")) {
+			return _significanceHeuristics.jlhScore();
+		}
+
+		if (bodyJSONObject.has("mutual_information")) {
+			JSONObject jsonObject = bodyJSONObject.getJSONObject(
+				"mutual_information");
+
+			if (jsonObject != null) {
+				_significanceHeuristics.mutualInformation(
+					_getBackGroundIsSuperset(jsonObject),
+					_getIncludeNegatives(jsonObject));
+			}
+		}
+
+		if (bodyJSONObject.has("percentage")) {
+			return _significanceHeuristics.percentageScore();
+		}
+
+		if (bodyJSONObject.has("script_heuristic")) {
+			JSONObject jsonObject = bodyJSONObject.getJSONObject(
+				"script_heuristic");
+
+			if (jsonObject != null) {
+				Optional<Script> optional = getScript(jsonObject);
+
+				if (optional.isPresent()) {
+					return _significanceHeuristics.script(optional.get());
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public Integer getTDigestCompression(JSONObject jsonObject) {
+		JSONObject tDigestJSONObject = jsonObject.getJSONObject("tdigest");
+
+		if (tDigestJSONObject == null) {
+			return null;
+		}
+
+		return tDigestJSONObject.getInt("compression");
 	}
 
 	public void setBackgroundFilter(
 		JSONObject bodyJSONObject, Consumer<Query> setter,
 		ParameterData parameterData, Messages messages) {
 
-		if (!bodyJSONObject.has("background_filter")) {
+		JSONObject backgroundFilterJSONObject = bodyJSONObject.getJSONObject(
+			"background_filter");
+
+		if (backgroundFilterJSONObject == null) {
 			return;
 		}
 
-		JSONObject queryJSONObject = bodyJSONObject.getJSONObject(
-			"background_filter");
-
 		Optional<Query> optional = _clauseHelper.getClause(
-			queryJSONObject, parameterData, messages);
+			backgroundFilterJSONObject, parameterData, messages);
 
 		if (optional.isPresent()) {
 			setter.accept(optional.get());
@@ -144,10 +221,6 @@ public class AggregationHelper {
 	public void setBucketPaths(
 		JSONObject bodyJSONObject, BiConsumer<String, String> setter,
 		Messages messages) {
-
-		if (!bodyJSONObject.has("bucket_paths")) {
-			return;
-		}
 
 		Map<String, String> bucketsPathMap = getBucketsPaths(
 			bodyJSONObject, messages);
@@ -160,7 +233,29 @@ public class AggregationHelper {
 
 		Stream<Map.Entry<String, String>> stream = entrySet.stream();
 
-		stream.forEach(entry -> setter.accept(entry.getKey(), entry.getKey()));
+		stream.forEach(
+			entry -> setter.accept(entry.getKey(), entry.getValue()));
+	}
+
+	public void setDoubleBounds(
+		JSONObject jsonObject, BiConsumer<Double, Double> setter) {
+
+		JSONObject extendedBoundsJSONObject = jsonObject.getJSONObject(
+			DateHistogramAggregationBodyConfigurationKeys.EXTENDED_BOUNDS.
+				getJsonKey());
+
+		if (extendedBoundsJSONObject != null) {
+			_setDoubleBoundValues(extendedBoundsJSONObject, setter);
+		}
+		else {
+			JSONObject hardBoundsJSONObject = jsonObject.getJSONObject(
+				DateHistogramAggregationBodyConfigurationKeys.HARD_BOUNDS.
+					getJsonKey());
+
+			if (hardBoundsJSONObject != null) {
+				_setDoubleBoundValues(hardBoundsJSONObject, setter);
+			}
+		}
 	}
 
 	public void setGapPolicy(
@@ -180,9 +275,7 @@ public class AggregationHelper {
 		Object excludeObject = jsonObject.get("exclude");
 		Object includeObject = jsonObject.get("include");
 
-		if (Validator.isNull(excludeObject) &&
-			Validator.isNull(includeObject)) {
-
+		if (Objects.isNull(excludeObject) && Objects.isNull(includeObject)) {
 			return;
 		}
 
@@ -194,7 +287,7 @@ public class AggregationHelper {
 
 		String includeString = null;
 
-		if (Validator.isNotNull(excludeObject)) {
+		if (!Objects.isNull(excludeObject)) {
 			if (excludeObject instanceof JSONArray) {
 				excludeArray = JSONUtil.toStringArray((JSONArray)excludeObject);
 			}
@@ -203,7 +296,7 @@ public class AggregationHelper {
 			}
 		}
 
-		if (Validator.isNotNull(includeObject)) {
+		if (!Objects.isNull(includeObject)) {
 			if (includeObject instanceof JSONArray) {
 				includeArray = JSONUtil.toStringArray((JSONArray)includeObject);
 			}
@@ -218,10 +311,33 @@ public class AggregationHelper {
 		setter.accept(includeExcludeClause);
 	}
 
+	public void setLongBounds(
+		JSONObject jsonObject, BiConsumer<Long, Long> setter) {
+
+		JSONObject extendedBoundsJSONObject = jsonObject.getJSONObject(
+			DateHistogramAggregationBodyConfigurationKeys.EXTENDED_BOUNDS.
+				getJsonKey());
+
+		if (extendedBoundsJSONObject != null) {
+			_setLongBoundValues(extendedBoundsJSONObject, setter);
+		}
+		else {
+			JSONObject hardBoundsJSONObject = jsonObject.getJSONObject(
+				DateHistogramAggregationBodyConfigurationKeys.HARD_BOUNDS.
+					getJsonKey());
+
+			if (hardBoundsJSONObject != null) {
+				_setLongBoundValues(hardBoundsJSONObject, setter);
+			}
+		}
+	}
+
 	public void setMissing(
 		FieldAggregation fieldAggregation, JSONObject bodyJSONObject) {
 
-		if (!bodyJSONObject.has("missing")) {
+		String missing = bodyJSONObject.getString("missing");
+
+		if (Validator.isBlank(missing)) {
 			return;
 		}
 
@@ -229,17 +345,15 @@ public class AggregationHelper {
 	}
 
 	public void setOrders(
-		JSONObject configurationJSONObject, Consumer<Order[]> setter,
-		Messages messages) {
+		JSONObject jsonObject, Consumer<Order[]> setter, Messages messages) {
 
-		if (!configurationJSONObject.has("order")) {
+		JSONObject orderJSONObject = jsonObject.getJSONObject("order");
+
+		if (orderJSONObject == null) {
 			return;
 		}
 
 		List<Order> orders = new ArrayList<>();
-
-		JSONObject orderJSONObject = configurationJSONObject.getJSONObject(
-			"order");
 
 		Set<String> keySet = orderJSONObject.keySet();
 
@@ -253,33 +367,45 @@ public class AggregationHelper {
 		setter.accept(orderStream.toArray(Order[]::new));
 	}
 
-	public void setRanges(JSONObject bodyJSONObject, Consumer<Range> setter) {
-		JSONArray rangesJSONArray = bodyJSONObject.getJSONArray("ranges");
+	public void setRanges(JSONObject jsonObject, Consumer<Range> setter) {
+		JSONArray rangesJSONArray = jsonObject.getJSONArray("ranges");
 
-		if ((rangesJSONArray == null) || (rangesJSONArray.length() == 0)) {
+		if (rangesJSONArray == null) {
 			return;
 		}
 
 		for (int i = 0; i < rangesJSONArray.length(); i++) {
 			JSONObject rangeJSONObject = rangesJSONArray.getJSONObject(i);
 
-			setter.accept(
-				new Range(
-					rangeJSONObject.getString("key"),
-					rangeJSONObject.getDouble("from"),
-					rangeJSONObject.getDouble("to")));
+			Range range = null;
+
+			String key = rangeJSONObject.getString("key");
+
+			if (!Validator.isBlank(key)) {
+				range = new Range(
+					key, rangeJSONObject.getString("from", null),
+					rangeJSONObject.getString("to", null));
+			}
+			else {
+				range = new Range(
+					rangeJSONObject.getString("from", null),
+					rangeJSONObject.getString("to", null));
+			}
+
+			setter.accept(range);
 		}
 	}
 
 	public void setScript(
 		JSONObject jsonObject, Consumer<Script> setter, Messages messages) {
 
-		if (!jsonObject.has("script")) {
+		Object scriptObject = jsonObject.get("script");
+
+		if (Objects.isNull(scriptObject)) {
 			return;
 		}
 
-		Optional<Script> scriptOptional = getScript(
-			jsonObject.get("script"), messages);
+		Optional<Script> scriptOptional = getScript(scriptObject);
 
 		if (scriptOptional.isPresent()) {
 			setter.accept(scriptOptional.get());
@@ -294,8 +420,7 @@ public class AggregationHelper {
 			return;
 		}
 
-		Optional<Script> scriptOptional = getScript(
-			jsonObject.get(scriptKey), messages);
+		Optional<Script> scriptOptional = getScript(jsonObject.get(scriptKey));
 
 		if (scriptOptional.isPresent()) {
 			setter.accept(scriptOptional.get());
@@ -306,43 +431,8 @@ public class AggregationHelper {
 		JSONObject bodyJSONObject, Consumer<SignificanceHeuristic> setter,
 		Messages messages) {
 
-		SignificanceHeuristic significanceHeuristic = null;
-
-		if (bodyJSONObject.has("chi_square")) {
-			JSONObject jsonObject = bodyJSONObject.getJSONObject("chi_square");
-
-			_significanceHeuristics.chiSquare(
-				_getBackGroundIsSuperset(jsonObject),
-				_getIncludeNegatives(jsonObject));
-		}
-		else if (bodyJSONObject.has("gnd")) {
-			_significanceHeuristics.gnd(
-				_getBackGroundIsSuperset(bodyJSONObject.getJSONObject("gnd")));
-		}
-		else if (bodyJSONObject.has("jlh")) {
-			significanceHeuristic = _significanceHeuristics.jlhScore();
-		}
-		else if (bodyJSONObject.has("mutual_information")) {
-			JSONObject jsonObject = bodyJSONObject.getJSONObject(
-				"mutual_information");
-
-			_significanceHeuristics.mutualInformation(
-				_getBackGroundIsSuperset(jsonObject),
-				_getIncludeNegatives(jsonObject));
-		}
-		else if (bodyJSONObject.has("percentage")) {
-			significanceHeuristic = _significanceHeuristics.percentageScore();
-		}
-		else if (bodyJSONObject.has("script_heuristic")) {
-			JSONObject jsonObject = bodyJSONObject.getJSONObject(
-				"script_heuristic");
-
-			Optional<Script> optional = getScript(jsonObject, messages);
-
-			if (optional.isPresent()) {
-				_significanceHeuristics.script(optional.get());
-			}
-		}
+		SignificanceHeuristic significanceHeuristic = getSignificanceHeuristics(
+			bodyJSONObject, messages);
 
 		if (significanceHeuristic != null) {
 			setter.accept(significanceHeuristic);
@@ -412,6 +502,20 @@ public class AggregationHelper {
 
 			return order;
 		}
+	}
+
+	private void _setDoubleBoundValues(
+		JSONObject jsonObject, BiConsumer<Double, Double> setter) {
+
+		setter.accept(
+			jsonObject.getDouble("min", Double.MIN_VALUE),
+			jsonObject.getDouble("max", Double.MAX_VALUE));
+	}
+
+	private void _setLongBoundValues(
+		JSONObject jsonObject, BiConsumer<Long, Long> setter) {
+
+		setter.accept(jsonObject.getLong("min"), jsonObject.getLong("max"));
 	}
 
 	@Reference

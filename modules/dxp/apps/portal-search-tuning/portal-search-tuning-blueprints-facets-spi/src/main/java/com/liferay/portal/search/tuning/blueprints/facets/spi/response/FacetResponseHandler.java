@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
 public interface FacetResponseHandler {
 
 	public Optional<JSONObject> getResultOptional(
-		AggregationResult aggregationResult,
+		AggregationResult aggregationResult, String type,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
 		JSONObject jsonObject);

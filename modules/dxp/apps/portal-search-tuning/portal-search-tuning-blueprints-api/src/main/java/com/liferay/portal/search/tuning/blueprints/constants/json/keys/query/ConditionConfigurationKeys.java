@@ -22,9 +22,8 @@ import java.util.stream.Stream;
  */
 public enum ConditionConfigurationKeys {
 
-	CONFIGURATION("configuration"), DATE_FORMAT("date_format"),
-	EVALUATION_TYPE("evaluation_type"), HANDLER("handler"),
-	OPERATOR("operator"), PARAMETER_NAME("parameter_name"), VALUE("value");
+	DATE_FORMAT("date_format"), PARAMETER_NAME("parameter_name"),
+	VALUE("value");
 
 	public static ConditionConfigurationKeys findByJsonKey(String jsonKey) {
 		Stream<ConditionConfigurationKeys> stream = Arrays.stream(

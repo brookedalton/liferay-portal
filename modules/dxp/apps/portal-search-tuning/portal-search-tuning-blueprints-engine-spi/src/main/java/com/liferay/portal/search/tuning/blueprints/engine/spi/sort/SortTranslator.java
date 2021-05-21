@@ -27,6 +27,7 @@ import java.util.Optional;
 public interface SortTranslator {
 
 	public Optional<Sort> translate(
-		JSONObject jsonObject, SortOrder sortOrder, Messages messages);
+		JSONObject jsonObject, String field, SortOrder sortOrder,
+		Messages messages);
 
 }

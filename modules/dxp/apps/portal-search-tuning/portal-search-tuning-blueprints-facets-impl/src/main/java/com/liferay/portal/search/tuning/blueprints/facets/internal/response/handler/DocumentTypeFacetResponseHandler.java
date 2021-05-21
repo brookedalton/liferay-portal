@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -43,24 +44,35 @@ public class DocumentTypeFacetResponseHandler
 	@Override
 	protected JSONObject createBucketJSONObject(
 			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
-			ResourceBundle resourceBundle)
+			ResourceBundle resourceBundle, Messages messages)
 		throws Exception {
-
-		Locale locale = blueprintsAttributes.getLocale();
 
 		long frequency = bucket.getDocCount();
 
 		long fileEntryTypeId = GetterUtil.getLong(bucket.getKey());
 
+		// Fetching the basic document type causes a NoSuchGroupException when
+		// checking permission.
+
+		if (fileEntryTypeId == 0) {
+			return createBucketJSONObject(
+				bucket.getDocCount(), null, "basic-document",
+				getText("basic-document", frequency, null), fileEntryTypeId);
+		}
+
 		DLFileEntryType dlFileEntryType =
 			_dLFileEntryTypeService.getFileEntryType(fileEntryTypeId);
+
+		Locale locale = blueprintsAttributes.getLocale();
 
 		String name = dlFileEntryType.getName(locale, true);
 
 		Group group = _groupLocalService.getGroup(dlFileEntryType.getGroupId());
 
+		String groupName = group.getName(locale, true);
+
 		return createBucketJSONObject(
-			bucket.getDocCount(), group.getName(locale, true), name,
+			bucket.getDocCount(), groupName, "basic-document",
 			getText(name, frequency, null), fileEntryTypeId);
 	}
 

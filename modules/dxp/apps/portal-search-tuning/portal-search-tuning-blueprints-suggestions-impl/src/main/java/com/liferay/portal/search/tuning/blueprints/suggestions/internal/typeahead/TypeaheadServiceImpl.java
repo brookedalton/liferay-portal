@@ -14,11 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.suggestions.internal.typeahead;
 
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributes;
-import com.liferay.portal.search.tuning.blueprints.suggestions.constants.SuggestionsConstants;
+import com.liferay.portal.search.tuning.blueprints.suggestions.internal.util.SuggestionsUtil;
 import com.liferay.portal.search.tuning.blueprints.suggestions.spi.provider.TypeaheadDataProvider;
 import com.liferay.portal.search.tuning.blueprints.suggestions.suggestion.Suggestion;
 import com.liferay.portal.search.tuning.blueprints.suggestions.typeahead.TypeaheadService;
@@ -26,15 +23,10 @@ import com.liferay.portal.search.tuning.blueprints.util.component.ServiceCompone
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReferenceUtil;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -60,7 +52,10 @@ public class TypeaheadServiceImpl implements TypeaheadService {
 	protected List<Suggestion> fetchSuggestions(
 		SuggestionsAttributes suggestionsAttributes) {
 
-		List<String> includedProviders = _getIncludedProviders(
+		List<String> excludedProviders = SuggestionsUtil.getExcludedProviders(
+			suggestionsAttributes);
+
+		List<String> includedProviders = SuggestionsUtil.getIncludedProviders(
 			suggestionsAttributes);
 
 		Map<String, Suggestion> suggestions = new HashMap<>();
@@ -68,38 +63,31 @@ public class TypeaheadServiceImpl implements TypeaheadService {
 		for (Map.Entry<String, ServiceComponentReference<TypeaheadDataProvider>>
 				entry : _typeaheadDataProviders.entrySet()) {
 
-			if (!includedProviders.isEmpty() &&
-				!includedProviders.contains(entry.getKey())) {
+			if (!SuggestionsUtil.includeProvider(
+					includedProviders, excludedProviders, entry.getKey())) {
 
 				continue;
 			}
 
-			try {
-				ServiceComponentReference<TypeaheadDataProvider> value =
-					entry.getValue();
+			ServiceComponentReference<TypeaheadDataProvider> value =
+				entry.getValue();
 
-				TypeaheadDataProvider typeaheadDataProvider =
-					value.getServiceComponent();
+			TypeaheadDataProvider typeaheadDataProvider =
+				value.getServiceComponent();
 
-				List<Suggestion> providerSuggestions =
-					typeaheadDataProvider.getSuggestions(suggestionsAttributes);
+			List<Suggestion> providerSuggestions =
+				typeaheadDataProvider.getSuggestions(suggestionsAttributes);
 
-				if (providerSuggestions.isEmpty()) {
-					continue;
-				}
-
-				_combineResults(
-					suggestions, providerSuggestions,
-					typeaheadDataProvider.getWeight());
+			if (providerSuggestions.isEmpty()) {
+				continue;
 			}
-			catch (IllegalArgumentException illegalArgumentException) {
-				_log.error(
-					illegalArgumentException.getMessage(),
-					illegalArgumentException);
-			}
+
+			SuggestionsUtil.combineResults(
+				suggestions, providerSuggestions,
+				typeaheadDataProvider.getWeight());
 		}
 
-		return _getResults(suggestions, suggestionsAttributes.getSize());
+		return SuggestionsUtil.toSortedList(suggestions, suggestionsAttributes);
 	}
 
 	@Reference(
@@ -121,73 +109,6 @@ public class TypeaheadServiceImpl implements TypeaheadService {
 		ServiceComponentReferenceUtil.removeFromMapByName(
 			_typeaheadDataProviders, typeaheadDataProvider, properties);
 	}
-
-	private void _combineResults(
-		Map<String, Suggestion> suggestions,
-		List<Suggestion> providerSuggestions, int weight) {
-
-		Stream<Suggestion> stream = providerSuggestions.stream();
-
-		stream.forEach(
-			suggestion -> {
-				float score = suggestion.getScore() * weight;
-				String text = suggestion.getText();
-
-				if (!suggestions.containsKey(text)) {
-					suggestion.setScore(score);
-					suggestion.setText(StringUtil.toLowerCase(text));
-
-					suggestions.put(text, suggestion);
-				}
-				else {
-					Suggestion existingSuggestion = suggestions.get(text);
-
-					if (existingSuggestion.getScore() < score) {
-						suggestions.put(text, suggestion);
-					}
-				}
-			});
-	}
-
-	private List<String> _getIncludedProviders(
-		SuggestionsAttributes suggestionsAttributes) {
-
-		Optional<Object> attributeOptional =
-			suggestionsAttributes.getAttributeOptional(
-				SuggestionsConstants.INCLUDE_PROVIDERS);
-
-		if (!attributeOptional.isPresent()) {
-			return new ArrayList<>();
-		}
-
-		Object object = attributeOptional.get();
-
-		if (!List.class.isAssignableFrom(object.getClass())) {
-			return new ArrayList<>();
-		}
-
-		return (List<String>)object;
-	}
-
-	private List<Suggestion> _getResults(
-		Map<String, Suggestion> suggestions, int size) {
-
-		Collection<Suggestion> entrySet = suggestions.values();
-
-		Stream<Suggestion> stream = entrySet.stream();
-
-		return stream.sorted(
-			Comparator.comparing(
-				Suggestion::getScore, Comparator.reverseOrder())
-		).limit(
-			size
-		).collect(
-			Collectors.toList()
-		);
-	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		TypeaheadServiceImpl.class);
 
 	private volatile Map
 		<String, ServiceComponentReference<TypeaheadDataProvider>>

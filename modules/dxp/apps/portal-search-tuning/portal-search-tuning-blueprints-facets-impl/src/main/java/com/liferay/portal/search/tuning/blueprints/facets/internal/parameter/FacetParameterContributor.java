@@ -14,14 +14,12 @@
 
 package com.liferay.portal.search.tuning.blueprints.facets.internal.parameter;
 
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsBlueprintKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.request.handler.FacetRequestHandlerFactory;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.util.FacetConfigurationUtil;
@@ -29,12 +27,13 @@ import com.liferay.portal.search.tuning.blueprints.facets.spi.request.FacetReque
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -53,30 +52,18 @@ public class FacetParameterContributor implements ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		Optional<JSONArray> optional =
-			_blueprintHelper.getJSONArrayConfigurationOptional(
+		Optional<JSONObject> optional =
+			_blueprintHelper.getJSONObjectConfigurationOptional(
 				blueprint,
-				"JSONArray/" + FacetsBlueprintKeys.CONFIGURATION_SECTION);
+				"JSONObject/" + FacetsBlueprintKeys.CONFIGURATION_SECTION);
 
 		if (!optional.isPresent()) {
 			return;
 		}
 
-		JSONArray jsonArray = optional.get();
-
-		for (int i = 0; i < jsonArray.length(); i++) {
-			JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-			if (!_isEnabled(jsonObject) ||
-				!_validateFacetConfiguration(messages, jsonObject)) {
-
-				continue;
-			}
-
-			_parseFacetParameter(
-				parameterDataBuilder, blueprintsAttributes, messages,
-				jsonObject);
-		}
+		_processFacets(
+			optional.get(), parameterDataBuilder, blueprintsAttributes,
+			messages);
 	}
 
 	@Override
@@ -89,21 +76,38 @@ public class FacetParameterContributor implements ParameterContributor {
 		return new ArrayList<>();
 	}
 
-	private boolean _isEnabled(JSONObject jsonObject) {
-		return jsonObject.getBoolean(
-			FacetConfigurationKeys.ENABLED.getJsonKey(), true);
+	private void _addFacetParameter(
+		JSONObject jsonObject, ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
+
+		Optional<String> optional1 = BlueprintJSONUtil.getFirstKeyOptional(
+			jsonObject);
+
+		if (!optional1.isPresent()) {
+			return;
+		}
+
+		String type = optional1.get();
+
+		JSONObject typeJSONObject = jsonObject.getJSONObject(type);
+
+		if (!FacetConfigurationUtil.isEnabled(typeJSONObject)) {
+			return;
+		}
+
+		_addParameter(
+			type, typeJSONObject, parameterDataBuilder, blueprintsAttributes,
+			messages);
 	}
 
-	private void _parseFacetParameter(
+	private void _addParameter(
+		String type, JSONObject jsonObject,
 		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject jsonObject) {
-
-		String handler = FacetConfigurationUtil.getHandlerName(jsonObject);
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
 		try {
 			FacetRequestHandler facetRequestHandler =
-				_facetRequestHandlerFactory.getHandler(handler);
+				_facetRequestHandlerFactory.getHandler(type);
 
 			Optional<Parameter> parameter =
 				facetRequestHandler.getParameterOptional(
@@ -116,17 +120,20 @@ public class FacetParameterContributor implements ParameterContributor {
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
 				messages, getClass().getName(), illegalArgumentException,
-				jsonObject, FacetConfigurationKeys.HANDLER.getJsonKey(),
-				handler);
+				jsonObject, null, type);
 		}
 	}
 
-	private boolean _validateFacetConfiguration(
-		Messages messages, JSONObject jsonObject) {
+	private void _processFacets(
+		JSONObject jsonObject, ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(
-			getClass().getName(), jsonObject, messages,
-			FacetConfigurationKeys.FIELD.getJsonKey());
+		Set<String> keySet = jsonObject.keySet();
+
+		keySet.forEach(
+			facetName -> _addFacetParameter(
+				jsonObject.getJSONObject(facetName), parameterDataBuilder,
+				blueprintsAttributes, messages));
 	}
 
 	@Reference

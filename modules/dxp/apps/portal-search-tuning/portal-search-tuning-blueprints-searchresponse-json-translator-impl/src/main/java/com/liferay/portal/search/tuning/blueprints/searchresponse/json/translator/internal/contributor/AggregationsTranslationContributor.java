@@ -55,14 +55,24 @@ public class AggregationsTranslationContributor
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages) {
 
+		Optional<JSONObject> optional =
+			_blueprintHelper.getAggsConfigurationOptional(blueprint);
+
+		Map<String, AggregationResult> aggregations =
+			searchResponse.getAggregationResultsMap();
+
+		if (aggregations.isEmpty() || !optional.isPresent()) {
+			return;
+		}
+
 		responseJSONObject.put(
 			JSONKeys.AGGREGATIONS,
-			_getAggregationsJSONObject(searchResponse, blueprint, messages));
+			_getAggregationsJSONObject(aggregations, optional.get(), messages));
 	}
 
 	private void _addResult(
-		JSONObject responseJSONObject, String aggregationName, String type,
-		AggregationResult aggregationResult, Messages messages) {
+		JSONObject responseJSONObject, AggregationResult aggregationResult,
+		String aggregationName, String type, Messages messages) {
 
 		try {
 			AggregationJSONTranslator aggregationResponseBuilder =
@@ -84,52 +94,45 @@ public class AggregationsTranslationContributor
 	}
 
 	private JSONObject _getAggregationsJSONObject(
-		SearchResponse searchResponse, Blueprint blueprint, Messages messages) {
+		Map<String, AggregationResult> aggregations, JSONObject jsonObject,
+		Messages messages) {
 
 		JSONObject responseJSONObject = _jsonFactory.createJSONObject();
 
-		Optional<JSONObject> configurationJSONObjectOptional =
-			_blueprintHelper.getAggsConfigurationOptional(blueprint);
-
-		Map<String, AggregationResult> aggregations =
-			searchResponse.getAggregationResultsMap();
-
-		if (aggregations.isEmpty() ||
-			!configurationJSONObjectOptional.isPresent()) {
-
-			return responseJSONObject;
-		}
-
-		JSONObject configurationJSONObject =
-			configurationJSONObjectOptional.get();
-
-		Set<String> keySet = configurationJSONObject.keySet();
+		Set<String> keySet = jsonObject.keySet();
 
 		keySet.forEach(
-			aggregationName -> {
-				JSONObject nameJSONObject =
-					configurationJSONObject.getJSONObject(aggregationName);
-
-				Optional<String> typeOptional =
-					BlueprintJSONUtil.getFirstKeyOptional(nameJSONObject);
-
-				Set<Map.Entry<String, AggregationResult>> entrySet =
-					aggregations.entrySet();
-
-				Stream<Map.Entry<String, AggregationResult>> stream =
-					entrySet.stream();
-
-				stream.filter(
-					entry -> StringUtil.equalsIgnoreCase(
-						entry.getKey(), aggregationName)
-				).forEach(
-					entry -> _addResult(
-						responseJSONObject, entry.getKey(), typeOptional.get(),
-						entry.getValue(), messages)
-				);
-			});
+			aggregationName -> _processAggregation(
+				responseJSONObject, aggregations, aggregationName, jsonObject,
+				messages));
 
 		return responseJSONObject;
+	}
+
+	private void _processAggregation(
+		JSONObject responseJSONObject,
+		Map<String, AggregationResult> aggregations, String aggregationName,
+		JSONObject configurationJSONObject, Messages messages) {
+
+		JSONObject nameJSONObject = configurationJSONObject.getJSONObject(
+			aggregationName);
+
+		Optional<String> typeOptional = BlueprintJSONUtil.getFirstKeyOptional(
+			nameJSONObject);
+
+		Set<Map.Entry<String, AggregationResult>> entrySet =
+			aggregations.entrySet();
+
+		Stream<Map.Entry<String, AggregationResult>> stream = entrySet.stream();
+
+		stream.filter(
+			entry -> StringUtil.equalsIgnoreCase(
+				entry.getKey(), aggregationName)
+		).forEach(
+			entry -> _addResult(
+				responseJSONObject, entry.getValue(), entry.getKey(),
+				typeOptional.get(), messages)
+		);
 	}
 
 	@Reference

@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.test.BaseBlueprintsTestCase;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -62,24 +61,20 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 		assertSearch(blueprint, null, "[coca cola, pepsi cola]", "cola", null);
 
 		String configurationString = getConfigurationString(
-			_getQueryElementJSONObject(
-				articleId, 100, EvaluationType.ANY_WORD_IN.getjsonValue(),
-				"cola"));
+			_getQueryElementJSONObject(articleId, 100, "contains", "cola"));
 
 		String selectedElementString = _getSelectedElementString(
-			articleId, 100, EvaluationType.ANY_WORD_IN.getjsonValue(), "cola");
+			articleId, 100, "contains", "cola");
 
 		assertSearch(
 			blueprint, configurationString, "[pepsi cola, coca cola]", "cola",
 			selectedElementString);
 
 		configurationString = getConfigurationString(
-			_getQueryElementJSONObject(
-				articleId, 100, EvaluationType.NO_WORD_IN.getjsonValue(),
-				"cola"));
+			_getQueryElementJSONObject(articleId, 100, "not_contains", "cola"));
 
 		selectedElementString = _getSelectedElementString(
-			articleId, 100, EvaluationType.NO_WORD_IN.getjsonValue(), "cola");
+			articleId, 100, "not_contains", "cola");
 
 		assertSearch(
 			blueprint, configurationString, "[coca cola, pepsi cola]", "cola",
@@ -115,16 +110,13 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 				))
 		).put(
 			"conditions",
-			createJSONArray().put(
+			JSONUtil.put(
+				evaluationType,
 				JSONUtil.put(
-					"configuration",
-					JSONUtil.put(
-						"evaluation_type", evaluationType
-					).put(
-						"parameter_name", "${keywords}"
-					).put(
-						"value", createJSONArray().put(keywords)
-					)))
+					"parameter_name", "${keywords}"
+				).put(
+					"value", createJSONArray().put(keywords)
+				))
 		).put(
 			"description",
 			JSONUtil.put(
@@ -177,16 +169,15 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 							))
 					).put(
 						"conditions",
-						createJSONArray().put(
+						JSONUtil.put(
+							evaluationType,
 							JSONUtil.put(
-								"configuration",
-								JSONUtil.put(
-									"evaluation_type", evaluationType
-								).put(
-									"parameter_name", "${keywords}"
-								).put(
-									"value", createJSONArray().put(keywords)
-								)))
+								"evaluation_type", evaluationType
+							).put(
+								"parameter_name", "${keywords}"
+							).put(
+								"value", createJSONArray().put(keywords)
+							))
 					).put(
 						"description",
 						JSONUtil.put(

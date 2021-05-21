@@ -56,6 +56,8 @@ public class ElementWrapper
 		attributes.put("title", getTitle());
 		attributes.put("description", getDescription());
 		attributes.put("configuration", getConfiguration());
+		attributes.put("hidden", getHidden());
+		attributes.put("readOnly", getReadOnly());
 		attributes.put("type", getType());
 
 		return attributes;
@@ -139,6 +141,18 @@ public class ElementWrapper
 
 		if (configuration != null) {
 			setConfiguration(configuration);
+		}
+
+		Boolean hidden = (Boolean)attributes.get("hidden");
+
+		if (hidden != null) {
+			setHidden(hidden);
+		}
+
+		Boolean readOnly = (Boolean)attributes.get("readOnly");
+
+		if (readOnly != null) {
+			setReadOnly(readOnly);
 		}
 
 		Integer type = (Integer)attributes.get("type");
@@ -285,6 +299,16 @@ public class ElementWrapper
 	}
 
 	/**
+	 * Returns the hidden of this element.
+	 *
+	 * @return the hidden of this element
+	 */
+	@Override
+	public Boolean getHidden() {
+		return model.getHidden();
+	}
+
+	/**
 	 * Returns the modified date of this element.
 	 *
 	 * @return the modified date of this element
@@ -312,6 +336,16 @@ public class ElementWrapper
 	@Override
 	public long getPrimaryKey() {
 		return model.getPrimaryKey();
+	}
+
+	/**
+	 * Returns the read only of this element.
+	 *
+	 * @return the read only of this element
+	 */
+	@Override
+	public Boolean getReadOnly() {
+		return model.getReadOnly();
 	}
 
 	/**
@@ -588,6 +622,16 @@ public class ElementWrapper
 	}
 
 	/**
+	 * Sets the hidden of this element.
+	 *
+	 * @param hidden the hidden of this element
+	 */
+	@Override
+	public void setHidden(Boolean hidden) {
+		model.setHidden(hidden);
+	}
+
+	/**
 	 * Sets the modified date of this element.
 	 *
 	 * @param modifiedDate the modified date of this element
@@ -615,6 +659,16 @@ public class ElementWrapper
 	@Override
 	public void setPrimaryKey(long primaryKey) {
 		model.setPrimaryKey(primaryKey);
+	}
+
+	/**
+	 * Sets the read only of this element.
+	 *
+	 * @param readOnly the read only of this element
+	 */
+	@Override
+	public void setReadOnly(Boolean readOnly) {
+		model.setReadOnly(readOnly);
 	}
 
 	/**

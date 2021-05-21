@@ -49,7 +49,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US:
 				'Boost contents having the current session language as the default language',

@@ -35,15 +35,12 @@ export default {
 				},
 			},
 		],
-		conditions: [
-			{
-				configuration: {
-					evaluation_type: 'eq',
-					parameter_name: '${time.time_of_day}',
-					value: '${configuration.time_of_day}',
-				},
+		conditions: {
+			equals: {
+				parameter_name: '${time.time_of_day}',
+				value: '${configuration.time_of_day}',
 			},
-		],
+		},
 		description: {
 			en_US: 'Boost contents in a category based on the time of day',
 		},

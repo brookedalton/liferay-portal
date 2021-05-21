@@ -119,7 +119,7 @@ public class OpenWeatherMapDataProvider {
 			MessagesUtil.error(
 				messages, getClass().getName(),
 				new Throwable("OpenWeatherMap response was empty"), rawData,
-				null, null, "openweathermap.error.empty-response");
+				null, null, "openweathermap.error.response-was-empty");
 
 			return null;
 		}
@@ -170,8 +170,9 @@ public class OpenWeatherMapDataProvider {
 		if (Validator.isBlank(_openWeatherMapConfiguration.apiKey())) {
 			MessagesUtil.error(
 				messages, getClass().getName(),
-				new Throwable("OpenWeatherMap API key not configured"), null,
-				null, null, "openweathermap.error.api-key-not-configured");
+				new Throwable("OpenWeatherMap API key must be configured"),
+				null, null, null,
+				"openweathermap.error.api-key-must-be-configured");
 
 			valid = false;
 		}
@@ -179,8 +180,9 @@ public class OpenWeatherMapDataProvider {
 		if (Validator.isBlank(_openWeatherMapConfiguration.apiURL())) {
 			MessagesUtil.error(
 				messages, getClass().getName(),
-				new Throwable("OpenWeatherMap API URL not configured"), null,
-				null, null, "openweathermap.error.api-key-not-configured");
+				new Throwable("OpenWeatherMap API URL must be configured"),
+				null, null, null,
+				"openweathermap.error.api-url-must-be-configured");
 
 			valid = false;
 		}
@@ -194,9 +196,9 @@ public class OpenWeatherMapDataProvider {
 		if ((jsonObject == null) || !jsonObject.has("weather")) {
 			MessagesUtil.error(
 				messages, getClass().getName(),
-				new Throwable("Invalid OpenWeatherMap response data"),
+				new Throwable("OpenWeatherMap response data was invalid"),
 				jsonObject, null, null,
-				"openweathermap.error.invalid-response-data");
+				"openweathermap.error.response-data-was-invalid");
 
 			return false;
 		}

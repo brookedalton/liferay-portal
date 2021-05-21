@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.framework.FrameworkConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -79,17 +78,14 @@ public class BoostContentsInCategoryByKeywordMatchTest
 	}
 
 	@Override
-	protected JSONArray getConditions() {
-		return createJSONArray().put(
+	protected JSONObject getConditions() {
+		return JSONUtil.put(
+			"contains",
 			JSONUtil.put(
-				"configuration",
-				JSONUtil.put(
-					"evaluation_type", EvaluationType.ANY_WORD_IN.getjsonValue()
-				).put(
-					"parameter_name", "${keywords}"
-				).put(
-					"value", createJSONArray().put("cola")
-				)));
+				"parameter_name", "${keywords}"
+			).put(
+				"value", createJSONArray().put("cola")
+			));
 	}
 
 	@Override

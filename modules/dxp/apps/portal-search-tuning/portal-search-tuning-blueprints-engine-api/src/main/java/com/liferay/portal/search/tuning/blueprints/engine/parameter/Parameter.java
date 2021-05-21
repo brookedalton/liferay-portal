@@ -14,10 +14,10 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.parameter;
 
-import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.visitor.EvaluationVisitor;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.visitor.ToStringVisitor;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,15 +25,13 @@ import java.util.Map;
  */
 public interface Parameter {
 
-	public boolean accept(ConditionEvaluationVisitor visitor)
+	public boolean accept(EvaluationVisitor visitor)
 		throws ParameterEvaluationException;
 
 	public String accept(ToStringVisitor visitor, Map<String, String> options)
 		throws Exception;
 
 	public String getName();
-
-	public List<EvaluationType> getSupportedEvaluationTypes();
 
 	public String getTemplateVariable();
 

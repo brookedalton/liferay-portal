@@ -27,6 +27,18 @@ import java.util.Optional;
  */
 public class BlueprintJSONUtil {
 
+	public static Optional<Boolean> getBooleanOptional(
+		Object object, String... paths) {
+
+		Object value = getValue(object, paths);
+
+		if (value == null) {
+			return Optional.empty();
+		}
+
+		return Optional.of(GetterUtil.getBoolean(value));
+	}
+
 	public static Optional<String> getFirstKeyOptional(JSONObject jsonObject) {
 		if (jsonObject == null) {
 			return Optional.empty();
@@ -39,6 +51,42 @@ public class BlueprintJSONUtil {
 		}
 
 		return Optional.empty();
+	}
+
+	public static Optional<Integer> getIntegerOptional(
+		Object object, String... paths) {
+
+		Object value = getValue(object, paths);
+
+		if (value == null) {
+			return Optional.empty();
+		}
+
+		return Optional.of(GetterUtil.getInteger(value));
+	}
+
+	public static Optional<JSONArray> getJSONArrayOptional(
+		Object object, String... paths) {
+
+		Object value = getValue(object, paths);
+
+		if (value == null) {
+			return Optional.empty();
+		}
+
+		return Optional.of((JSONArray)value);
+	}
+
+	public static Optional<JSONObject> getJSONObjectOptional(
+		Object object, String... paths) {
+
+		Object value = getValue(object, paths);
+
+		if (value == null) {
+			return Optional.empty();
+		}
+
+		return Optional.of((JSONObject)value);
 	}
 
 	public static Optional<String[]> getStringArray(
@@ -64,6 +112,18 @@ public class BlueprintJSONUtil {
 		}
 
 		return Optional.of(stringArray);
+	}
+
+	public static Optional<String> getStringOptional(
+		Object object, String... paths) {
+
+		Object value = getValue(object, paths);
+
+		if (value == null) {
+			return Optional.empty();
+		}
+
+		return Optional.of(String.valueOf(value));
 	}
 
 	public static Object getValue(Object object, String... paths) {
@@ -110,66 +170,6 @@ public class BlueprintJSONUtil {
 		}
 
 		return getValue(value, Arrays.copyOfRange(paths, 1, paths.length));
-	}
-
-	public static Optional<Boolean> getValueAsBooleanOptional(
-		Object object, String... paths) {
-
-		Object value = getValue(object, paths);
-
-		if (value == null) {
-			return Optional.empty();
-		}
-
-		return Optional.of(GetterUtil.getBoolean(value));
-	}
-
-	public static Optional<Integer> getValueAsIntegerOptional(
-		Object object, String... paths) {
-
-		Object value = getValue(object, paths);
-
-		if (value == null) {
-			return Optional.empty();
-		}
-
-		return Optional.of(GetterUtil.getInteger(value));
-	}
-
-	public static Optional<JSONArray> getValueAsJSONArrayOptional(
-		Object object, String... paths) {
-
-		Object value = getValue(object, paths);
-
-		if (value == null) {
-			return Optional.empty();
-		}
-
-		return Optional.of((JSONArray)value);
-	}
-
-	public static Optional<JSONObject> getValueAsJSONObjectOptional(
-		Object object, String... paths) {
-
-		Object value = getValue(object, paths);
-
-		if (value == null) {
-			return Optional.empty();
-		}
-
-		return Optional.of((JSONObject)value);
-	}
-
-	public static Optional<String> getValueAsStringOptional(
-		Object object, String... paths) {
-
-		Object value = getValue(object, paths);
-
-		if (value == null) {
-			return Optional.empty();
-		}
-
-		return Optional.of(String.valueOf(value));
 	}
 
 	public static double[] jsonArrayToDoubleArray(JSONArray jsonArray) {

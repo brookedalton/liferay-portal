@@ -451,7 +451,7 @@ public class ElementServiceHttp {
 				HttpPrincipal httpPrincipal, long elementId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration,
+				String configuration, boolean hidden,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -462,7 +462,7 @@ public class ElementServiceHttp {
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, elementId, titleMap, descriptionMap, configuration,
-				serviceContext);
+				hidden, serviceContext);
 
 			Object returnObj = null;
 
@@ -531,6 +531,7 @@ public class ElementServiceHttp {
 	private static final Class<?>[] _updateElementParameterTypes10 =
 		new Class[] {
 			long.class, java.util.Map.class, java.util.Map.class, String.class,
+			boolean.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
 

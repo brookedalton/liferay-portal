@@ -56,7 +56,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Hide the instance default user account from being searched',
 		},

@@ -48,7 +48,6 @@ import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.AdvancedConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.QueryProcessingConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.SourceConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.framework.FrameworkConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
@@ -243,18 +242,7 @@ public abstract class BaseBlueprintsTestCase {
 
 	protected JSONObject getAdvancedConfiguration() {
 		return JSONUtil.put(
-			AdvancedConfigurationKeys.QUERY_PROCESSING.getJsonKey(),
-			JSONUtil.put(
-				QueryProcessingConfigurationKeys.EXCLUDE_QUERY_CONTRIBUTORS.
-					getJsonKey(),
-				""
-			).put(
-				QueryProcessingConfigurationKeys.EXCLUDE_QUERY_POST_PROCESSORS.
-					getJsonKey(),
-				""
-			)
-		).put(
-			"source",
+			AdvancedConfigurationKeys.SOURCE.getJsonKey(),
 			JSONUtil.put(
 				SourceConfigurationKeys.FETCH_SOURCE.getJsonKey(), true
 			).put(
@@ -263,8 +251,7 @@ public abstract class BaseBlueprintsTestCase {
 			).put(
 				SourceConfigurationKeys.SOURCE_INCLUDES.getJsonKey(),
 				createJSONArray()
-			)
-		);
+			));
 	}
 
 	protected JSONArray getAggregationConfiguration() {

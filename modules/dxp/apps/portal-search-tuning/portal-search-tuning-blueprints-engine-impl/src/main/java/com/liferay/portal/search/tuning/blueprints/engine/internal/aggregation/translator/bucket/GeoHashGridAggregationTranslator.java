@@ -18,13 +18,11 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.GeoHashGridAggregation;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.bucket.GeoHashGridAggregationBodyConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.bucket.TermsAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -45,14 +43,6 @@ public class GeoHashGridAggregationTranslator implements AggregationTranslator {
 	public Optional<AggregationWrapper> translate(
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
-
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				GeoHashGridAggregationBodyConfigurationKeys.FIELD.
-					getJsonKey())) {
-
-			return Optional.empty();
-		}
 
 		GeoHashGridAggregation aggregation = _aggregations.geoHashGrid(
 			aggregationName,
@@ -75,11 +65,12 @@ public class GeoHashGridAggregationTranslator implements AggregationTranslator {
 
 		_setterHelper.setIntegerValue(
 			jsonObject,
-			TermsAggregationBodyConfigurationKeys.SHARD_SIZE.getJsonKey(),
+			GeoHashGridAggregationBodyConfigurationKeys.SHARD_SIZE.getJsonKey(),
 			aggregation::setShardSize);
 
 		_setterHelper.setIntegerValue(
-			jsonObject, TermsAggregationBodyConfigurationKeys.SIZE.getJsonKey(),
+			jsonObject,
+			GeoHashGridAggregationBodyConfigurationKeys.SIZE.getJsonKey(),
 			aggregation::setSize);
 
 		return _aggregationHelper.wrap(aggregation);

@@ -35,8 +35,10 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONUtil;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.portlet.PortletRequest;
@@ -162,40 +164,65 @@ public class BlueprintsAttributesHelperImpl
 		}
 	}
 
+	private void _addFacetParameter(
+		JSONObject jsonObject, PortletRequest portletRequest,
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder) {
+
+		Optional<String> optional = BlueprintJSONUtil.getFirstKeyOptional(
+			jsonObject);
+
+		if (!optional.isPresent()) {
+			return;
+		}
+
+		String type = optional.get();
+
+		JSONObject typeJSONObject = jsonObject.getJSONObject(type);
+
+		if (!typeJSONObject.getBoolean(
+				FacetConfigurationKeys.ENABLED.getJsonKey(), true)) {
+
+			return;
+		}
+
+		String parameterName = typeJSONObject.getString(
+			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
+
+		boolean arrayValue = typeJSONObject.getBoolean(
+			FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
+
+		if (arrayValue) {
+			_addStringValues(
+				portletRequest, blueprintsAttributesBuilder, parameterName);
+		}
+		else {
+			_addStringValue(
+				portletRequest, blueprintsAttributesBuilder, parameterName);
+		}
+	}
+
 	private void _addFacetParameters(
 		PortletRequest portletRequest,
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
 		Blueprint blueprint) {
 
-		Optional<JSONArray> configurationJSONArrayOptional =
-			_blueprintHelper.getJSONArrayConfigurationOptional(
+		Optional<JSONObject> optional =
+			_blueprintHelper.getJSONObjectConfigurationOptional(
 				blueprint,
-				"JSONArray/" + FacetsBlueprintKeys.CONFIGURATION_SECTION);
+				"JSONObject/" + FacetsBlueprintKeys.CONFIGURATION_SECTION);
 
-		if (!configurationJSONArrayOptional.isPresent()) {
+		if (!optional.isPresent()) {
 			return;
 		}
 
-		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
+		JSONObject jsonObject = optional.get();
 
-		for (int i = 0; i < configurationJSONArray.length(); i++) {
-			JSONObject jsonObject = configurationJSONArray.getJSONObject(i);
+		Set<String> keySet = jsonObject.keySet();
 
-			String key = jsonObject.getString(
-				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
-
-			boolean arrayValue = jsonObject.getBoolean(
-				FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
-
-			if (arrayValue) {
-				_addStringValues(
-					portletRequest, blueprintsAttributesBuilder, key);
-			}
-			else {
-				_addStringValue(
-					portletRequest, blueprintsAttributesBuilder, key);
-			}
-		}
+		keySet.forEach(
+			facetName -> _addFacetParameter(
+				jsonObject.getJSONObject(facetName), portletRequest,
+				blueprintsAttributesBuilder));
 	}
 
 	private void _addIntValue(
@@ -289,23 +316,25 @@ public class BlueprintsAttributesHelperImpl
 		PortletRequest portletRequest, Blueprint blueprint,
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder) {
 
-		Optional<JSONArray> jsonArrayOptional =
+		Optional<JSONObject> optional =
 			_blueprintHelper.getSortParameterConfigurationOptional(blueprint);
 
-		if (!jsonArrayOptional.isPresent()) {
+		if (!optional.isPresent()) {
 			return;
 		}
 
-		JSONArray jsonArray = jsonArrayOptional.get();
+		JSONObject jsonObject = optional.get();
 
-		for (int i = 0; i < jsonArray.length(); i++) {
-			JSONObject jsonObject = jsonArray.getJSONObject(i);
+		Set<String> keySet = jsonObject.keySet();
 
-			String key = jsonObject.getString(
-				CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		keySet.forEach(
+			key -> {
+				JSONObject sortJSONObject = jsonObject.getJSONObject(key);
 
-			_addStringValue(portletRequest, blueprintsAttributesBuilder, key);
-		}
+				_addStringValue(
+					portletRequest, blueprintsAttributesBuilder,
+					sortJSONObject.getString("parameter_name"));
+			});
 	}
 
 	private void _addStringValue(

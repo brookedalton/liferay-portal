@@ -59,6 +59,10 @@ public class ElementTable extends BaseTable<ElementTable> {
 		"description", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<ElementTable, Clob> configuration = createColumn(
 		"configuration", Clob.class, Types.CLOB, Column.FLAG_DEFAULT);
+	public final Column<ElementTable, Boolean> hidden = createColumn(
+		"hidden_", Boolean.class, Types.BOOLEAN, Column.FLAG_DEFAULT);
+	public final Column<ElementTable, Boolean> readOnly = createColumn(
+		"readOnly", Boolean.class, Types.BOOLEAN, Column.FLAG_DEFAULT);
 	public final Column<ElementTable, Integer> type = createColumn(
 		"type_", Integer.class, Types.INTEGER, Column.FLAG_DEFAULT);
 

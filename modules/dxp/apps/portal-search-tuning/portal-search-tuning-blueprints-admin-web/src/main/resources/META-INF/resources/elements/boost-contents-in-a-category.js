@@ -34,7 +34,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Boost and promote contents in a given category',
 		},

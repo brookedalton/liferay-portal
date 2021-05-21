@@ -98,40 +98,45 @@ public class SuggestSearchRequestBodyContributor
 			AggregationConfigurationKeys.ENABLED.getJsonKey(), true);
 	}
 
-	private void _processSuggesters(
-		SearchRequestBuilder searchRequestBuilder,
-		JSONObject suggesterJSONObject, ParameterData parameterData,
-		Messages messages) {
+	private void _processSuggester(
+		SearchRequestBuilder searchRequestBuilder, String suggesterName,
+		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
 
-		Set<String> keySet = suggesterJSONObject.keySet();
+		JSONObject nameJSONObject = jsonObject.getJSONObject(suggesterName);
+
+		Optional<String> typeOptional = BlueprintJSONUtil.getFirstKeyOptional(
+			nameJSONObject);
+
+		if (!typeOptional.isPresent()) {
+			return;
+		}
+
+		String type = typeOptional.get();
+
+		JSONObject typeJSONObject = nameJSONObject.getJSONObject(type);
+
+		Optional<Suggester> suggesterOptional = _getSuggesterOptional(
+			suggesterName, type, typeJSONObject, parameterData, messages);
+
+		if (!suggesterOptional.isPresent()) {
+			return;
+		}
+
+		// TODO: https://issues.liferay.com/browse/LPS-120711
+
+		searchRequestBuilder.getClass();
+	}
+
+	private void _processSuggesters(
+		SearchRequestBuilder searchRequestBuilder, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
+
+		Set<String> keySet = jsonObject.keySet();
 
 		keySet.forEach(
-			name -> {
-				JSONObject nameJSONObject = suggesterJSONObject.getJSONObject(
-					name);
-
-				Optional<String> typeOptional =
-					BlueprintJSONUtil.getFirstKeyOptional(nameJSONObject);
-
-				if (!typeOptional.isPresent()) {
-					return;
-				}
-
-				String type = typeOptional.get();
-
-				JSONObject typeJSONObject = nameJSONObject.getJSONObject(type);
-
-				Optional<Suggester> suggesterOptional = _getSuggesterOptional(
-					name, type, typeJSONObject, parameterData, messages);
-
-				if (!suggesterOptional.isPresent()) {
-					return;
-				}
-
-				// TODO: https://issues.liferay.com/browse/LPS-120711
-
-				searchRequestBuilder.getClass();
-			});
+			suggesterName -> _processSuggester(
+				searchRequestBuilder, suggesterName, jsonObject, parameterData,
+				messages));
 	}
 
 	@Reference

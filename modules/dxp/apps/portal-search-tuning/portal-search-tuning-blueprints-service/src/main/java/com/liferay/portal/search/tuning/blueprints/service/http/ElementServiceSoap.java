@@ -299,6 +299,7 @@ public class ElementServiceSoap {
 				long elementId, String[] titleMapLanguageIds,
 				String[] titleMapValues, String[] descriptionMapLanguageIds,
 				String[] descriptionMapValues, String configuration,
+				boolean hidden,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws RemoteException {
 
@@ -311,7 +312,7 @@ public class ElementServiceSoap {
 
 			com.liferay.portal.search.tuning.blueprints.model.Element
 				returnValue = ElementServiceUtil.updateElement(
-					elementId, titleMap, descriptionMap, configuration,
+					elementId, titleMap, descriptionMap, configuration, hidden,
 					serviceContext);
 
 			return com.liferay.portal.search.tuning.blueprints.model.

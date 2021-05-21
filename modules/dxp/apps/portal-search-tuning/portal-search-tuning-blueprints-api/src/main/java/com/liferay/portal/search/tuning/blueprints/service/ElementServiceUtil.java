@@ -127,11 +127,13 @@ public class ElementServiceUtil {
 	public static Element updateElement(
 			long elementId, Map<java.util.Locale, String> titleMap,
 			Map<java.util.Locale, String> descriptionMap, String configuration,
+			boolean hidden,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
 		return getService().updateElement(
-			elementId, titleMap, descriptionMap, configuration, serviceContext);
+			elementId, titleMap, descriptionMap, configuration, hidden,
+			serviceContext);
 	}
 
 	public static ElementService getService() {

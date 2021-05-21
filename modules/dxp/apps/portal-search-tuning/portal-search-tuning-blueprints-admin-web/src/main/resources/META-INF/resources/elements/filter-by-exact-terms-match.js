@@ -33,7 +33,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US:
 				'Filter results by one or multiple terms. At least one has to match',

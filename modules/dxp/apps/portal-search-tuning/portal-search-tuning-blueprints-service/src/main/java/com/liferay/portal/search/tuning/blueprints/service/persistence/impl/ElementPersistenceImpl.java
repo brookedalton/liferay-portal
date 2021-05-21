@@ -6157,6 +6157,7 @@ public class ElementPersistenceImpl
 		Map<String, String> dbColumnNames = new HashMap<String, String>();
 
 		dbColumnNames.put("uuid", "uuid_");
+		dbColumnNames.put("hidden", "hidden_");
 		dbColumnNames.put("type", "type_");
 
 		setDBColumnNames(dbColumnNames);
@@ -6994,7 +6995,7 @@ public class ElementPersistenceImpl
 		ElementPersistenceImpl.class);
 
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(
-		new String[] {"uuid", "type"});
+		new String[] {"uuid", "hidden", "type"});
 
 	@Override
 	protected FinderCache getFinderCache() {
@@ -7041,6 +7042,13 @@ public class ElementPersistenceImpl
 						elementModelImpl.getColumnBitmask(columnName);
 				}
 
+				if (finderPath.isBaseModelResult() &&
+					(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION ==
+						finderPath.getCacheName())) {
+
+					finderPathColumnBitmask |= _ORDER_BY_COLUMNS_BITMASK;
+				}
+
 				_finderPathColumnBitmasksCache.put(
 					finderPath, finderPathColumnBitmask);
 			}
@@ -7062,7 +7070,7 @@ public class ElementPersistenceImpl
 			return ElementTable.INSTANCE.getTableName();
 		}
 
-		private Object[] _getValue(
+		private static Object[] _getValue(
 			ElementModelImpl elementModelImpl, String[] columnNames,
 			boolean original) {
 
@@ -7083,8 +7091,19 @@ public class ElementPersistenceImpl
 			return arguments;
 		}
 
-		private static Map<FinderPath, Long> _finderPathColumnBitmasksCache =
-			new ConcurrentHashMap<>();
+		private static final Map<FinderPath, Long>
+			_finderPathColumnBitmasksCache = new ConcurrentHashMap<>();
+
+		private static final long _ORDER_BY_COLUMNS_BITMASK;
+
+		static {
+			long orderByColumnsBitmask = 0;
+
+			orderByColumnsBitmask |= ElementModelImpl.getColumnBitmask(
+				"createDate");
+
+			_ORDER_BY_COLUMNS_BITMASK = orderByColumnsBitmask;
+		}
 
 	}
 

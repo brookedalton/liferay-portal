@@ -110,7 +110,7 @@ public interface ElementService extends BaseService {
 	public Element updateElement(
 			long elementId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,
-			ServiceContext serviceContext)
+			boolean hidden, ServiceContext serviceContext)
 		throws PortalException;
 
 }

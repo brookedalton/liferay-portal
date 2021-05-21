@@ -81,6 +81,8 @@
 		<column localized="true" name="title" type="String" />
 		<column localized="true" name="description" type="String" />
 		<column name="configuration" type="String" />
+		<column name="hidden" type="Boolean" />
+		<column name="readOnly" type="Boolean" />
 		<column name="type" type="int" />
 
 		<!-- Finder methods -->
@@ -114,6 +116,7 @@
 		</finder>
 	</entity>
 	<exceptions>
+		<exception>BlueprintValidation</exception>
 		<exception>ElementValidation</exception>
 	</exceptions>
 </service-builder>

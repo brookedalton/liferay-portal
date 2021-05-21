@@ -32,5 +32,7 @@ create table Element (
 	title STRING null,
 	description STRING null,
 	configuration TEXT null,
+	hidden_ BOOLEAN,
+	readOnly BOOLEAN,
 	type_ INTEGER
 );

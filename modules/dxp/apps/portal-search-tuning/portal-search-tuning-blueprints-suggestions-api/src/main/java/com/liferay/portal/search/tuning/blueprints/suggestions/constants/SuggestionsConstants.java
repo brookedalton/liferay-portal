@@ -19,6 +19,8 @@ package com.liferay.portal.search.tuning.blueprints.suggestions.constants;
  */
 public class SuggestionsConstants {
 
-	public static final String INCLUDE_PROVIDERS = "data.provider.include";
+	public static final String EXCLUDED_PROVIDERS = "data.providers.exclude";
+
+	public static final String INCLUDED_PROVIDERS = "data.providers.include";
 
 }

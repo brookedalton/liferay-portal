@@ -33,7 +33,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: "Boost contents on sites I'm a member of",
 		},

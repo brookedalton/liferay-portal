@@ -18,7 +18,6 @@ import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.kernel.service.AssetCategoryLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalServiceUtil;
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Role;
@@ -51,7 +50,7 @@ public abstract class BaseBoostContentsInCategoryTestCase
 			assetVocabulary.getVocabularyId(), serviceContext);
 	}
 
-	protected abstract JSONArray getConditions();
+	protected abstract JSONObject getConditions();
 
 	protected abstract JSONObject getDescription();
 

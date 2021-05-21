@@ -37,7 +37,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsA
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineHelper;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.SearchResponseJSONTranslator;
@@ -45,11 +45,11 @@ import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translato
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.constants.ResponseAttributeKeys;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintLocalService;
 import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.validator.BlueprintValidator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Stream;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -75,15 +75,18 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
-		Blueprint blueprint = _getBlueprint(resourceRequest);
-
 		JSONObject responseJSONObject = null;
 
 		try {
-			Messages messages = new Messages();
+			Blueprint blueprint = _getBlueprint(resourceRequest);
+
+			_blueprintValidator.validateConfiguration(
+				blueprint.getConfiguration());
 
 			BlueprintsAttributes blueprintsRequestAttributes =
 				_getBlueprintsRequestAttributes(resourceRequest, blueprint);
+
+			Messages messages = new Messages();
 
 			SearchResponse searchResponse = _blueprintsEngineHelper.search(
 				blueprint, blueprintsRequestAttributes, messages);
@@ -102,16 +105,20 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 				blueprintsEngineException.getMessage(),
 				blueprintsEngineException);
 
-			List<Message> errorMessages =
-				blueprintsEngineException.getMessages();
-
-			Stream<Message> stream = errorMessages.stream();
-
-			stream.forEach(message -> _log.error(message));
+			responseJSONObject =
+				_blueprintsJSONResponseBuilder.translateErrorMessages(
+					blueprintsEngineException.getMessages(),
+					_getResourceBundle(resourceRequest));
+		}
+		catch (BlueprintValidationException blueprintValidationException) {
+			_log.error(
+				blueprintValidationException.getMessage(),
+				blueprintValidationException);
 
 			responseJSONObject =
 				_blueprintsJSONResponseBuilder.translateErrorMessages(
-					errorMessages, _getResourceBundle(resourceRequest));
+					blueprintValidationException.getMessages(),
+					_getResourceBundle(resourceRequest));
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
@@ -215,6 +222,9 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 
 	@Reference
 	private SearchResponseJSONTranslator _blueprintsJSONResponseBuilder;
+
+	@Reference
+	private BlueprintValidator _blueprintValidator;
 
 	@Reference
 	private JSONFactory _jsonFactory;

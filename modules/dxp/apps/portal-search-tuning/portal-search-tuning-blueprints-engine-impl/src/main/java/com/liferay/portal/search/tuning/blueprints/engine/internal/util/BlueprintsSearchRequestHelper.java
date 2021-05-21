@@ -116,6 +116,11 @@ public class BlueprintsSearchRequestHelper {
 					"core.error.error-in-executing-search-request-body-" +
 						"contributors");
 			}
+			catch (Exception exception) {
+				MessagesUtil.error(
+					messages, getClass().getName(), exception, null, null, null,
+					"core.error.unknown-error");
+			}
 		}
 	}
 
@@ -143,60 +148,48 @@ public class BlueprintsSearchRequestHelper {
 		Optional<JSONObject> optional1 =
 			_blueprintHelper.getAdvancedConfigurationOptional(blueprint);
 
-		if (!optional1.isPresent()) {
-			return;
-		}
-
 		JSONObject advancedConfigurationJSONObject = optional1.get();
 
-		if (!advancedConfigurationJSONObject.has(
-				AdvancedConfigurationKeys.SOURCE.getJsonKey())) {
+		JSONObject sourceJSONObject =
+			advancedConfigurationJSONObject.getJSONObject(
+				AdvancedConfigurationKeys.SOURCE.getJsonKey());
 
+		if (sourceJSONObject == null) {
 			return;
 		}
 
 		Optional<JSONObject> optional2 =
 			_blueprintTemplateVariableParser.parseObject(
-				advancedConfigurationJSONObject.getJSONObject(
-					AdvancedConfigurationKeys.SOURCE.getJsonKey()),
-				parameterData, messages);
+				sourceJSONObject, parameterData, messages);
 
 		if (!optional2.isPresent()) {
 			return;
 		}
 
-		JSONObject sourceConfigurationJSONObject = optional2.get();
+		JSONObject parsedSourceJSONObject = optional2.get();
 
-		if (sourceConfigurationJSONObject.has(
+		if (parsedSourceJSONObject.has(
 				SourceConfigurationKeys.FETCH_SOURCE.getJsonKey())) {
 
 			searchRequestBuilder.fetchSource(
-				sourceConfigurationJSONObject.getBoolean(
+				parsedSourceJSONObject.getBoolean(
 					SourceConfigurationKeys.FETCH_SOURCE.getJsonKey()));
 		}
 
-		if (sourceConfigurationJSONObject.has(
-				SourceConfigurationKeys.SOURCE_EXCLUDES.getJsonKey())) {
+		JSONArray excludesJSONArray = parsedSourceJSONObject.getJSONArray(
+			SourceConfigurationKeys.SOURCE_EXCLUDES.getJsonKey());
 
-			JSONArray jsonArray = sourceConfigurationJSONObject.getJSONArray(
-				SourceConfigurationKeys.SOURCE_EXCLUDES.getJsonKey());
-
-			if (jsonArray.length() > 0) {
-				searchRequestBuilder.fetchSourceExcludes(
-					JSONUtil.toStringArray(jsonArray));
-			}
+		if ((excludesJSONArray != null) && (excludesJSONArray.length() > 0)) {
+			searchRequestBuilder.fetchSourceExcludes(
+				JSONUtil.toStringArray(excludesJSONArray));
 		}
 
-		if (sourceConfigurationJSONObject.has(
-				SourceConfigurationKeys.SOURCE_INCLUDES.getJsonKey())) {
+		JSONArray includesJSONArray = parsedSourceJSONObject.getJSONArray(
+			SourceConfigurationKeys.SOURCE_INCLUDES.getJsonKey());
 
-			JSONArray jsonArray = sourceConfigurationJSONObject.getJSONArray(
-				SourceConfigurationKeys.SOURCE_INCLUDES.getJsonKey());
-
-			if (jsonArray.length() > 0) {
-				searchRequestBuilder.fetchSourceIncludes(
-					JSONUtil.toStringArray(jsonArray));
-			}
+		if ((includesJSONArray != null) && (includesJSONArray.length() > 0)) {
+			searchRequestBuilder.fetchSourceIncludes(
+				JSONUtil.toStringArray(includesJSONArray));
 		}
 	}
 

@@ -27,15 +27,12 @@ import com.liferay.portal.search.rescore.RescoreBuilder;
 import com.liferay.portal.search.rescore.RescoreBuilderFactory;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ClauseConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.QueryConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.ClauseContext;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Occur;
-import com.liferay.portal.search.tuning.blueprints.constants.json.values.Operator;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.util.ClauseHelper;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.condition.ConditionHandlerFactory;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.condition.util.ConditionsProcessor;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.clause.ConditionHandler;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.query.QueryContributor;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
@@ -45,11 +42,9 @@ import com.liferay.portal.search.tuning.blueprints.util.component.ServiceCompone
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReferenceUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -127,12 +122,76 @@ public class QuerySearchRequestBodyContributor
 
 	private void _addRescoreClause(
 		SearchRequestBuilder searchRequestBuilder, Query query,
-		Integer windowSize) {
+		JSONObject jsonObject) {
 
 		RescoreBuilder rescoreBuilder = _rescoreBuilderFactory.builder(query);
 
-		if (windowSize != null) {
-			rescoreBuilder.windowSize(windowSize);
+		if (jsonObject.has(ClauseConfigurationKeys.WINDOW_SIZE.getJsonKey())) {
+			rescoreBuilder.windowSize(
+				jsonObject.getInt(
+					ClauseConfigurationKeys.WINDOW_SIZE.getJsonKey(), 100));
+		}
+
+		if (jsonObject.has(ClauseConfigurationKeys.QUERY_WEIGHT.getJsonKey())) {
+			rescoreBuilder.queryWeight(
+				GetterUtil.getFloat(
+					jsonObject.getString(
+						ClauseConfigurationKeys.WINDOW_SIZE.getJsonKey(),
+						"1.0")));
+		}
+
+		if (jsonObject.has(
+				ClauseConfigurationKeys.RESCORE_QUERY_WEIGHT.getJsonKey())) {
+
+			rescoreBuilder.queryWeight(
+				GetterUtil.getFloat(
+					jsonObject.getString(
+						ClauseConfigurationKeys.RESCORE_QUERY_WEIGHT.
+							getJsonKey(),
+						"1.0")));
+		}
+
+		searchRequestBuilder.addRescore(rescoreBuilder.build());
+	}
+
+	private void _addRescoreClause(
+		SearchRequestBuilder searchRequestBuilder, Query query,
+		QueryContributor queryContributor) {
+
+		RescoreBuilder rescoreBuilder = _rescoreBuilderFactory.builder(query);
+
+		if (queryContributor.getAttributes() != null) {
+			Map<String, Object> attributes = queryContributor.getAttributes();
+
+			if (attributes.containsKey(
+					ClauseConfigurationKeys.WINDOW_SIZE.getJsonKey())) {
+
+				rescoreBuilder.windowSize(
+					GetterUtil.getInteger(
+						attributes.get(
+							ClauseConfigurationKeys.WINDOW_SIZE.getJsonKey())));
+			}
+
+			if (attributes.containsKey(
+					ClauseConfigurationKeys.QUERY_WEIGHT.getJsonKey())) {
+
+				rescoreBuilder.queryWeight(
+					GetterUtil.getFloat(
+						attributes.get(
+							ClauseConfigurationKeys.QUERY_WEIGHT.
+								getJsonKey())));
+			}
+
+			if (attributes.containsKey(
+					ClauseConfigurationKeys.RESCORE_QUERY_WEIGHT.
+						getJsonKey())) {
+
+				rescoreBuilder.rescoreQueryWeight(
+					GetterUtil.getFloat(
+						attributes.get(
+							ClauseConfigurationKeys.RESCORE_QUERY_WEIGHT.
+								getJsonKey())));
+			}
 		}
 
 		searchRequestBuilder.addRescore(rescoreBuilder.build());
@@ -143,8 +202,6 @@ public class QuerySearchRequestBodyContributor
 		JSONArray configurationJSONArray, ParameterData parameterData,
 		Messages messages) {
 
-		Messages queryBuildingMessages = new Messages();
-
 		for (int i = 0; i < configurationJSONArray.length(); i++) {
 			JSONObject configurationJSONObject =
 				configurationJSONArray.getJSONObject(i);
@@ -154,52 +211,18 @@ public class QuerySearchRequestBodyContributor
 			if (!configurationJSONObject.getBoolean(
 					QueryConfigurationKeys.ENABLED.getJsonKey(), true) ||
 				!_isConditionsTrue(
-					parameterData, queryBuildingMessages,
-					configurationJSONObject)) {
+					configurationJSONObject, parameterData, messages)) {
 
 				messages.unsetElementId();
 
 				continue;
 			}
 
-			JSONArray clausesJSONArray = configurationJSONObject.getJSONArray(
-				QueryConfigurationKeys.CLAUSES.getJsonKey());
-
-			for (int j = 0; j < clausesJSONArray.length(); j++) {
-				JSONObject clauseJSONObject = clausesJSONArray.getJSONObject(j);
-
-				Optional<Query> clauseOptional = _clauseHelper.getClause(
-					clauseJSONObject.getJSONObject(
-						ClauseConfigurationKeys.QUERY.getJsonKey()),
-					parameterData, messages);
-
-				if (!clauseOptional.isPresent()) {
-					continue;
-				}
-
-				ClauseContext clauseContext = _getClauseContext(
-					clauseJSONObject, messages);
-
-				Occur occur = _getOccur(clauseJSONObject, messages);
-
-				if ((clauseContext == null) || (occur == null)) {
-					continue;
-				}
-
-				if (clauseContext.equals(ClauseContext.POST_FILTER)) {
-					_addPostFilterClause(
-						searchRequestBuilder, clauseOptional.get(), occur);
-				}
-				else if (clauseContext.equals(ClauseContext.QUERY)) {
-					_addQueryClause(
-						searchRequestBuilder, clauseOptional.get(), occur);
-				}
-				else if (clauseContext.equals(ClauseContext.RESCORE)) {
-					_addRescoreClause(
-						searchRequestBuilder, clauseOptional.get(),
-						_getRescoreWindoSize(clauseJSONObject));
-				}
-			}
+			_processClauses(
+				searchRequestBuilder,
+				configurationJSONObject.getJSONArray(
+					QueryConfigurationKeys.CLAUSES.getJsonKey()),
+				parameterData, messages);
 
 			messages.unsetElementId();
 		}
@@ -226,12 +249,6 @@ public class QuerySearchRequestBodyContributor
 
 				QueryContributor queryContributor = value.getServiceComponent();
 
-				Class<?> clazz = queryContributor.getClass();
-
-				if (_isQueryContributorExcluded(blueprint, clazz.getName())) {
-					continue;
-				}
-
 				Optional<Query> queryOptional = queryContributor.build(
 					blueprint, parameterData, messages);
 
@@ -255,7 +272,7 @@ public class QuerySearchRequestBodyContributor
 				else if (clauseContext.equals(ClauseContext.RESCORE)) {
 					_addRescoreClause(
 						searchRequestBuilder, queryOptional.get(),
-						_getQueryContributorRescoreWindoSize(queryContributor));
+						queryContributor);
 				}
 			}
 			catch (Exception exception) {
@@ -266,155 +283,69 @@ public class QuerySearchRequestBodyContributor
 		}
 	}
 
-	private ClauseContext _getClauseContext(
-		JSONObject jsonObject, Messages messages) {
-
+	private ClauseContext _getClauseContext(JSONObject jsonObject) {
 		String context = jsonObject.getString(
 			ClauseConfigurationKeys.CONTEXT.getJsonKey());
 
-		try {
-			return ClauseContext.valueOf(StringUtil.toUpperCase(context));
-		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			MessagesUtil.invalidConfigurationValueError(
-				messages, getClass().getName(), illegalArgumentException,
-				jsonObject, ClauseConfigurationKeys.CONTEXT.getJsonKey(),
-				context);
-		}
-
-		return null;
+		return ClauseContext.valueOf(StringUtil.toUpperCase(context));
 	}
 
-	private Occur _getOccur(JSONObject jsonObject, Messages messages) {
+	private Occur _getOccur(JSONObject jsonObject) {
 		String occur = jsonObject.getString(
-			ClauseConfigurationKeys.OCCUR.getJsonKey(), "must");
+			ClauseConfigurationKeys.OCCUR.getJsonKey(),
+			Occur.MUST.getjsonValue());
 
-		try {
-			return Occur.valueOf(StringUtil.toUpperCase(occur));
-		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			MessagesUtil.invalidConfigurationValueError(
-				messages, getClass().getName(), illegalArgumentException,
-				jsonObject, ClauseConfigurationKeys.OCCUR.getJsonKey(), occur);
-		}
-
-		return null;
-	}
-
-	private Integer _getQueryContributorRescoreWindoSize(
-		QueryContributor queryContributor) {
-
-		if (queryContributor.getAttributes() == null) {
-			return null;
-		}
-
-		Map<String, Object> attributes = queryContributor.getAttributes();
-
-		if (attributes.containsKey(
-				ClauseConfigurationKeys.WINDOW_SIZE.getJsonKey())) {
-
-			return GetterUtil.getInteger(
-				attributes.containsKey(
-					ClauseConfigurationKeys.WINDOW_SIZE.getJsonKey()));
-		}
-
-		return null;
-	}
-
-	private Integer _getRescoreWindoSize(JSONObject jsonObject) {
-		if (jsonObject.has(ClauseConfigurationKeys.WINDOW_SIZE.getJsonKey())) {
-			return jsonObject.getInt(
-				ClauseConfigurationKeys.WINDOW_SIZE.getJsonKey());
-		}
-
-		return null;
+		return Occur.valueOf(StringUtil.toUpperCase(occur));
 	}
 
 	private boolean _isConditionsTrue(
-		ParameterData parameterData, Messages messages,
-		JSONObject configurationJSONObject) {
+		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
 
-		JSONArray conditionsJSONArray = configurationJSONObject.getJSONArray(
+		JSONObject conditionsJSONObject = jsonObject.getJSONObject(
 			QueryConfigurationKeys.CONDITIONS.getJsonKey());
 
-		if ((conditionsJSONArray == null) ||
-			(conditionsJSONArray.length() == 0)) {
-
+		if (conditionsJSONObject == null) {
 			return true;
 		}
 
-		boolean valid = false;
-
-		for (int i = 0; i < conditionsJSONArray.length(); i++) {
-			JSONObject conditionJSONObject = conditionsJSONArray.getJSONObject(
-				i);
-
-			String handler = conditionJSONObject.getString(
-				ConditionConfigurationKeys.HANDLER.getJsonKey(), "default");
-
-			try {
-				ConditionHandler conditionHandler =
-					_conditionHandlerFactory.getHandler(handler);
-
-				String operatorString = conditionJSONObject.getString(
-					ConditionConfigurationKeys.OPERATOR.getJsonKey(),
-					Operator.AND.name());
-
-				Operator operator = Operator.valueOf(
-					StringUtil.toUpperCase(operatorString));
-
-				JSONObject handlerConfigurationJSONObject =
-					conditionJSONObject.getJSONObject(
-						ConditionConfigurationKeys.CONFIGURATION.getJsonKey());
-
-				boolean conditionTrue = conditionHandler.isTrue(
-					handlerConfigurationJSONObject, parameterData, messages);
-
-				if (operator.equals(Operator.AND) && !conditionTrue) {
-					return false;
-				}
-				else if (operator.equals(Operator.NOT) && conditionTrue) {
-					return false;
-				}
-				else if (conditionTrue) {
-					valid = true;
-				}
-			}
-			catch (IllegalArgumentException illegalArgumentException) {
-				MessagesUtil.invalidConfigurationValueError(
-					messages, getClass().getName(), illegalArgumentException,
-					conditionJSONObject, null, null);
-			}
-			catch (Exception exception) {
-				MessagesUtil.unknownError(
-					messages, getClass().getName(), exception,
-					conditionJSONObject, null, null);
-			}
-		}
-
-		return valid;
+		return _conditionsProcessor.processConditions(
+			conditionsJSONObject, parameterData, messages);
 	}
 
-	private boolean _isQueryContributorExcluded(
-		Blueprint blueprint, String className) {
+	private void _processClauses(
+		SearchRequestBuilder searchRequestBuilder, JSONArray clausesJSONArray,
+		ParameterData parameterData, Messages messages) {
 
-		Optional<List<String>> excludedQueryContributorsOptional =
-			_blueprintHelper.getExcludedQueryContributorsOptional(blueprint);
+		for (int j = 0; j < clausesJSONArray.length(); j++) {
+			JSONObject clauseJSONObject = clausesJSONArray.getJSONObject(j);
 
-		if (!excludedQueryContributorsOptional.isPresent()) {
-			return false;
+			Optional<Query> clauseOptional = _clauseHelper.getClause(
+				clauseJSONObject.getJSONObject(
+					ClauseConfigurationKeys.QUERY.getJsonKey()),
+				parameterData, messages);
+
+			if (!clauseOptional.isPresent()) {
+				continue;
+			}
+
+			ClauseContext clauseContext = _getClauseContext(clauseJSONObject);
+
+			Occur occur = _getOccur(clauseJSONObject);
+
+			if (clauseContext.equals(ClauseContext.POST_FILTER)) {
+				_addPostFilterClause(
+					searchRequestBuilder, clauseOptional.get(), occur);
+			}
+			else if (clauseContext.equals(ClauseContext.QUERY)) {
+				_addQueryClause(
+					searchRequestBuilder, clauseOptional.get(), occur);
+			}
+			else if (clauseContext.equals(ClauseContext.RESCORE)) {
+				_addRescoreClause(
+					searchRequestBuilder, clauseOptional.get(),
+					clauseJSONObject);
+			}
 		}
-
-		List<String> excludedQueryContributors =
-			excludedQueryContributorsOptional.get();
-
-		Stream<String> stream = excludedQueryContributors.stream();
-
-		if (stream.anyMatch(s -> s.contentEquals(className) || s.equals("*"))) {
-			return true;
-		}
-
-		return false;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
@@ -430,7 +361,7 @@ public class QuerySearchRequestBodyContributor
 	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
 
 	@Reference
-	private ConditionHandlerFactory _conditionHandlerFactory;
+	private ConditionsProcessor _conditionsProcessor;
 
 	@Reference
 	private Queries _queries;

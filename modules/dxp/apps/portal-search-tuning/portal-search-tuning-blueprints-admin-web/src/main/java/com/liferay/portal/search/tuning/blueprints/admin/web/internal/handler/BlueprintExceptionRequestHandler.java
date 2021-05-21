@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
 import com.liferay.portal.search.tuning.blueprints.exception.ElementValidationException;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
 
 import java.io.IOException;
 
@@ -59,7 +60,7 @@ public class BlueprintExceptionRequestHandler {
 				(BlueprintValidationException)portalException;
 
 			_addErrors(
-				jsonArray, blueprintValidationException.getErrors(),
+				jsonArray, blueprintValidationException.getMessages(),
 				themeDisplay);
 		}
 		else if (portalException instanceof ElementValidationException) {
@@ -67,13 +68,15 @@ public class BlueprintExceptionRequestHandler {
 				(ElementValidationException)portalException;
 
 			_addErrors(
-				jsonArray, elementValidationException.getErrors(),
+				jsonArray, elementValidationException.getMessages(),
 				themeDisplay);
 		}
-		else if (portalException.getCause() instanceof JSONException) {
+
+		if (portalException.getCause() instanceof JSONException) {
 			jsonArray.put(
 				_language.get(
-					themeDisplay.getRequest(), "unable-to-parse-json"));
+					themeDisplay.getRequest(),
+					"core.error.unable-to-parse-json"));
 		}
 		else {
 			jsonArray.put(
@@ -93,22 +96,13 @@ public class BlueprintExceptionRequestHandler {
 	}
 
 	private void _addErrors(
-		JSONArray jsonArray, List<String> errors, ThemeDisplay themeDisplay) {
+		JSONArray jsonArray, List<Message> messages,
+		ThemeDisplay themeDisplay) {
 
-		errors.forEach(
-			key -> {
-				String errorMessage = "an-unexpected-error-occurred";
-
-				if (key.equals("titleEmpty")) {
-					errorMessage = "error.title-empty";
-				}
-				else if (key.equals("defaultLocaleTitleEmpty")) {
-					errorMessage = "error.default-locale-title-empty";
-				}
-
-				jsonArray.put(
-					_language.get(themeDisplay.getRequest(), errorMessage));
-			});
+		messages.forEach(
+			message -> jsonArray.put(
+				_language.get(
+					themeDisplay.getRequest(), message.getLocalizationKey())));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

@@ -25,11 +25,14 @@ import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
+import com.liferay.portal.search.tuning.blueprints.exception.ElementValidationException;
 import com.liferay.portal.search.tuning.blueprints.model.Element;
 import com.liferay.portal.search.tuning.blueprints.service.base.ElementLocalServiceBaseImpl;
-import com.liferay.portal.search.tuning.blueprints.validation.ElementValidator;
+import com.liferay.portal.search.tuning.blueprints.validator.ElementValidator;
 
 import java.util.Date;
 import java.util.List;
@@ -64,7 +67,6 @@ public class ElementLocalServiceImpl extends ElementLocalServiceBaseImpl {
 	 * Never reference this class directly. Use <code>com.liferay.portal.search.tuning.elements.service.ElementLocalService</code> via injection or a <code>org.osgi.util.tracker.ServiceTracker</code> or use <code>com.liferay.portal.search.tuning.elements.service.ElementLocalServiceUtil</code>.
 	 */
 	@Indexable(type = IndexableType.REINDEX)
-	@Override
 	public Element addElement(
 			long userId, long groupId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration, int type,
@@ -73,7 +75,7 @@ public class ElementLocalServiceImpl extends ElementLocalServiceBaseImpl {
 
 		User user = _userLocalService.getUser(userId);
 
-		_elementValidator.validate(titleMap, configuration);
+		_validate(titleMap, configuration, type, serviceContext);
 
 		long elementId = counterLocalService.increment(Element.class.getName());
 
@@ -87,6 +89,8 @@ public class ElementLocalServiceImpl extends ElementLocalServiceBaseImpl {
 		element.setModifiedDate(serviceContext.getModifiedDate(new Date()));
 		element.setUuid(serviceContext.getUuid());
 
+		element.setHidden(false);
+		element.setReadOnly(_isReadOnly(serviceContext));
 		element.setTitleMap(titleMap);
 		element.setDescriptionMap(descriptionMap);
 
@@ -108,6 +112,10 @@ public class ElementLocalServiceImpl extends ElementLocalServiceBaseImpl {
 	@Override
 	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
 	public Element deleteElement(Element element) throws PortalException {
+		if (element.getReadOnly()) {
+			throw new PortalException("Cannot delete system read-only element");
+		}
+
 		_resourceLocalService.deleteResource(
 			element, ResourceConstants.SCOPE_INDIVIDUAL);
 
@@ -119,6 +127,15 @@ public class ElementLocalServiceImpl extends ElementLocalServiceBaseImpl {
 		Element element = elementPersistence.findByPrimaryKey(elementId);
 
 		return deleteElement(element);
+	}
+
+	@Indexable(type = IndexableType.DELETE)
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
+	public Element deleteSystemElement(Element element) throws PortalException {
+		_resourceLocalService.deleteResource(
+			element, ResourceConstants.SCOPE_INDIVIDUAL);
+
+		return super.deleteElement(element);
 	}
 
 	public int getCompanyElementsCount(long companyId, int type) {
@@ -178,12 +195,12 @@ public class ElementLocalServiceImpl extends ElementLocalServiceBaseImpl {
 	public Element updateElement(
 			long userId, long elementId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,
-			ServiceContext serviceContext)
+			boolean hidden, ServiceContext serviceContext)
 		throws PortalException {
 
 		Element element = getElement(elementId);
 
-		_elementValidator.validate(titleMap, configuration);
+		_validate(titleMap, configuration, element.getType(), serviceContext);
 
 		element.setDescriptionMap(descriptionMap);
 		element.setModifiedDate(serviceContext.getModifiedDate(new Date()));
@@ -204,6 +221,22 @@ public class ElementLocalServiceImpl extends ElementLocalServiceBaseImpl {
 		element.setStatus(status);
 
 		return updateElement(element);
+	}
+
+	private Boolean _isReadOnly(ServiceContext serviceContext) {
+		return GetterUtil.getBoolean(serviceContext.getAttribute("read-only"));
+	}
+
+	private void _validate(
+			Map<Locale, String> titleMap, String configuration, int type,
+			ServiceContext serviceContext)
+		throws BlueprintValidationException, ElementValidationException {
+
+		if (!GetterUtil.getBoolean(
+				serviceContext.getAttribute("skip.element.validation"))) {
+
+			_elementValidator.validateElement(titleMap, configuration, type);
+		}
 	}
 
 	@Reference

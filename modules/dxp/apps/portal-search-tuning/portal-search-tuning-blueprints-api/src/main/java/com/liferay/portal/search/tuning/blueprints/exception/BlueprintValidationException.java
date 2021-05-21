@@ -14,8 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.exception;
 
-import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
 
 import java.util.List;
 
@@ -28,26 +28,30 @@ public class BlueprintValidationException extends PortalException {
 	public BlueprintValidationException() {
 	}
 
-	public BlueprintValidationException(List<String> errors) {
-		super(StringUtil.merge(errors, ","));
-
-		_errors = errors;
-	}
-
 	public BlueprintValidationException(String msg) {
 		super(msg);
+	}
+
+	public BlueprintValidationException(String msg, List<Message> messages) {
+		super(msg);
+
+		_messages = messages;
 	}
 
 	public BlueprintValidationException(String msg, Throwable throwable) {
 		super(msg, throwable);
 	}
 
-	public List<String> getErrors() {
-		return _errors;
+	public BlueprintValidationException(Throwable throwable) {
+		super(throwable);
+	}
+
+	public List<Message> getMessages() {
+		return _messages;
 	}
 
 	private static final long serialVersionUID = 1L;
 
-	private List<String> _errors;
+	private List<Message> _messages;
 
 }

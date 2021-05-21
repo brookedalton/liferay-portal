@@ -34,15 +34,12 @@ export default {
 				},
 			},
 		],
-		conditions: [
-			{
-				configuration: {
-					evaluation_type: 'any_word_in',
-					parameter_name: '${keywords}',
-					value: '${configuration.values}',
-				},
+		conditions: {
+			contains: {
+				parameter_name: '${keywords}',
+				value: '${configuration.values}',
 			},
-		],
+		},
 		description: {
 			en_US:
 				'Show selected Web Contents higher in the results, if given keywords exist in the searchphrase',

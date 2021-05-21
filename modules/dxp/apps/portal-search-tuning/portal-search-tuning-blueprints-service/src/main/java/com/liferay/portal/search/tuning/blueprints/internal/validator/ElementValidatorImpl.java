@@ -14,13 +14,20 @@
 
 package com.liferay.portal.search.tuning.blueprints.internal.validator;
 
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.exception.ElementValidationException;
-import com.liferay.portal.search.tuning.blueprints.validation.ElementValidator;
+import com.liferay.portal.search.tuning.blueprints.internal.validator.util.BlueprintJSONValidatorUtil;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.validator.ElementValidator;
+
+import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.everit.json.schema.ValidationException;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -32,26 +39,82 @@ public class ElementValidatorImpl
 	extends BaseValidator implements ElementValidator {
 
 	@Override
-	public void validate(Map<Locale, String> titleMap, String configuration)
+	public void validateConfiguration(String configuration, int type)
 		throws ElementValidationException {
 
-		List<String> errors = new ArrayList<>();
+		try {
+			_validateConfiguration(configuration, type);
+		}
+		catch (ValidationException validationException) {
+			List<Message> messages = new ArrayList<>();
 
-		if (!_isValid(titleMap, configuration, errors)) {
-			throw new ElementValidationException(errors);
+			addMessages(messages, validationException);
+
+			throw new ElementValidationException(
+				"There were (" + messages.size() + ") validation errors",
+				messages);
 		}
 	}
 
-	private boolean _isValid(
-		Map<Locale, String> titleMap, String configuration,
-		List<String> errors) {
+	@Override
+	public void validateElement(
+			Map<Locale, String> titleMap, String configuration, int type)
+		throws ElementValidationException {
 
-		boolean result = true;
+		List<Message> messages = new ArrayList<>();
 
-		result &= isConfigurationValid(configuration, errors);
-		result &= isTitleValid(titleMap, errors);
+		validateTitle(titleMap, messages);
 
-		return result;
+		try {
+			_validateConfiguration(configuration, type);
+		}
+		catch (ValidationException validationException) {
+			addMessages(messages, validationException);
+		}
+
+		if (!messages.isEmpty()) {
+			throw new ElementValidationException(
+				"There were (" + messages.size() + ") validation errors",
+				messages);
+		}
+	}
+
+	private void _validateConfiguration(String configuration, int type)
+		throws ValidationException {
+
+		if (Validator.isNull(configuration)) {
+			return;
+		}
+
+		InputStream configurationJSONSchemaInputStream =
+			BlueprintValidatorImpl.class.getResourceAsStream(
+				"dependencies/element.schema.json");
+
+		BlueprintJSONValidatorUtil.validate(
+			_wrapConfiguration(configuration, type),
+			configurationJSONSchemaInputStream);
+	}
+
+	private String _wrapConfiguration(String configuration, int type) {
+		StringBuilder sb = new StringBuilder();
+
+		if (type == 1) {
+			sb.append("{\"aggregation_element\": ");
+		}
+		else if (type == 5) {
+			sb.append("{\"facet_element\": ");
+		}
+		else if (type == 10) {
+			sb.append("{\"query_element\": ");
+		}
+		else if (type == 15) {
+			sb.append("{\"suggester_element\": ");
+		}
+
+		sb.append(configuration);
+		sb.append("}");
+
+		return sb.toString();
 	}
 
 }

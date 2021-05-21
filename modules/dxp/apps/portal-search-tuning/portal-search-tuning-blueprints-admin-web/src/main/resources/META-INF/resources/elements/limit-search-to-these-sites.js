@@ -33,7 +33,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Limit search scope to the given sites',
 		},

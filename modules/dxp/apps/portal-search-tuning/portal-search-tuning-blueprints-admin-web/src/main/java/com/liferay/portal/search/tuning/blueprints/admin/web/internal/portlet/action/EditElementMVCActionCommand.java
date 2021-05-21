@@ -34,7 +34,7 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.handler.BlueprintExceptionRequestHandler;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminRequestUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
-import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+import com.liferay.portal.search.tuning.blueprints.exception.ElementValidationException;
 import com.liferay.portal.search.tuning.blueprints.model.Element;
 import com.liferay.portal.search.tuning.blueprints.service.ElementService;
 
@@ -75,11 +75,13 @@ public class EditElementMVCActionCommand extends BaseMVCActionCommand {
 		String configuration = BlueprintsAdminRequestUtil.getConfiguration(
 			actionRequest);
 
+		boolean hidden = BlueprintsAdminRequestUtil.getHidden(actionRequest);
+
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
 		try {
-			ServiceContext serviceContext = ServiceContextFactory.getInstance(
-				Blueprint.class.getName(), actionRequest);
+			ServiceContext serviceContext = _createServiceContext(
+				actionRequest);
 
 			JSONObject jsonObject = JSONUtil.put("title", titleMap);
 
@@ -97,11 +99,24 @@ public class EditElementMVCActionCommand extends BaseMVCActionCommand {
 			else {
 				_elementService.updateElement(
 					BlueprintsAdminRequestUtil.getElementId(actionRequest),
-					titleMap, descriptionMap, configuration, serviceContext);
+					titleMap, descriptionMap, configuration, hidden,
+					serviceContext);
 			}
 
 			JSONPortletResponseUtil.writeJSON(
 				actionRequest, actionResponse, jsonObject);
+		}
+		catch (ElementValidationException elementValidationException) {
+			_log.error(
+				elementValidationException.getMessage(),
+				elementValidationException);
+
+			SessionErrors.add(
+				actionRequest, BlueprintsAdminWebKeys.ERROR,
+				elementValidationException.getMessage());
+
+			_blueprintExceptionRequestHandler.handlePortalException(
+				actionRequest, actionResponse, elementValidationException);
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
@@ -113,6 +128,17 @@ public class EditElementMVCActionCommand extends BaseMVCActionCommand {
 			_blueprintExceptionRequestHandler.handlePortalException(
 				actionRequest, actionResponse, portalException);
 		}
+	}
+
+	private ServiceContext _createServiceContext(ActionRequest actionRequest)
+		throws PortalException {
+
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			Element.class.getName(), actionRequest);
+
+		serviceContext.setAttribute("skip.element.validation", Boolean.TRUE);
+
+		return serviceContext;
 	}
 
 	private String _getRedirectURL(

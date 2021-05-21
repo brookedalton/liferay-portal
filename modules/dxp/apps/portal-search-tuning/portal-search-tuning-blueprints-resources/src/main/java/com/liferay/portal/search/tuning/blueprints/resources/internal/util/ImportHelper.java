@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.search.tuning.blueprints.util.importer.BlueprintsImporter;
+import com.liferay.portal.search.tuning.blueprints.importer.BlueprintsImporter;
 
 import java.net.URL;
 
@@ -39,16 +39,15 @@ import org.osgi.service.component.annotations.Reference;
 public class ImportHelper {
 
 	public void importDefaultResources(
-			long companyId, long groupId, long userId)
-		throws PortalException {
+		long companyId, long groupId, long userId) {
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Importing default Blueprints and Elements");
 		}
 
-		_processResources(companyId, groupId, userId, _listBlueprints());
+		_processBlueprintResources(companyId, groupId, userId);
 
-		_processResources(companyId, groupId, userId, _listElements());
+		_processElementResources(companyId, groupId, userId);
 
 		if (_log.isInfoEnabled()) {
 			_log.info("Import done");
@@ -64,12 +63,24 @@ public class ImportHelper {
 			StringUtil.read(getClass(), "/" + url.getPath()));
 	}
 
-	private void _import(
+	private void _importBlueprint(
 		long companyId, long groupId, long userId, JSONObject jsonObject) {
 
 		try {
-			_blueprintsImporter.importItem(
+			_blueprintsImporter.importBlueprint(
 				companyId, groupId, userId, jsonObject);
+		}
+		catch (PortalException portalException) {
+			throw new RuntimeException(portalException);
+		}
+	}
+
+	private void _importElement(
+		long companyId, long groupId, long userId, JSONObject jsonObject) {
+
+		try {
+			_blueprintsImporter.importElement(
+				companyId, groupId, userId, jsonObject, true);
 		}
 		catch (PortalException portalException) {
 			throw new RuntimeException(portalException);
@@ -88,19 +99,46 @@ public class ImportHelper {
 		return bundle.findEntries(_ELEMENTS_PATH, "*.json", false);
 	}
 
-	private void _processResources(
-			long companyId, long groupId, long userId,
-			Enumeration<URL> urlEnumeration)
-		throws PortalException {
+	private void _processBlueprintResources(
+		long companyId, long groupId, long userId) {
+
+		Enumeration<URL> urlEnumeration = _listBlueprints();
 
 		if ((urlEnumeration == null) || !urlEnumeration.hasMoreElements()) {
 			return;
 		}
 
-		while (urlEnumeration.hasMoreElements()) {
-			URL url = urlEnumeration.nextElement();
+		try {
+			while (urlEnumeration.hasMoreElements()) {
+				URL url = urlEnumeration.nextElement();
 
-			_import(companyId, groupId, userId, _getJSONObject(url));
+				_importBlueprint(
+					companyId, groupId, userId, _getJSONObject(url));
+			}
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
+		}
+	}
+
+	private void _processElementResources(
+		long companyId, long groupId, long userId) {
+
+		Enumeration<URL> urlEnumeration = _listElements();
+
+		if ((urlEnumeration == null) || !urlEnumeration.hasMoreElements()) {
+			return;
+		}
+
+		try {
+			while (urlEnumeration.hasMoreElements()) {
+				URL url = urlEnumeration.nextElement();
+
+				_importElement(companyId, groupId, userId, _getJSONObject(url));
+			}
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
 		}
 	}
 

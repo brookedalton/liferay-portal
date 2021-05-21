@@ -23,7 +23,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.u
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -45,22 +44,17 @@ public class HistogramAggregationTranslator implements AggregationTranslator {
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				HistogramAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
-
-			return Optional.empty();
-		}
-
 		HistogramAggregation aggregation = _aggregations.histogram(
 			aggregationName,
 			jsonObject.getString(
 				HistogramAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
 
+		_aggregationHelper.setDoubleBounds(jsonObject, aggregation::setBounds);
+
 		_setterHelper.setDoubleValue(
 			jsonObject,
 			HistogramAggregationBodyConfigurationKeys.INTERVAL.getJsonKey(),
-			aggregation::setOffset);
+			aggregation::setInterval);
 
 		_setterHelper.setBooleanValue(
 			jsonObject,

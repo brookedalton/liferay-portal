@@ -34,7 +34,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Boost contents having at least one of the given tags',
 		},

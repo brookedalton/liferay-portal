@@ -14,13 +14,20 @@
 
 package com.liferay.portal.search.tuning.blueprints.internal.validator;
 
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
-import com.liferay.portal.search.tuning.blueprints.validation.BlueprintValidator;
+import com.liferay.portal.search.tuning.blueprints.internal.validator.util.BlueprintJSONValidatorUtil;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.validator.BlueprintValidator;
+
+import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.everit.json.schema.ValidationException;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -32,26 +39,59 @@ public class BlueprintValidatorImpl
 	extends BaseValidator implements BlueprintValidator {
 
 	@Override
-	public void validate(Map<Locale, String> titleMap, String configuration)
+	public void validateBlueprint(
+			Map<Locale, String> titleMap, String configuration)
 		throws BlueprintValidationException {
 
-		List<String> errors = new ArrayList<>();
+		List<Message> messages = new ArrayList<>();
 
-		if (!_isValid(titleMap, configuration, errors)) {
-			throw new BlueprintValidationException(errors);
+		validateTitle(titleMap, messages);
+
+		try {
+			_validateConfiguration(configuration);
+		}
+		catch (ValidationException validationException) {
+			addMessages(messages, validationException);
+		}
+
+		if (!messages.isEmpty()) {
+			throw new BlueprintValidationException(
+				"There were (" + messages.size() + ") validation errors",
+				messages);
 		}
 	}
 
-	private boolean _isValid(
-		Map<Locale, String> titleMap, String configuration,
-		List<String> errors) {
+	@Override
+	public void validateConfiguration(String configuration)
+		throws BlueprintValidationException {
 
-		boolean result = true;
+		try {
+			_validateConfiguration(configuration);
+		}
+		catch (ValidationException validationException) {
+			List<Message> messages = new ArrayList<>();
 
-		result &= isConfigurationValid(configuration, errors);
-		result &= isTitleValid(titleMap, errors);
+			addMessages(messages, validationException);
 
-		return result;
+			throw new BlueprintValidationException(
+				"There were (" + messages.size() + ") validation errors",
+				messages);
+		}
+	}
+
+	private void _validateConfiguration(String configuration)
+		throws ValidationException {
+
+		if (Validator.isNull(configuration)) {
+			return;
+		}
+
+		InputStream configurationJSONSchemaInputStream =
+			BlueprintValidatorImpl.class.getResourceAsStream(
+				"dependencies/blueprint.schema.json");
+
+		BlueprintJSONValidatorUtil.validate(
+			configuration, configurationJSONSchemaInputStream);
 	}
 
 }

@@ -142,6 +142,16 @@ public class ElementLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.portal.search.tuning.blueprints.model.Element
+			deleteSystemElement(
+				com.liferay.portal.search.tuning.blueprints.model.Element
+					element)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _elementLocalService.deleteSystemElement(element);
+	}
+
+	@Override
 	public <T> T dslQuery(com.liferay.petra.sql.dsl.query.DSLQuery dslQuery) {
 		return _elementLocalService.dslQuery(dslQuery);
 	}
@@ -484,12 +494,12 @@ public class ElementLocalServiceWrapper
 				long userId, long elementId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration,
+				String configuration, boolean hidden,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _elementLocalService.updateElement(
-			userId, elementId, titleMap, descriptionMap, configuration,
+			userId, elementId, titleMap, descriptionMap, configuration, hidden,
 			serviceContext);
 	}
 

@@ -17,6 +17,7 @@ package com.liferay.portal.search.tuning.blueprints.condition.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -78,8 +79,8 @@ public class BoostContentsInCategoryTest
 	}
 
 	@Override
-	protected JSONArray getConditions() {
-		return createJSONArray();
+	protected JSONObject getConditions() {
+		return JSONFactoryUtil.createJSONObject();
 	}
 
 	@Override

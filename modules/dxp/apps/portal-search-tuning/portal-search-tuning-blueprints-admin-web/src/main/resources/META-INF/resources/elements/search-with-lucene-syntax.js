@@ -35,7 +35,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Enable searching using the Lucene syntax',
 		},

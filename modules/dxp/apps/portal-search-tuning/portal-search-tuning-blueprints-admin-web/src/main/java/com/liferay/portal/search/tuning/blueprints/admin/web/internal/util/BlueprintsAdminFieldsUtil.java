@@ -21,6 +21,7 @@ import com.liferay.portal.search.tuning.blueprints.fields.provider.FieldInfo;
 import com.liferay.portal.search.tuning.blueprints.fields.provider.FieldMappingInfoProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -74,13 +75,8 @@ public class BlueprintsAdminFieldsUtil {
 			fieldInfo.getType() + ":" + fieldInfo.getName());
 	}
 
-	private static final List<String> _blackListedfields =
-		new ArrayList<String>() {
-			{
-				add("text:content_length");
-				add("text:versionCount");
-			}
-		};
+	private static final List<String> _blackListedfields = new ArrayList<>(
+		Arrays.asList("text:content_length", "text:versionCount"));
 	private static FieldMappingInfoProvider _fieldMappingInfoProvider;
 	private static JSONFactory _jsonFactory;
 

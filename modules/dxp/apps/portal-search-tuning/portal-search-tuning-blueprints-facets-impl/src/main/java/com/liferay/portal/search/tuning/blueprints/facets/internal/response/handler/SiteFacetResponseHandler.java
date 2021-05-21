@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 import java.util.ResourceBundle;
 
@@ -40,7 +41,7 @@ public class SiteFacetResponseHandler
 	@Override
 	protected JSONObject createBucketJSONObject(
 			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
-			ResourceBundle resourceBundle)
+			ResourceBundle resourceBundle, Messages messages)
 		throws Exception {
 
 		long frequency = bucket.getDocCount();

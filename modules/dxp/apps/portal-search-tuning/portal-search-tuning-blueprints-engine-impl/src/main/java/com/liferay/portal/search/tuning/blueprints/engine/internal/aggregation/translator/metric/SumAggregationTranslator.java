@@ -17,7 +17,6 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.SumAggregation;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.MaxAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.MinAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.SumAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
@@ -25,7 +24,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.u
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -46,13 +44,6 @@ public class SumAggregationTranslator implements AggregationTranslator {
 	public Optional<AggregationWrapper> translate(
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
-
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				MaxAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
-
-			return Optional.empty();
-		}
 
 		SumAggregation aggregation = _aggregations.sum(
 			aggregationName,

@@ -41,7 +41,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Hide contents in a category',
 		},

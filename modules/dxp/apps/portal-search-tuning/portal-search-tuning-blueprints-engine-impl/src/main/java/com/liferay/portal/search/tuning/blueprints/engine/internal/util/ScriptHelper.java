@@ -21,9 +21,9 @@ import com.liferay.portal.search.script.ScriptBuilder;
 import com.liferay.portal.search.script.ScriptType;
 import com.liferay.portal.search.script.Scripts;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.ScriptConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
@@ -35,18 +35,33 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = ScriptHelper.class)
 public class ScriptHelper {
 
-	public Optional<Script> getScript(
-		JSONObject jsonObject, Messages messages) {
+	public Optional<Script> getScript(Object object) {
+		if (Objects.isNull(object)) {
+			return Optional.empty();
+		}
 
+		if (object instanceof String) {
+			return _getStringScript((String)object);
+		}
+		else if (object instanceof JSONObject) {
+			return _getObjectScript((JSONObject)object);
+		}
+
+		return Optional.empty();
+	}
+
+	private Optional<Script> _getObjectScript(JSONObject jsonObject) {
 		if (jsonObject.length() == 0) {
 			return Optional.empty();
 		}
 
 		ScriptBuilder scriptBuilder = _scripts.builder();
 
-		_setIdOrSource(scriptBuilder, jsonObject, messages);
+		_setIdOrSource(scriptBuilder, jsonObject);
 
-		_setLang(scriptBuilder, jsonObject);
+		_setterHelper.setStringValue(
+			jsonObject, ScriptConfigurationKeys.LANG.getJsonKey(),
+			scriptBuilder::language);
 
 		_setOptions(scriptBuilder, jsonObject);
 
@@ -55,7 +70,7 @@ public class ScriptHelper {
 		return Optional.of(scriptBuilder.build());
 	}
 
-	public Optional<Script> getScript(String scriptString, Messages messages) {
+	private Optional<Script> _getStringScript(String scriptString) {
 		if (Validator.isBlank(scriptString)) {
 			return Optional.empty();
 		}
@@ -66,63 +81,46 @@ public class ScriptHelper {
 			scriptString
 		).scriptType(
 			ScriptType.INLINE
+		).language(
+			"painless"
 		);
 
 		return Optional.of(scriptBuilder.build());
 	}
 
-	private Optional<Script> _returnIdOrSourceMissing(
-		JSONObject jsonObject, Messages messages) {
-
-		MessagesUtil.requiredFieldMissingError(
-			messages, getClass().getName(), jsonObject,
-			ScriptConfigurationKeys.ID.getJsonKey() + " or " +
-				ScriptConfigurationKeys.SOURCE.getJsonKey());
-
-		return Optional.empty();
-	}
-
 	private void _setIdOrSource(
-		ScriptBuilder scriptBuilder, JSONObject jsonObject, Messages messages) {
+		ScriptBuilder scriptBuilder, JSONObject jsonObject) {
 
-		if (jsonObject.has(ScriptConfigurationKeys.ID.getJsonKey())) {
+		String id = jsonObject.getString(
+			ScriptConfigurationKeys.ID.getJsonKey());
+		String source = jsonObject.getString(
+			ScriptConfigurationKeys.SOURCE.getJsonKey());
+
+		if (!Validator.isBlank(id)) {
 			scriptBuilder.idOrCode(
-				jsonObject.getString(ScriptConfigurationKeys.ID.getJsonKey())
+				id
 			).scriptType(
 				ScriptType.STORED
 			);
 		}
-		else if (jsonObject.has(ScriptConfigurationKeys.SOURCE.getJsonKey())) {
+		else if (!Validator.isBlank(source)) {
 			scriptBuilder.idOrCode(
-				jsonObject.getString(
-					ScriptConfigurationKeys.SOURCE.getJsonKey())
+				source
 			).scriptType(
 				ScriptType.INLINE
 			);
 		}
-		else {
-			_returnIdOrSourceMissing(jsonObject, messages);
-		}
-	}
-
-	private void _setLang(ScriptBuilder scriptBuilder, JSONObject jsonObject) {
-		if (!jsonObject.has(ScriptConfigurationKeys.LANG.getJsonKey())) {
-			return;
-		}
-
-		scriptBuilder.language(
-			jsonObject.getString(ScriptConfigurationKeys.LANG.getJsonKey()));
 	}
 
 	private void _setOptions(
 		ScriptBuilder scriptBuilder, JSONObject jsonObject) {
 
-		if (!jsonObject.has(ScriptConfigurationKeys.OPTIONS.getJsonKey())) {
-			return;
-		}
-
 		JSONObject optionsJSONObject = jsonObject.getJSONObject(
 			ScriptConfigurationKeys.OPTIONS.getJsonKey());
+
+		if (optionsJSONObject == null) {
+			return;
+		}
 
 		optionsJSONObject.keySet(
 		).stream(
@@ -134,12 +132,12 @@ public class ScriptHelper {
 	private void _setParams(
 		ScriptBuilder scriptBuilder, JSONObject jsonObject) {
 
-		if (!jsonObject.has(ScriptConfigurationKeys.PARAMS.getJsonKey())) {
-			return;
-		}
-
 		JSONObject paramsJSONObject = jsonObject.getJSONObject(
 			ScriptConfigurationKeys.PARAMS.getJsonKey());
+
+		if (paramsJSONObject == null) {
+			return;
+		}
 
 		paramsJSONObject.keySet(
 		).stream(
@@ -150,5 +148,8 @@ public class ScriptHelper {
 
 	@Reference
 	private Scripts _scripts;
+
+	@Reference
+	private SetterHelper _setterHelper;
 
 }

@@ -25,7 +25,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.u
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -46,13 +45,6 @@ public class DateRangeAggregationTranslator implements AggregationTranslator {
 	public Optional<AggregationWrapper> translate(
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
-
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				DateRangeAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
-
-			return Optional.empty();
-		}
 
 		DateRangeAggregation aggregation = _aggregations.dateRange(
 			aggregationName,
@@ -88,12 +80,16 @@ public class DateRangeAggregationTranslator implements AggregationTranslator {
 		JSONArray rangesJSONArray = jsonObject.getJSONArray(
 			DateRangeAggregationBodyConfigurationKeys.RANGES.getJsonKey());
 
-		if ((rangesJSONArray == null) || (rangesJSONArray.length() == 0)) {
+		if (rangesJSONArray == null) {
 			return;
 		}
 
 		for (int i = 0; i < rangesJSONArray.length(); i++) {
 			JSONObject rangeJSONObject = rangesJSONArray.getJSONObject(i);
+
+			if (rangeJSONObject == null) {
+				continue;
+			}
 
 			aggregation.addRange(
 				new Range(

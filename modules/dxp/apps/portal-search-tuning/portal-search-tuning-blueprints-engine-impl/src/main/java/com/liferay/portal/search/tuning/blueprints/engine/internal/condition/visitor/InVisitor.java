@@ -18,174 +18,90 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEvaluationVisitor;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.FloatParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintValueUtil;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.visitor.EvaluationVisitor;
+
+import java.util.stream.IntStream;
 
 /**
  * @author Petteri Karttunen
  */
 public class InVisitor
-	extends BaseEvaluationVisitor implements ConditionEvaluationVisitor {
+	extends BaseEvaluationVisitor implements EvaluationVisitor {
 
-	public InVisitor(JSONObject conditionJSONObject, boolean not) {
-		super(conditionJSONObject, not);
-	}
-
-	@Override
-	public boolean visit(BooleanParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean visit(DateParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+	public InVisitor(JSONObject conditionJSONObject) {
+		super(conditionJSONObject);
 	}
 
 	@Override
 	public boolean visit(DoubleParameter parameter)
 		throws ParameterEvaluationException {
 
-		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			conditionJSONObject);
+		JSONArray jsonArray = getConditionValueJSONArray(conditionJSONObject);
 
-		boolean match = false;
-
-		for (int i = 0; i < jsonArray.length(); i++) {
-			Double value = jsonArray.getDouble(i);
-
-			if (parameter.equalsTo(value)) {
-				match = true;
-
-				break;
-			}
-		}
-
-		return returnValue(match);
+		return IntStream.range(
+			0, jsonArray.length()
+		).anyMatch(
+			i -> parameter.equalsTo(jsonArray.getDouble(i))
+		);
 	}
 
 	@Override
 	public boolean visit(FloatParameter parameter)
 		throws ParameterEvaluationException {
 
-		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			conditionJSONObject);
+		JSONArray jsonArray = getConditionValueJSONArray(conditionJSONObject);
 
-		boolean match = false;
-
-		for (int i = 0; i < jsonArray.length(); i++) {
-			Float value = GetterUtil.getFloat(jsonArray.get(i));
-
-			if (parameter.equalsTo(value)) {
-				match = true;
-
-				break;
-			}
-		}
-
-		return returnValue(match);
-	}
-
-	@Override
-	public boolean visit(IntegerArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		return IntStream.range(
+			0, jsonArray.length()
+		).anyMatch(
+			i -> parameter.equalsTo(GetterUtil.getFloat(jsonArray.get(i)))
+		);
 	}
 
 	@Override
 	public boolean visit(IntegerParameter parameter)
 		throws ParameterEvaluationException {
 
-		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			conditionJSONObject);
+		JSONArray jsonArray = getConditionValueJSONArray(conditionJSONObject);
 
-		boolean match = false;
-
-		for (int i = 0; i < jsonArray.length(); i++) {
-			Integer value = jsonArray.getInt(i);
-
-			if (parameter.equalsTo(value)) {
-				match = true;
-
-				break;
-			}
-		}
-
-		return returnValue(match);
-	}
-
-	@Override
-	public boolean visit(LongArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		return IntStream.range(
+			0, jsonArray.length()
+		).anyMatch(
+			i -> parameter.equalsTo(jsonArray.getInt(i))
+		);
 	}
 
 	@Override
 	public boolean visit(LongParameter parameter)
 		throws ParameterEvaluationException {
 
-		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			conditionJSONObject);
+		JSONArray jsonArray = getConditionValueJSONArray(conditionJSONObject);
 
-		boolean match = false;
-
-		for (int i = 0; i < jsonArray.length(); i++) {
-			Long value = jsonArray.getLong(i);
-
-			if (parameter.equalsTo(value)) {
-				match = true;
-
-				break;
-			}
-		}
-
-		return returnValue(match);
-	}
-
-	@Override
-	public boolean visit(StringArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		return IntStream.range(
+			0, jsonArray.length()
+		).anyMatch(
+			i -> parameter.equalsTo(jsonArray.getLong(i))
+		);
 	}
 
 	@Override
 	public boolean visit(StringParameter parameter)
 		throws ParameterEvaluationException {
 
-		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			conditionJSONObject);
+		JSONArray jsonArray = getConditionValueJSONArray(conditionJSONObject);
 
 		String parameterValue = parameter.getValue();
 
-		boolean match = false;
-
-		for (int i = 0; i < jsonArray.length(); i++) {
-			String value = jsonArray.getString(i);
-
-			if (parameterValue.equals(value)) {
-				match = true;
-
-				break;
-			}
-		}
-
-		return returnValue(match);
+		return IntStream.range(
+			0, jsonArray.length()
+		).anyMatch(
+			i -> parameterValue.equals(jsonArray.getString(i))
+		);
 	}
 
 }

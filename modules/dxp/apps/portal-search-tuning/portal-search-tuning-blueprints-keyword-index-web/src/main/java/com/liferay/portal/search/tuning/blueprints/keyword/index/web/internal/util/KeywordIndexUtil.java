@@ -30,6 +30,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -46,16 +47,8 @@ public class KeywordIndexUtil {
 
 	public static final String INDEX_DATE_FORMAT = "yyyyMMddHHmmss";
 
-	@SuppressWarnings("serial")
-	public static final List<String> analyzedLanguages =
-		new ArrayList<String>() {
-			{
-				add("ar");
-				add("ja");
-				add("ko");
-				add("zh");
-			}
-		};
+	public static final List<String> analyzedLanguages = new ArrayList<>(
+		Arrays.asList("ar", "ja", "ko", "zh"));
 
 	public static String createReportEntry(
 		ModerationReason moderationReason, String reporter) {

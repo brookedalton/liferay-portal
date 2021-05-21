@@ -68,7 +68,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Show only the latest HEAD version of Web Content articles',
 		},

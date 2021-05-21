@@ -30,13 +30,11 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReference;
 import com.liferay.portal.search.tuning.blueprints.util.component.ServiceComponentReferenceUtil;
+import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -83,18 +81,28 @@ public class SearchExecutorImpl implements SearchExecutor {
 		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
 		Blueprint blueprint, Messages messages) {
 
-		SearchResponse searchResponse = _searcher.search(
-			searchRequestBuilder.build());
+		try {
+			SearchResponse searchResponse = _searcher.search(
+				searchRequestBuilder.build());
 
-		if (_log.isDebugEnabled() && (searchResponse != null)) {
-			_log.debug("Request string: " + searchResponse.getRequestString());
-			_log.debug("Hits: " + searchResponse.getCount());
+			if (_log.isDebugEnabled() && (searchResponse != null)) {
+				_log.debug(
+					"Request string: " + searchResponse.getRequestString());
+				_log.debug("Hits: " + searchResponse.getCount());
+			}
+
+			_executeQueryPostProcessors(
+				searchResponse, parameterData, blueprint, messages);
+
+			return searchResponse;
+		}
+		catch (RuntimeException runtimeException) {
+			MessagesUtil.error(
+				messages, getClass().getName(), runtimeException, null, null,
+				null, "core.error.unknown-error");
 		}
 
-		_executeQueryPostProcessors(
-			searchResponse, parameterData, blueprint, messages);
-
-		return searchResponse;
+		return null;
 	}
 
 	private void _executeQueryPostProcessors(
@@ -109,15 +117,6 @@ public class SearchExecutorImpl implements SearchExecutor {
 			return;
 		}
 
-		List<String> excludedQueryPostProcessors =
-			_getExcludedQueryPostProcessors(blueprint);
-
-		Stream<String> stream1 = excludedQueryPostProcessors.stream();
-
-		if (stream1.anyMatch(s -> s.equals("*"))) {
-			return;
-		}
-
 		for (Map.Entry<String, ServiceComponentReference<QueryPostProcessor>>
 				entry : _queryPostProcessors.entrySet()) {
 
@@ -126,32 +125,9 @@ public class SearchExecutorImpl implements SearchExecutor {
 
 			QueryPostProcessor queryPostProcessor = value.getServiceComponent();
 
-			Stream<String> stream2 = excludedQueryPostProcessors.stream();
-
-			if (stream2.anyMatch(s -> s.equals(entry.getKey()))) {
-				if (_log.isDebugEnabled()) {
-					Class<?> clazz = queryPostProcessor.getClass();
-
-					_log.debug(clazz.getName() + " is excluded.");
-				}
-
-				continue;
-			}
-
 			queryPostProcessor.process(
 				searchResponse, blueprint, parameterData, messages);
 		}
-	}
-
-	private List<String> _getExcludedQueryPostProcessors(Blueprint blueprint) {
-		Optional<List<String>> excludedQueryPostProcessorsOptional =
-			_blueprintHelper.getExcludedQueryPostProcessorsOptional(blueprint);
-
-		if (excludedQueryPostProcessorsOptional.isPresent()) {
-			return excludedQueryPostProcessorsOptional.get();
-		}
-
-		return new ArrayList<>();
 	}
 
 	private SearchRequestBuilder _rescoreOrSort(

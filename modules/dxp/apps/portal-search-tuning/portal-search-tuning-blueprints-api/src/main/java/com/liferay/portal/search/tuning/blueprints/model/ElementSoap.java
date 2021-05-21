@@ -46,6 +46,8 @@ public class ElementSoap implements Serializable {
 		soapModel.setTitle(model.getTitle());
 		soapModel.setDescription(model.getDescription());
 		soapModel.setConfiguration(model.getConfiguration());
+		soapModel.setHidden(model.getHidden());
+		soapModel.setReadOnly(model.getReadOnly());
 		soapModel.setType(model.getType());
 
 		return soapModel;
@@ -204,6 +206,22 @@ public class ElementSoap implements Serializable {
 		_configuration = configuration;
 	}
 
+	public Boolean getHidden() {
+		return _hidden;
+	}
+
+	public void setHidden(Boolean hidden) {
+		_hidden = hidden;
+	}
+
+	public Boolean getReadOnly() {
+		return _readOnly;
+	}
+
+	public void setReadOnly(Boolean readOnly) {
+		_readOnly = readOnly;
+	}
+
 	public int getType() {
 		return _type;
 	}
@@ -225,6 +243,8 @@ public class ElementSoap implements Serializable {
 	private String _title;
 	private String _description;
 	private String _configuration;
+	private Boolean _hidden;
+	private Boolean _readOnly;
 	private int _type;
 
 }

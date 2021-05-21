@@ -39,7 +39,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US:
 				'Boost contents with longer content translation for the current language',

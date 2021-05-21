@@ -24,7 +24,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.u
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -47,14 +46,12 @@ public class MovingFunctionAggregationTranslator
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!_validate(jsonObject, messages)) {
-			return Optional.empty();
-		}
-
 		Optional<Script> scriptOptional = _aggregationHelper.getScript(
-			jsonObject, messages);
+			jsonObject.get(
+				MovingFunctionAggregationBodyConfigurationKeys.SCRIPT.
+					getJsonKey()));
 
-		if (scriptOptional.isPresent()) {
+		if (!scriptOptional.isPresent()) {
 			return Optional.empty();
 		}
 
@@ -73,15 +70,6 @@ public class MovingFunctionAggregationTranslator
 			jsonObject, aggregation::setGapPolicy, messages);
 
 		return _aggregationHelper.wrap(aggregation);
-	}
-
-	private boolean _validate(JSONObject jsonObject, Messages messages) {
-		return BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-			jsonObject, messages,
-			MovingFunctionAggregationBodyConfigurationKeys.BUCKETS_PATH.
-				getJsonKey(),
-			MovingFunctionAggregationBodyConfigurationKeys.SCRIPT.getJsonKey(),
-			MovingFunctionAggregationBodyConfigurationKeys.WINDOW.getJsonKey());
 	}
 
 	@Reference

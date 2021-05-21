@@ -17,19 +17,15 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.condition.vi
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEvaluationVisitor;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.FloatParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerArrayParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.visitor.EvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 
 import java.util.Arrays;
@@ -39,38 +35,10 @@ import java.util.stream.Stream;
  * @author Petteri Karttunen
  */
 public class ContainsVisitor
-	extends BaseEvaluationVisitor implements ConditionEvaluationVisitor {
+	extends BaseEvaluationVisitor implements EvaluationVisitor {
 
-	public ContainsVisitor(JSONObject conditionJSONObject, boolean not) {
-		super(conditionJSONObject, not);
-	}
-
-	@Override
-	public boolean visit(BooleanParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean visit(DateParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean visit(DoubleParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean visit(FloatParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+	public ContainsVisitor(JSONObject conditionJSONObject) {
+		super(conditionJSONObject);
 	}
 
 	@Override
@@ -111,7 +79,7 @@ public class ContainsVisitor
 					x -> x.longValue() == value.longValue());
 			}
 
-			return returnValue(match);
+			return match;
 		}
 		catch (NumberFormatException numberFormatException) {
 			throw new ParameterEvaluationException(
@@ -120,15 +88,8 @@ public class ContainsVisitor
 					conditionJSONObject,
 					ConditionConfigurationKeys.VALUE.getJsonKey(),
 					object.toString(),
-					"core.error.illegal-clause-condition-match-value"));
+					"core.error.illegal-match-value-format"));
 		}
-	}
-
-	@Override
-	public boolean visit(IntegerParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -171,7 +132,7 @@ public class ContainsVisitor
 					x -> x.longValue() == value.longValue());
 			}
 
-			return returnValue(match);
+			return match;
 		}
 		catch (NumberFormatException numberFormatException) {
 			throw new ParameterEvaluationException(
@@ -180,15 +141,8 @@ public class ContainsVisitor
 					conditionJSONObject,
 					ConditionConfigurationKeys.VALUE.getJsonKey(),
 					object.toString(),
-					"core.error.illegal-clause-condition-match-value"));
+					"core.error.illegal-match-value-format"));
 		}
-	}
-
-	@Override
-	public boolean visit(LongParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -225,14 +179,31 @@ public class ContainsVisitor
 			match = stream.anyMatch(value::equals);
 		}
 
-		return returnValue(match);
+		return match;
 	}
 
 	@Override
 	public boolean visit(StringParameter parameter)
 		throws ParameterEvaluationException {
 
-		throw new UnsupportedOperationException();
+		String value = conditionJSONObject.getString(
+			ConditionConfigurationKeys.VALUE.getJsonKey());
+
+		if (Validator.isBlank(value)) {
+			throw new ParameterEvaluationException(
+				MessagesUtil.toErrorMessage(
+					getClass().getName(),
+					new Throwable("Value must be a string"),
+					conditionJSONObject,
+					ConditionConfigurationKeys.VALUE.getJsonKey(), null,
+					"core.error.illegal-match-value-type"));
+		}
+
+		value = StringUtil.toLowerCase(value);
+
+		String parameterValue = StringUtil.toLowerCase(parameter.getValue());
+
+		return parameterValue.contains(value);
 	}
 
 }

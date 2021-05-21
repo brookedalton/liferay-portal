@@ -149,6 +149,10 @@ public class ElementPersistenceTest {
 
 		newElement.setConfiguration(RandomTestUtil.randomString());
 
+		newElement.setHidden(RandomTestUtil.randomBoolean());
+
+		newElement.setReadOnly(RandomTestUtil.randomBoolean());
+
 		newElement.setType(RandomTestUtil.nextInt());
 
 		_elements.add(_persistence.update(newElement));
@@ -182,6 +186,10 @@ public class ElementPersistenceTest {
 			existingElement.getDescription(), newElement.getDescription());
 		Assert.assertEquals(
 			existingElement.getConfiguration(), newElement.getConfiguration());
+		Assert.assertEquals(
+			existingElement.getHidden(), newElement.getHidden());
+		Assert.assertEquals(
+			existingElement.getReadOnly(), newElement.getReadOnly());
 		Assert.assertEquals(existingElement.getType(), newElement.getType());
 	}
 
@@ -293,7 +301,8 @@ public class ElementPersistenceTest {
 			"Element", "mvccVersion", true, "uuid", true, "elementId", true,
 			"groupId", true, "companyId", true, "userId", true, "userName",
 			true, "createDate", true, "modifiedDate", true, "status", true,
-			"title", true, "description", true, "type", true);
+			"title", true, "description", true, "hidden", true, "readOnly",
+			true, "type", true);
 	}
 
 	@Test
@@ -588,6 +597,10 @@ public class ElementPersistenceTest {
 		element.setDescription(RandomTestUtil.randomString());
 
 		element.setConfiguration(RandomTestUtil.randomString());
+
+		element.setHidden(RandomTestUtil.randomBoolean());
+
+		element.setReadOnly(RandomTestUtil.randomBoolean());
 
 		element.setType(RandomTestUtil.nextInt());
 

@@ -139,6 +139,12 @@ public class ElementLocalServiceUtil {
 		return getService().deletePersistedModel(persistedModel);
 	}
 
+	public static Element deleteSystemElement(Element element)
+		throws PortalException {
+
+		return getService().deleteSystemElement(element);
+	}
+
 	public static <T> T dslQuery(DSLQuery dslQuery) {
 		return getService().dslQuery(dslQuery);
 	}
@@ -415,11 +421,12 @@ public class ElementLocalServiceUtil {
 	public static Element updateElement(
 			long userId, long elementId, Map<java.util.Locale, String> titleMap,
 			Map<java.util.Locale, String> descriptionMap, String configuration,
+			boolean hidden,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
 		return getService().updateElement(
-			userId, elementId, titleMap, descriptionMap, configuration,
+			userId, elementId, titleMap, descriptionMap, configuration, hidden,
 			serviceContext);
 	}
 

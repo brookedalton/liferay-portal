@@ -38,7 +38,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Boost contents edited more often',
 		},

@@ -125,7 +125,7 @@ function EditBlueprintForm({
 				: {},
 			aggregation_configuration: aggregationConfig
 				? JSON.parse(aggregationConfig)
-				: [],
+				: {},
 			facet_configuration: facetConfig ? JSON.parse(facetConfig) : [],
 			framework_configuration: frameworkConfig,
 			highlight_configuration: highlightConfig

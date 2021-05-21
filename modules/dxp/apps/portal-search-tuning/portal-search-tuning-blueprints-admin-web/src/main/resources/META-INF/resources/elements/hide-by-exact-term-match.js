@@ -40,7 +40,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Hide results by an exact term match',
 		},

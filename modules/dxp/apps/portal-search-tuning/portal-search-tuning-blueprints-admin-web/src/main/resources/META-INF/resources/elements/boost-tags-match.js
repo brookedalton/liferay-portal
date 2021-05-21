@@ -35,7 +35,7 @@ export default {
 				},
 			},
 		],
-		conditions: [],
+		conditions: {},
 		description: {
 			en_US: 'Boost contents having an exact keyword match to a tag',
 		},

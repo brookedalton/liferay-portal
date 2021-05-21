@@ -17,13 +17,11 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.GlobalAggregation;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.bucket.GlobalAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -44,13 +42,6 @@ public class GlobalAggregationTranslator implements AggregationTranslator {
 	public Optional<AggregationWrapper> translate(
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
-
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				GlobalAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
-
-			return Optional.empty();
-		}
 
 		GlobalAggregation aggregation = _aggregations.global(aggregationName);
 

@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.PercentileRanksAggregation;
 import com.liferay.portal.search.aggregation.metrics.PercentilesMethod;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.MaxAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.metric.PercentileRanksAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.util.AggregationHelper;
@@ -26,7 +25,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDat
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONUtil;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.Optional;
@@ -49,22 +47,12 @@ public class PercentileRanksAggregationTranslator
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		double[] values = _getValues(jsonObject);
-
-		if ((values == null) ||
-			!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				MaxAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
-
-			return Optional.empty();
-		}
-
 		PercentileRanksAggregation aggregation = _aggregations.percentileRanks(
 			aggregationName,
 			jsonObject.getString(
 				PercentileRanksAggregationBodyConfigurationKeys.FIELD.
 					getJsonKey()),
-			values);
+			_getValues(jsonObject));
 
 		_setterHelper.setBooleanValue(
 			jsonObject,
@@ -86,64 +74,31 @@ public class PercentileRanksAggregationTranslator
 	}
 
 	private double[] _getValues(JSONObject jsonObject) {
-		if (!jsonObject.has(
-				PercentileRanksAggregationBodyConfigurationKeys.VALUES.
-					getJsonKey())) {
-
-			return null;
-		}
-
 		return BlueprintJSONUtil.toDoubleArray(
 			jsonObject.getJSONArray(
 				PercentileRanksAggregationBodyConfigurationKeys.VALUES.
 					getJsonKey()));
 	}
 
-	private void _setHDR(
-		PercentileRanksAggregation aggregation, JSONObject jsonObject) {
-
-		JSONObject hdrJSONObject = jsonObject.getJSONObject(
-			PercentileRanksAggregationBodyConfigurationKeys.HDR.getJsonKey());
-
-		if (!hdrJSONObject.has("number_of_significant_value_digits")) {
-			return;
-		}
-
-		aggregation.setPercentilesMethod(PercentilesMethod.HDR);
-		aggregation.setHdrSignificantValueDigits(
-			hdrJSONObject.getInt("number_of_significant_value_digits"));
-	}
-
 	private void _setMethod(
 		PercentileRanksAggregation aggregation, JSONObject jsonObject) {
 
-		if (jsonObject.has(
-				PercentileRanksAggregationBodyConfigurationKeys.HDR.
-					getJsonKey())) {
+		Integer digits = _aggregationHelper.getHdrSignificantValueDigits(
+			jsonObject);
 
-			_setHDR(aggregation, jsonObject);
+		if (digits != null) {
+			aggregation.setPercentilesMethod(PercentilesMethod.HDR);
+			aggregation.setHdrSignificantValueDigits(digits);
 		}
-		else if (jsonObject.has(
-					PercentileRanksAggregationBodyConfigurationKeys.TDIGEST.
-						getJsonKey())) {
+		else {
+			Integer compression = _aggregationHelper.getTDigestCompression(
+				jsonObject);
 
-			_setTDigest(aggregation, jsonObject);
+			if (compression != null) {
+				aggregation.setPercentilesMethod(PercentilesMethod.TDIGEST);
+				aggregation.setCompression(compression);
+			}
 		}
-	}
-
-	private void _setTDigest(
-		PercentileRanksAggregation aggregation, JSONObject jsonObject) {
-
-		JSONObject tDigestJSONObject = jsonObject.getJSONObject(
-			PercentileRanksAggregationBodyConfigurationKeys.TDIGEST.
-				getJsonKey());
-
-		if (!tDigestJSONObject.has("compression")) {
-			return;
-		}
-
-		aggregation.setPercentilesMethod(PercentilesMethod.TDIGEST);
-		aggregation.setCompression(tDigestJSONObject.getInt("compression"));
 	}
 
 	@Reference

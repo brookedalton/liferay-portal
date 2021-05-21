@@ -34,6 +34,7 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.handler.BlueprintExceptionRequestHandler;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminRequestUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
+import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
@@ -80,8 +81,8 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
 		try {
-			ServiceContext serviceContext = ServiceContextFactory.getInstance(
-				Blueprint.class.getName(), actionRequest);
+			ServiceContext serviceContext = _createServiceContext(
+				actionRequest);
 
 			JSONObject jsonObject = JSONUtil.put("title", titleMap);
 
@@ -106,6 +107,18 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			JSONPortletResponseUtil.writeJSON(
 				actionRequest, actionResponse, jsonObject);
 		}
+		catch (BlueprintValidationException blueprintValidationException) {
+			_log.error(
+				blueprintValidationException.getMessage(),
+				blueprintValidationException);
+
+			SessionErrors.add(
+				actionRequest, BlueprintsAdminWebKeys.ERROR,
+				blueprintValidationException.getMessage());
+
+			_blueprintExceptionRequestHandler.handlePortalException(
+				actionRequest, actionResponse, blueprintValidationException);
+		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
 
@@ -116,6 +129,17 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			_blueprintExceptionRequestHandler.handlePortalException(
 				actionRequest, actionResponse, portalException);
 		}
+	}
+
+	private ServiceContext _createServiceContext(ActionRequest actionRequest)
+		throws PortalException {
+
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			Blueprint.class.getName(), actionRequest);
+
+		serviceContext.setAttribute("skip.blueprint.validation", Boolean.TRUE);
+
+		return serviceContext;
 	}
 
 	private String _getRedirectURL(

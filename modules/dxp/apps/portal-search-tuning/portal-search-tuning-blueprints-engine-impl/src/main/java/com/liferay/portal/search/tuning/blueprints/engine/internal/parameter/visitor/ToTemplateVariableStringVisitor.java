@@ -28,7 +28,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayPar
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.ToStringVisitor;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.visitor.ToStringVisitor;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

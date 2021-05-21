@@ -35,19 +35,16 @@ export default {
 				},
 			},
 		],
-		conditions: [
-			{
-				configuration: {
-					date_format: 'yyyyMMdd',
-					evaluation_type: 'in_range',
-					parameter_name: '${time.current_date}',
-					value: [
-						'${configuration.start_date}',
-						'${configuration.end_date}',
-					],
-				},
+		conditions: {
+			in_range: {
+				date_format: 'yyyyMMdd',
+				parameter_name: '${time.current_date}',
+				value: [
+					'${configuration.start_date}',
+					'${configuration.end_date}',
+				],
 			},
-		],
+		},
 		description: {
 			en_US: 'Boost contents in a category for the given period of time',
 		},

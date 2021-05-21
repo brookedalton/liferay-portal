@@ -263,7 +263,7 @@ public class BlueprintTemplateVariableParserImpl
 				}
 			}
 
-			if (!_validateParsing(str, messages)) {
+			if (!_validateResults(str, messages)) {
 				return null;
 			}
 
@@ -357,7 +357,7 @@ public class BlueprintTemplateVariableParserImpl
 		return StringUtil.replace(str, sb.toString(), substitution);
 	}
 
-	private boolean _validateParsing(String str, Messages messages) {
+	private boolean _validateResults(String str, Messages messages) {
 		if (str.contains("${")) {
 			MessagesUtil.warning(
 				messages, getClass().getName(),

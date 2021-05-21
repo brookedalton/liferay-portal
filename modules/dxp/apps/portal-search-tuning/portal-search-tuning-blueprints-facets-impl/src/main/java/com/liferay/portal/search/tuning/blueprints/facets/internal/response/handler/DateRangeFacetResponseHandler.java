@@ -21,7 +21,6 @@ import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.RangeAggregationResult;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
@@ -46,7 +45,7 @@ public class DateRangeFacetResponseHandler
 
 	@Override
 	public Optional<JSONObject> getResultOptional(
-		AggregationResult aggregationResult,
+		AggregationResult aggregationResult, String type,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
 		JSONObject jsonObject) {
@@ -60,9 +59,6 @@ public class DateRangeFacetResponseHandler
 			return Optional.empty();
 		}
 
-		long frequencyThreshold = jsonObject.getLong(
-			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
-
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		List<String> excludeValues = FacetConfigurationUtil.getExcludeValues(
@@ -72,8 +68,7 @@ public class DateRangeFacetResponseHandler
 			jsonObject);
 
 		for (Bucket bucket : buckets) {
-			if ((bucket.getDocCount() < frequencyThreshold) ||
-				!FacetConfigurationUtil.includeValue(
+			if (!FacetConfigurationUtil.includeValue(
 					bucket.getKey(), includeValues, excludeValues)) {
 
 				continue;
@@ -82,7 +77,8 @@ public class DateRangeFacetResponseHandler
 			try {
 				jsonArray.put(
 					createBucketJSONObject(
-						bucket, blueprintsAttributes, resourceBundle));
+						bucket, blueprintsAttributes, resourceBundle,
+						messages));
 			}
 			catch (Exception exception) {
 				MessagesUtil.error(
@@ -91,7 +87,7 @@ public class DateRangeFacetResponseHandler
 			}
 		}
 
-		return createResultObject(jsonArray, jsonObject, resourceBundle);
+		return createResultObject(jsonArray, type, jsonObject, resourceBundle);
 	}
 
 }

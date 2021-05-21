@@ -18,18 +18,12 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.condition.util.ConditionUtil;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.FloatParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.visitor.EvaluationVisitor;
 
 import java.util.Date;
 
@@ -37,36 +31,23 @@ import java.util.Date;
  * @author Petteri Karttunen
  */
 public class GreaterThanVisitor
-	extends BaseEvaluationVisitor implements ConditionEvaluationVisitor {
+	extends BaseEvaluationVisitor implements EvaluationVisitor {
 
 	public GreaterThanVisitor(
-		JSONObject conditionJSONObject, boolean not, boolean equal) {
+		JSONObject conditionJSONObject, boolean closedRange) {
 
-		super(conditionJSONObject, not);
+		super(conditionJSONObject);
 
-		_equal = equal;
-	}
-
-	@Override
-	public boolean visit(BooleanParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		_closedRange = closedRange;
 	}
 
 	@Override
 	public boolean visit(DateParameter parameter)
 		throws ParameterEvaluationException {
 
-		Date date = ConditionUtil.getDateValue(conditionJSONObject);
-
 		Date parameterValue = parameter.getValue();
 
-		if (not) {
-			return parameterValue.after(date);
-		}
-
-		return parameterValue.before(date);
+		return parameterValue.before(getDateValue(conditionJSONObject));
 	}
 
 	@Override
@@ -80,7 +61,7 @@ public class GreaterThanVisitor
 
 		boolean greaterThan = false;
 
-		if (_equal) {
+		if (_closedRange) {
 			if (parameterValue.compareTo(value) >= 0) {
 				greaterThan = true;
 			}
@@ -89,7 +70,7 @@ public class GreaterThanVisitor
 			greaterThan = true;
 		}
 
-		return returnValue(greaterThan);
+		return greaterThan;
 	}
 
 	@Override
@@ -104,7 +85,7 @@ public class GreaterThanVisitor
 
 		boolean greaterThan = false;
 
-		if (_equal) {
+		if (_closedRange) {
 			if (parameterValue.compareTo(value) >= 0) {
 				greaterThan = true;
 			}
@@ -113,14 +94,7 @@ public class GreaterThanVisitor
 			greaterThan = true;
 		}
 
-		return returnValue(greaterThan);
-	}
-
-	@Override
-	public boolean visit(IntegerArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		return greaterThan;
 	}
 
 	@Override
@@ -134,7 +108,7 @@ public class GreaterThanVisitor
 
 		boolean greaterThan = false;
 
-		if (_equal) {
+		if (_closedRange) {
 			if (parameterValue.compareTo(value) >= 0) {
 				greaterThan = true;
 			}
@@ -143,14 +117,7 @@ public class GreaterThanVisitor
 			greaterThan = true;
 		}
 
-		return returnValue(greaterThan);
-	}
-
-	@Override
-	public boolean visit(LongArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
+		return greaterThan;
 	}
 
 	@Override
@@ -164,7 +131,7 @@ public class GreaterThanVisitor
 
 		boolean greaterThan = false;
 
-		if (_equal) {
+		if (_closedRange) {
 			if (parameterValue.compareTo(value) >= 0) {
 				greaterThan = true;
 			}
@@ -173,23 +140,9 @@ public class GreaterThanVisitor
 			greaterThan = true;
 		}
 
-		return returnValue(greaterThan);
+		return greaterThan;
 	}
 
-	@Override
-	public boolean visit(StringArrayParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean visit(StringParameter parameter)
-		throws ParameterEvaluationException {
-
-		throw new UnsupportedOperationException();
-	}
-
-	private final boolean _equal;
+	private final boolean _closedRange;
 
 }

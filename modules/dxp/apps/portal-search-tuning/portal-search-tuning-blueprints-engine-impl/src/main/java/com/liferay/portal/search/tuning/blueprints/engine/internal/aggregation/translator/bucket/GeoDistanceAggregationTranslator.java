@@ -17,10 +17,11 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.GeoDistanceAggregation;
-import com.liferay.portal.search.geolocation.DistanceUnit;
 import com.liferay.portal.search.geolocation.GeoBuilders;
+import com.liferay.portal.search.geolocation.GeoDistanceType;
 import com.liferay.portal.search.geolocation.GeoLocationPoint;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.bucket.GeoDistanceAggregationBodyConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.aggregation.AggregationWrapper;
@@ -28,8 +29,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.u
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.util.BlueprintJSONValidationUtil;
-import com.liferay.portal.search.tuning.blueprints.util.util.MessagesUtil;
 import com.liferay.portal.search.tuning.blueprints.util.util.SetterHelper;
 
 import java.util.List;
@@ -52,14 +51,6 @@ public class GeoDistanceAggregationTranslator implements AggregationTranslator {
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		if (!BlueprintJSONValidationUtil.validateRequiredFieldsPresent(getClass().getName(),
-				jsonObject, messages,
-				GeoDistanceAggregationBodyConfigurationKeys.FIELD.
-					getJsonKey())) {
-
-			return Optional.empty();
-		}
-
 		GeoLocationPoint geoLocationPoint = _getGeoLocationPoint(jsonObject);
 
 		if (geoLocationPoint == null) {
@@ -72,19 +63,14 @@ public class GeoDistanceAggregationTranslator implements AggregationTranslator {
 				GeoDistanceAggregationBodyConfigurationKeys.FIELD.getJsonKey()),
 			geoLocationPoint);
 
-		_setDistanceUnit(aggregation, jsonObject, messages);
+		_setDistanceUnit(aggregation, jsonObject);
 
-		_setDistanceType(aggregation, jsonObject, messages);
+		_setDistanceType(aggregation, jsonObject);
 
 		_setterHelper.setBooleanValue(
 			jsonObject,
 			GeoDistanceAggregationBodyConfigurationKeys.KEYED.getJsonKey(),
 			aggregation::setKeyed);
-
-		_setterHelper.setStringValue(
-			jsonObject,
-			GeoDistanceAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
-			aggregation::setMissing);
 
 		_aggregationHelper.setRanges(jsonObject, aggregation::addRange);
 
@@ -94,10 +80,7 @@ public class GeoDistanceAggregationTranslator implements AggregationTranslator {
 		return _aggregationHelper.wrap(aggregation);
 	}
 
-	private List<String> _getCoordinates(JSONObject jsonObject) {
-		String origin = jsonObject.getString(
-			GeoDistanceAggregationBodyConfigurationKeys.ORIGIN.getJsonKey());
-
+	private List<String> _getCoordinates(String origin) {
 		List<String> coordinates = StringUtil.split(origin, ',');
 
 		if (coordinates.size() != 2) {
@@ -108,14 +91,10 @@ public class GeoDistanceAggregationTranslator implements AggregationTranslator {
 	}
 
 	private GeoLocationPoint _getGeoLocationPoint(JSONObject jsonObject) {
-		if (!jsonObject.has(
-				GeoDistanceAggregationBodyConfigurationKeys.ORIGIN.
-					getJsonKey())) {
+		String origin = jsonObject.getString(
+			GeoDistanceAggregationBodyConfigurationKeys.ORIGIN.getJsonKey());
 
-			return null;
-		}
-
-		List<String> coordinates = _getCoordinates(jsonObject);
+		List<String> coordinates = _getCoordinates(origin);
 
 		if (coordinates == null) {
 			return null;
@@ -127,63 +106,33 @@ public class GeoDistanceAggregationTranslator implements AggregationTranslator {
 	}
 
 	private void _setDistanceType(
-		GeoDistanceAggregation aggregation, JSONObject jsonObject,
-		Messages messages) {
-
-		if (!jsonObject.has(
-				GeoDistanceAggregationBodyConfigurationKeys.DISTANCE_TYPE.
-					getJsonKey())) {
-
-			return;
-		}
+		GeoDistanceAggregation aggregation, JSONObject jsonObject) {
 
 		String distanceType = jsonObject.getString(
 			GeoDistanceAggregationBodyConfigurationKeys.DISTANCE_TYPE.
 				getJsonKey());
 
-		try {
-			aggregation.setDistanceUnit(
-				DistanceUnit.valueOf(
-					com.liferay.portal.kernel.util.StringUtil.toUpperCase(
-						distanceType)));
+		if (Validator.isBlank(distanceType)) {
+			return;
 		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			MessagesUtil.invalidConfigurationValueError(
-				messages, getClass().getName(), illegalArgumentException,
-				jsonObject,
-				GeoDistanceAggregationBodyConfigurationKeys.DISTANCE_TYPE.
-					getJsonKey(),
-				distanceType);
-		}
+
+		aggregation.setGeoDistanceType(
+			GeoDistanceType.valueOf(
+				com.liferay.portal.kernel.util.StringUtil.toUpperCase(
+					distanceType)));
 	}
 
 	private void _setDistanceUnit(
-		GeoDistanceAggregation aggregation, JSONObject jsonObject,
-		Messages messages) {
-
-		if (!jsonObject.has(
-				GeoDistanceAggregationBodyConfigurationKeys.UNIT.
-					getJsonKey())) {
-
-			return;
-		}
+		GeoDistanceAggregation aggregation, JSONObject jsonObject) {
 
 		String unit = jsonObject.getString(
 			GeoDistanceAggregationBodyConfigurationKeys.UNIT.getJsonKey());
 
-		try {
-			aggregation.setDistanceUnit(
-				DistanceUnit.valueOf(
-					com.liferay.portal.kernel.util.StringUtil.toUpperCase(
-						unit)));
+		if (Validator.isBlank(unit)) {
+			return;
 		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			MessagesUtil.invalidConfigurationValueError(
-				messages, getClass().getName(), illegalArgumentException,
-				jsonObject,
-				GeoDistanceAggregationBodyConfigurationKeys.UNIT.getJsonKey(),
-				unit);
-		}
+
+		aggregation.setDistanceUnit(_aggregationHelper.getDistanceUnit(unit));
 	}
 
 	@Reference
