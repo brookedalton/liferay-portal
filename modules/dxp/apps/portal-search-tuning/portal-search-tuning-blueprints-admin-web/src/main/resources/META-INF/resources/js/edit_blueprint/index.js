@@ -16,7 +16,7 @@ import getCN from 'classnames';
 import {useFormik} from 'formik';
 import {fetch, navigate} from 'frontend-js-web';
 import {PropTypes} from 'prop-types';
-import React, {useContext, useMemo, useRef, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 
 import ErrorBoundary from '../shared/ErrorBoundary';
 import PageToolbar from '../shared/PageToolbar';
@@ -601,39 +601,31 @@ function EditBlueprintForm({
 				tab={tab}
 				tabs={TABS}
 			>
-				{useMemo(
-					() => (
-						<ClayToolbar.Item>
-							<ClayButton
-								borderless
-								className={getCN({
-									active: showPreview,
-								})}
-								displayType="secondary"
-								onClick={() => {
-									setShowSidebar(false);
-									setShowPreview(!showPreview);
-								}}
-								small
-							>
-								{Liferay.Language.get('preview')}
+				<ClayToolbar.Item>
+					<ClayButton
+						borderless
+						className={getCN({
+							active: showPreview,
+						})}
+						displayType="secondary"
+						onClick={() => {
+							setShowSidebar(false);
+							setShowPreview(!showPreview);
+						}}
+						small
+					>
+						{Liferay.Language.get('preview')}
 
-								{!!previewInfo.results.errors?.length && (
-									<span className="inline-item inline-item-after">
-										<ClayBadge
-											displayType="danger"
-											label={
-												previewInfo.results.errors
-													.length
-											}
-										/>
-									</span>
-								)}
-							</ClayButton>
-						</ClayToolbar.Item>
-					),
-					[showPreview, previewInfo.results.errors?.length]
-				)}
+						{!!previewInfo.results.errors?.length && (
+							<span className="inline-item inline-item-after">
+								<ClayBadge
+									displayType="danger"
+									label={previewInfo.results.errors.length}
+								/>
+							</span>
+						)}
+					</ClayButton>
+				</ClayToolbar.Item>
 			</PageToolbar>
 
 			<PreviewSidebar

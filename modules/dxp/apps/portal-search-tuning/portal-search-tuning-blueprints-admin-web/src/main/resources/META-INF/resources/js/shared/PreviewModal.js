@@ -21,7 +21,11 @@ const PreviewModal = ({body, children, size = 'md', title}) => {
 	return (
 		<>
 			{visible && (
-				<ClayModal observer={observer} size={size}>
+				<ClayModal
+					className="preview-modal"
+					observer={observer}
+					size={size}
+				>
 					<ClayModal.Header>{title}</ClayModal.Header>
 
 					<ClayModal.Body>{body}</ClayModal.Body>

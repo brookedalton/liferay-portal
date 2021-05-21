@@ -14,6 +14,7 @@ import ClayButton from '@clayui/button';
 import {Align} from '@clayui/drop-down';
 import ClayEmptyState from '@clayui/empty-state';
 import ClayIcon from '@clayui/icon';
+import ClayLink from '@clayui/link';
 import ClayList from '@clayui/list';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClayManagementToolbar from '@clayui/management-toolbar';
@@ -32,6 +33,7 @@ import ErrorListItem from './ErrorListItem';
 import ResultListItem from './ResultListItem';
 
 const DELTAS = [10, 20, 30, 50];
+const RAW_RESPONSE_FILE_NAME = 'raw_response.json';
 
 function PreviewSidebar({
 	loading,
@@ -53,33 +55,17 @@ function PreviewSidebar({
 		_handleFetch();
 	}, [activeDelta, activePage]);
 
-	const _copyResultsToClipboard = () => {
+	const _handleDeltaChange = (delta) => () => {
+		setActiveDelta(delta);
+		setActivePage(1);
+	};
+
+	const _onCopyToClipboard = () => {
 		navigator.clipboard.writeText(JSON.stringify(results, null, 2));
 
 		openSuccessToast({
 			message: Liferay.Language.get('copied-to-clipboard'),
 		});
-	};
-
-	const _downloadResultsToTxtFile = () => {
-		const element = document.createElement('a');
-		element.href = URL.createObjectURL(
-			new Blob([JSON.stringify(results, null, 2)], {
-				type: 'text/plain',
-			})
-		);
-		element.download = 'results.txt';
-		document.body.appendChild(element);
-		element.click();
-
-		openSuccessToast({
-			message: Liferay.Language.get('downloaded-json'),
-		});
-	};
-
-	const _handleDeltaChange = (delta) => () => {
-		setActiveDelta(delta);
-		setActivePage(1);
 	};
 
 	const _renderErrors = () => (
@@ -170,11 +156,11 @@ function PreviewSidebar({
 				<ClayManagementToolbar.Item>
 					<PreviewModal
 						body={
-							<div className="preview-sidebar-modal">
+							<>
 								<ClayButton.Group spaced>
 									<ClayButton
 										displayType="secondary"
-										onClick={_copyResultsToClipboard}
+										onClick={_onCopyToClipboard}
 										small
 									>
 										<span className="inline-item inline-item-before">
@@ -186,27 +172,46 @@ function PreviewSidebar({
 										)}
 									</ClayButton>
 
-									<ClayButton
+									<ClayLink
 										displayType="secondary"
-										onClick={_downloadResultsToTxtFile}
-										small
+										download={RAW_RESPONSE_FILE_NAME}
+										href={URL.createObjectURL(
+											new Blob(
+												[
+													JSON.stringify(
+														results,
+														null,
+														2
+													),
+												],
+												{
+													type: 'application/json',
+												}
+											)
+										)}
+										onClick={() => {
+											openSuccessToast({
+												message: Liferay.Language.get(
+													'downloaded-json'
+												),
+											});
+										}}
+										outline
 									>
 										<span className="inline-item inline-item-before">
 											<ClayIcon symbol="download" />
 										</span>
 
 										{Liferay.Language.get('download-json')}
-									</ClayButton>
+									</ClayLink>
 								</ClayButton.Group>
 
-								<div className="json-modal">
-									<CodeMirrorEditor
-										folded
-										readOnly
-										value={JSON.stringify(results, null, 2)}
-									/>
-								</div>
-							</div>
+								<CodeMirrorEditor
+									folded
+									readOnly
+									value={JSON.stringify(results, null, 2)}
+								/>
+							</>
 						}
 						size="lg"
 						title={Liferay.Language.get('raw-response')}

@@ -318,20 +318,18 @@ function Element({
 						<ClayDropDown.ItemList>
 							<PreviewModal
 								body={
-									<div className="json-modal">
-										<CodeMirrorEditor
-											readOnly
-											value={JSON.stringify(
-												getElementOutput({
-													elementTemplateJSON,
-													uiConfigurationJSON,
-													uiConfigurationValues,
-												}),
-												null,
-												'\t'
-											)}
-										/>
-									</div>
+									<CodeMirrorEditor
+										readOnly
+										value={JSON.stringify(
+											getElementOutput({
+												elementTemplateJSON,
+												uiConfigurationJSON,
+												uiConfigurationValues,
+											}),
+											null,
+											'\t'
+										)}
+									/>
 								}
 								size="lg"
 								title={Liferay.Language.get('element-json')}
