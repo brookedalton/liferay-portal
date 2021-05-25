@@ -169,7 +169,7 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 				1, "AUTO", "or", "most_fields"));
 
 		String selectedElementString = getSelectedElementString(
-			getTextMatchOverMultipleFieldUIConfigValuesJSONObject(
+			getTextMatchOverMultipleFieldJSONObject(
 				2, 1, "AUTO", 1, "or", "most_fields"));
 
 		assertSearch(
@@ -183,7 +183,7 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 				1, "AUTO", "and", "most_fields"));
 
 		selectedElementString = getSelectedElementString(
-			getTextMatchOverMultipleFieldUIConfigValuesJSONObject(
+			getTextMatchOverMultipleFieldJSONObject(
 				2, 1, "AUTO", 1, "and", "most_fields"));
 
 		assertSearch(

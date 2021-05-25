@@ -113,7 +113,7 @@ public class SearchWithLuceneSyntaxTest extends BaseBlueprintsTestCase {
 								))))
 				))
 		).put(
-			"conditions", createJSONArray()
+			"conditions", JSONUtil.put(null, null)
 		).put(
 			"description",
 			JSONUtil.put("en_US", "Enable searching using the Lucene syntax")
@@ -139,51 +139,6 @@ public class SearchWithLuceneSyntaxTest extends BaseBlueprintsTestCase {
 			"query_configuration",
 			createJSONArray().put(
 				JSONUtil.put(
-					"elementOutput",
-					JSONUtil.put(
-						"category", "match"
-					).put(
-						"clauses",
-						createJSONArray().put(
-							JSONUtil.put(
-								"context", "query"
-							).put(
-								"occur", "must"
-							).put(
-								"query",
-								JSONUtil.put(
-									"wrapper",
-									JSONUtil.put(
-										"query",
-										JSONUtil.put(
-											"simple_query_string",
-											JSONUtil.put(
-												"boost", boost
-											).put(
-												"default_operator", operator
-											).put(
-												"fields",
-												_getSimpleQueryStringFieldsJSONArray(
-													contentBoost, titleBoost)
-											).put(
-												"query", "${keywords}"
-											))))
-							))
-					).put(
-						"conditions", createJSONArray()
-					).put(
-						"description",
-						JSONUtil.put(
-							"en_US", "Enable searching using the Lucene syntax")
-					).put(
-						"enabled", true
-					).put(
-						"icon", "picture"
-					).put(
-						"title",
-						JSONUtil.put("en_US", "Search with the Lucene Syntax")
-					)
-				).put(
 					"elementTemplateJSON",
 					elementTemplateJSONObject.get("elementTemplateJSON")
 				).put(
@@ -217,18 +172,6 @@ public class SearchWithLuceneSyntaxTest extends BaseBlueprintsTestCase {
 					)
 				))
 		).toString();
-	}
-
-	private JSONArray _getSimpleQueryStringFieldsJSONArray(
-		int contentBoost, int titleBoost) {
-
-		JSONArray jsonArray = createJSONArray();
-
-		return jsonArray.put(
-			"localized_title${context.language_id}^" + titleBoost
-		).put(
-			"content${context.language_id}^" + contentBoost
-		);
 	}
 
 }

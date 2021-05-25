@@ -157,7 +157,7 @@ public class BoostPhraseMatchTest extends BaseQueryElementsTestCase {
 									100, null, "and", "phrase"))))
 				))
 		).put(
-			"conditions", createJSONArray()
+			"conditions", JSONUtil.put(null, null)
 		).put(
 			"description",
 			JSONUtil.put(
@@ -171,30 +171,5 @@ public class BoostPhraseMatchTest extends BaseQueryElementsTestCase {
 			"title", JSONUtil.put("en_US", "Boost All Keywords Match")
 		);
 	}
-
-	//	@Override
-	//	protected JSONObject getMultiMatchJSONObject(
-	//		int boost, String fuzziness, String operator, String type) {
-	//
-	//		JSONArray fieldsJSONArray = createJSONArray();
-
-	//
-	//		return JSONUtil.put(
-	//			"boost", boost
-	//		).put(
-	//			"fields",
-	//			fieldsJSONArray.put(
-	//				"localized_title${context.language_id}^2"
-	//			).put(
-	//				"content${context.language_id}^1"
-	//			)
-	//		).put(
-	//			"operator", operator
-	//		).put(
-	//			"query", "${keywords}"
-	//		).put(
-	//			"type", type
-	//		);
-	//	}
 
 }

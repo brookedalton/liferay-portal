@@ -64,7 +64,7 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 			_getQueryElementJSONObject(articleId, 100, "contains", "cola"));
 
 		String selectedElementString = _getSelectedElementString(
-			articleId, 100, "contains", "cola");
+			articleId, 100, "cola");
 
 		assertSearch(
 			blueprint, configurationString, "[pepsi cola, coca cola]", "cola",
@@ -74,7 +74,7 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 			_getQueryElementJSONObject(articleId, 100, "not_contains", "cola"));
 
 		selectedElementString = _getSelectedElementString(
-			articleId, 100, "not_contains", "cola");
+			articleId, 100, "cola");
 
 		assertSearch(
 			blueprint, configurationString, "[coca cola, pepsi cola]", "cola",
@@ -132,7 +132,7 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 	}
 
 	private String _getSelectedElementString(
-			String articleId, int boost, String evaluationType, String keywords)
+			String articleId, int boost, String keywords)
 		throws Exception {
 
 		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
@@ -142,57 +142,6 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 			"query_configuration",
 			createJSONArray().put(
 				JSONUtil.put(
-					"elementOutput",
-					JSONUtil.put(
-						"category", "conditional"
-					).put(
-						"clauses",
-						createJSONArray().put(
-							JSONUtil.put(
-								"context", "query"
-							).put(
-								"occur", "should"
-							).put(
-								"query",
-								JSONUtil.put(
-									"wrapper",
-									JSONUtil.put(
-										"query",
-										JSONUtil.put(
-											"terms",
-											JSONUtil.put(
-												"articleId_String_sortable",
-												createJSONArray().put(articleId)
-											).put(
-												"boost", boost
-											))))
-							))
-					).put(
-						"conditions",
-						JSONUtil.put(
-							evaluationType,
-							JSONUtil.put(
-								"evaluation_type", evaluationType
-							).put(
-								"parameter_name", "${keywords}"
-							).put(
-								"value", createJSONArray().put(keywords)
-							))
-					).put(
-						"description",
-						JSONUtil.put(
-							"en_US",
-							"Show selected Web Contents higher in the results")
-					).put(
-						"enabled", true
-					).put(
-						"icon", "thumbs-up"
-					).put(
-						"title",
-						JSONUtil.put(
-							"en_US", "Boost Web Contents by Keyword Match")
-					)
-				).put(
 					"elementTemplateJSON",
 					elementTemplateJSONObject.get("elementTemplateJSON")
 				).put(

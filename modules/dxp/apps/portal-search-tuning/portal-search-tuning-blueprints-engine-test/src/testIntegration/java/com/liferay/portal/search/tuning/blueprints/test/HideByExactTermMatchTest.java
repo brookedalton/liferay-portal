@@ -112,7 +112,7 @@ public class HideByExactTermMatchTest extends BaseBlueprintsTestCase {
 													"value", folderId))))))))
 				))
 		).put(
-			"conditions", createJSONArray()
+			"conditions", JSONUtil.put(null, null)
 		).put(
 			"description",
 			JSONUtil.put("en_US", "Hide results by an exact term match")

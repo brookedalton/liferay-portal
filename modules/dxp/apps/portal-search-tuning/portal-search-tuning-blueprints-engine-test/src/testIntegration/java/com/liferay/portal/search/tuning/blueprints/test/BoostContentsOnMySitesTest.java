@@ -109,7 +109,7 @@ public class BoostContentsOnMySitesTest extends BaseBlueprintsTestCase {
 								))))
 				))
 		).put(
-			"conditions", createJSONArray()
+			"conditions", JSONUtil.put(null, null)
 		).put(
 			"description",
 			JSONUtil.put("en_US", "Boost contents on sites I'm a member of")

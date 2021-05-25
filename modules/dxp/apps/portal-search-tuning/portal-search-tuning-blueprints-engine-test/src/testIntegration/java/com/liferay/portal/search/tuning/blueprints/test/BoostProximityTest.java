@@ -140,7 +140,7 @@ public class BoostProximityTest extends BaseBlueprintsTestCase {
 								))))
 				))
 		).put(
-			"conditions", createJSONArray()
+			"conditions", JSONUtil.put(null, null)
 		).put(
 			"description",
 			JSONUtil.put(

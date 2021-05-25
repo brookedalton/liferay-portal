@@ -47,8 +47,6 @@ import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.AdvancedConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.SourceConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.framework.FrameworkConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.attributes.BlueprintsAttributes;
@@ -241,21 +239,11 @@ public abstract class BaseBlueprintsTestCase {
 	}
 
 	protected JSONObject getAdvancedConfiguration() {
-		return JSONUtil.put(
-			AdvancedConfigurationKeys.SOURCE.getJsonKey(),
-			JSONUtil.put(
-				SourceConfigurationKeys.FETCH_SOURCE.getJsonKey(), true
-			).put(
-				SourceConfigurationKeys.SOURCE_EXCLUDES.getJsonKey(),
-				createJSONArray()
-			).put(
-				SourceConfigurationKeys.SOURCE_INCLUDES.getJsonKey(),
-				createJSONArray()
-			));
+		return JSONUtil.put(null, null);
 	}
 
-	protected JSONArray getAggregationConfiguration() {
-		return createJSONArray();
+	protected JSONObject getAggregationConfiguration() {
+		return JSONUtil.put(null, null);
 	}
 
 	protected BlueprintsAttributes getBlueprintsAttributes(
@@ -303,6 +291,9 @@ public abstract class BaseBlueprintsTestCase {
 			BlueprintKeys.FRAMEWORK_CONFIGURATION.getJsonKey(),
 			getFrameworkConfiguration()
 		).put(
+			BlueprintKeys.HIGHLIGHT_CONFIGURATION.getJsonKey(),
+			getHightlightConfiguration()
+		).put(
 			BlueprintKeys.PARAMETER_CONFIGURATION.getJsonKey(),
 			JSONUtil.put(null, null)
 		).put(
@@ -313,8 +304,8 @@ public abstract class BaseBlueprintsTestCase {
 		);
 	}
 
-	protected JSONArray getConfigurationSection() {
-		return createJSONArray();
+	protected JSONObject getConfigurationSection() {
+		return JSONUtil.put(null, null);
 	}
 
 	protected String getConfigurationString(JSONObject... jsonObjects) {
@@ -354,6 +345,10 @@ public abstract class BaseBlueprintsTestCase {
 			String.valueOf(longitude), "}");
 	}
 
+	protected JSONObject getHightlightConfiguration() {
+		return JSONUtil.put(null, null);
+	}
+
 	protected ConfigurationTemporarySwapper
 			getIPStackConfigurationTemporarySwapper(
 				String apiKey, String isEnabled, String ip)
@@ -376,8 +371,8 @@ public abstract class BaseBlueprintsTestCase {
 		return JSONUtil.put(null, null);
 	}
 
-	protected JSONObject getSortConfiguration() {
-		return JSONUtil.put(null, null);
+	protected JSONArray getSortConfiguration() {
+		return createJSONArray();
 	}
 
 	protected String getTimeZoneID() throws Exception {

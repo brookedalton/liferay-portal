@@ -165,7 +165,7 @@ public class BoostWithESFunctionScoreQueryTest
 								))))
 				))
 		).put(
-			"conditions", createJSONArray()
+			"conditions", JSONUtil.put(null, null)
 		).put(
 			"description",
 			JSONUtil.put(

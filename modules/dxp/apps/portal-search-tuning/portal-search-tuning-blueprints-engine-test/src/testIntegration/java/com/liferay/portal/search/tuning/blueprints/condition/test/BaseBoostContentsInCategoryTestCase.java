@@ -109,44 +109,6 @@ public abstract class BaseBoostContentsInCategoryTestCase
 			"query_configuration",
 			createJSONArray().put(
 				JSONUtil.put(
-					"elementOutput",
-					JSONUtil.put(
-						"category", "conditional"
-					).put(
-						"clauses",
-						createJSONArray().put(
-							JSONUtil.put(
-								"context", "query"
-							).put(
-								"occur", "should"
-							).put(
-								"query",
-								JSONUtil.put(
-									"wrapper",
-									JSONUtil.put(
-										"query",
-										JSONUtil.put(
-											"term",
-											JSONUtil.put(
-												"assetCategoryIds",
-												JSONUtil.put(
-													"boost", boost
-												).put(
-													"value", categoryId
-												)))))
-							))
-					).put(
-						"conditions", getConditions()
-					).put(
-						"description", getDescription()
-					).put(
-						"enabled", isEnabled()
-					).put(
-						"icon", getIcon()
-					).put(
-						"title", getTitle()
-					)
-				).put(
 					"elementTemplateJSON",
 					elementTemplateJSONObject.get("elementTemplateJSON")
 				).put(

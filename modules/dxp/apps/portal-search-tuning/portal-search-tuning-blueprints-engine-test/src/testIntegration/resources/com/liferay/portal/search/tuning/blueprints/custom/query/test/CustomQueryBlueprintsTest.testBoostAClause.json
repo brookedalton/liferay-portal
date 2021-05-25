@@ -1,10 +1,10 @@
 {
 	"advanced_configuration": {
 	},
-	"aggregation_configuration": [
-	],
-	"facet_configuration": [
-	],
+	"aggregation_configuration": {
+	},
+	"facet_configuration": {
+	},
 	"framework_configuration": {
 		"apply_indexer_clauses": true
 	},

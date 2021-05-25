@@ -1,10 +1,10 @@
 {
 	"advanced_configuration": {
 	},
-	"aggregation_configuration": [
-	],
-	"facet_configuration": [
-	],
+	"aggregation_configuration": {
+	},
+	"facet_configuration": {
+	},
 	"framework_configuration": {
 		"apply_indexer_clauses": false
 	},
@@ -44,12 +44,9 @@
 			}
 		}
 	],
-	"sort_configuration": {
-		"default": [
-			{
-				"field": "localized_title_en_US_sortable",
-				"order": "desc"
-			}
-		]
-	}
+	"sort_configuration": [
+		{
+			"localized_title_en_US_sortable": "desc"
+		}
+	]
 }

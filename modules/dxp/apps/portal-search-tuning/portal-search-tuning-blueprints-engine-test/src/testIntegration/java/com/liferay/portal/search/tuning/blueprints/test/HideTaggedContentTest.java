@@ -98,7 +98,7 @@ public class HideTaggedContentTest extends BaseBlueprintsTestCase {
 													"value", "hide"))))))))
 				))
 		).put(
-			"conditions", createJSONArray()
+			"conditions", JSONUtil.put(null, null)
 		).put(
 			"description", JSONUtil.put("en_US", "Hide contents tagged with")
 		).put(

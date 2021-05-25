@@ -113,7 +113,7 @@ public class LimitSearchToTheseSitesTest extends BaseBlueprintsTestCase {
 									"scopeGroupId", scopeGroupIdJSONArray))))
 				))
 		).put(
-			"conditions", createJSONArray()
+			"conditions", JSONUtil.put(null, null)
 		).put(
 			"description", JSONUtil.put("en_US", "Limit Search to These Sites")
 		).put(

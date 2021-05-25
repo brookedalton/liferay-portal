@@ -29,7 +29,7 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 		JSONArray fieldsJSONArray = createJSONArray();
 
 		return JSONUtil.put(
-			FrameworkConfigurationKeys.APPLY_INDEXER_CLAUSES.getJsonKey(), false
+			FrameworkConfigurationKeys.APPLY_INDEXER_CLAUSES.getJsonKey(), true
 		).put(
 			"searchable_asset_types",
 			fieldsJSONArray.put(
@@ -94,7 +94,7 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 									)))))
 				))
 		).put(
-			"conditions", createJSONArray()
+			"conditions", JSONUtil.put(null, null)
 		).put(
 			"description",
 			JSONUtil.put(
@@ -123,6 +123,8 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 			).put(
 				"content${context.language_id}^1"
 			)
+		).put(
+			"minimum_should_match", 1
 		).put(
 			"operator", operator
 		).put(
@@ -169,7 +171,7 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 									boost, fuzziness, operator, type))))
 				))
 		).put(
-			"conditions", createJSONArray()
+			"conditions", JSONUtil.put(null, null)
 		).put(
 			"description",
 			JSONUtil.put(
@@ -294,7 +296,11 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 				)
 			)
 		).put(
+			"minimum_should_match", 1
+		).put(
 			"operator", operator
+		).put(
+			"slop", "null"
 		).put(
 			"type", type
 		);

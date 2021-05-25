@@ -107,7 +107,7 @@ public class LimitSearchToMySitesTest extends BaseBlueprintsTestCase {
 									"scopeGroupId", "${user.user_group_ids}"))))
 				))
 		).put(
-			"conditions", createJSONArray()
+			"conditions", JSONUtil.put(null, null)
 		).put(
 			"description",
 			JSONUtil.put(
