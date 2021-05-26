@@ -46,7 +46,7 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true, property = "name=aggs",
 	service = JSONTranslationContributor.class
 )
-public class AggregationsTranslationContributor
+public class AggregationsJSONTranslationContributor
 	implements JSONTranslationContributor {
 
 	@Override

@@ -44,7 +44,7 @@ import org.osgi.service.component.annotations.Component;
 	immediate = true, property = "name=meta",
 	service = JSONTranslationContributor.class
 )
-public class MetaTranslationContributor implements JSONTranslationContributor {
+public class MetaJSONTranslationContributor implements JSONTranslationContributor {
 
 	@Override
 	public void contribute(
@@ -145,6 +145,6 @@ public class MetaTranslationContributor implements JSONTranslationContributor {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		MetaTranslationContributor.class);
+		MetaJSONTranslationContributor.class);
 
 }

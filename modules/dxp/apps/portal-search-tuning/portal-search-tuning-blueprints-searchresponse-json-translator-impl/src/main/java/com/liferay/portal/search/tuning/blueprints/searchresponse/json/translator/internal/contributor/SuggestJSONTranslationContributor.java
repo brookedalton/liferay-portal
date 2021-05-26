@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true, property = "name=suggest",
 	service = JSONTranslationContributor.class
 )
-public class SuggestTranslationContributor
+public class SuggestJSONTranslationContributor
 	implements JSONTranslationContributor {
 
 	@Override

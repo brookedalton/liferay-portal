@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true, property = "name=paging",
 	service = JSONTranslationContributor.class
 )
-public class PagingTranslationContributor
+public class PagingJSONTranslationContributor
 	implements JSONTranslationContributor {
 
 	@Override
@@ -126,7 +126,7 @@ public class PagingTranslationContributor
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		PagingTranslationContributor.class);
+		PagingJSONTranslationContributor.class);
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;

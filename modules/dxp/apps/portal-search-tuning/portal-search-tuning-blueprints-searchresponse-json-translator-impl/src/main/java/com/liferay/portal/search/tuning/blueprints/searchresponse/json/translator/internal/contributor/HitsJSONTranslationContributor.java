@@ -71,7 +71,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 	immediate = true, property = "name=hits",
 	service = JSONTranslationContributor.class
 )
-public class HitsTranslationContributor implements JSONTranslationContributor {
+public class HitsJSONTranslationContributor implements JSONTranslationContributor {
 
 	@Override
 	public void contribute(
@@ -528,7 +528,7 @@ public class HitsTranslationContributor implements JSONTranslationContributor {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		HitsTranslationContributor.class);
+		HitsJSONTranslationContributor.class);
 
 	@Reference
 	private AssetEntryLocalService _assetEntryLocalService;
