@@ -17,8 +17,7 @@ import ClayList from '@clayui/list';
 import getCN from 'classnames';
 import React, {useState} from 'react';
 
-import CodeMirrorEditor from '../shared/CodeMirrorEditor';
-import PreviewModal from '../shared/PreviewModal';
+import {PreviewModalWithCopyDownload} from '../shared/PreviewModal';
 
 const BLUEPRINT_FIELD_PREFIX = 'b_';
 const RESULTS_DEFAULT_KEYS = [
@@ -73,17 +72,16 @@ function ResultListItem({item}) {
 	return (
 		<ClayList.Item className="result-list-item" flex key={item.b_title}>
 			<ClayList.ItemField>
-				<PreviewModal
-					body={
-						<CodeMirrorEditor readOnly value={item.explanation} />
-					}
+				<PreviewModalWithCopyDownload
+					fileName="score_explanation.json"
 					size="lg"
+					text={item.explanation}
 					title={Liferay.Language.get('score-explanation')}
 				>
 					<ClayButton className="score" displayType="unstyled" small>
 						{item.score.toFixed(2)}
 					</ClayButton>
-				</PreviewModal>
+				</PreviewModalWithCopyDownload>
 			</ClayList.ItemField>
 
 			<ClayList.ItemField expand>

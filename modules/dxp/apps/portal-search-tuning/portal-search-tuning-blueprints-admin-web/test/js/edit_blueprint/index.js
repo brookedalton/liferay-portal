@@ -73,6 +73,8 @@ function renderEditBlueprint(props) {
 }
 
 describe('EditBlueprint', () => {
+	global.URL.createObjectURL = jest.fn();
+
 	it('renders the configuration set form', () => {
 		const {container} = renderEditBlueprint();
 

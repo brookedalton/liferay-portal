@@ -14,7 +14,6 @@ import ClayButton from '@clayui/button';
 import {Align} from '@clayui/drop-down';
 import ClayEmptyState from '@clayui/empty-state';
 import ClayIcon from '@clayui/icon';
-import ClayLink from '@clayui/link';
 import ClayList from '@clayui/list';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClayManagementToolbar from '@clayui/management-toolbar';
@@ -24,16 +23,14 @@ import getCN from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 
-import CodeMirrorEditor from '../shared/CodeMirrorEditor';
-import PreviewModal from '../shared/PreviewModal';
+import {PreviewModalWithCopyDownload} from '../shared/PreviewModal';
 import SearchInput from '../shared/SearchInput';
 import useDidUpdateEffect from '../utils/useDidUpdateEffect';
-import {openSuccessToast, sub} from '../utils/utils';
+import {sub} from '../utils/utils';
 import ErrorListItem from './ErrorListItem';
 import ResultListItem from './ResultListItem';
 
 const DELTAS = [10, 20, 30, 50];
-const RAW_RESPONSE_FILE_NAME = 'raw_response.json';
 
 function PreviewSidebar({
 	loading,
@@ -54,14 +51,6 @@ function PreviewSidebar({
 	useDidUpdateEffect(() => {
 		_handleFetch();
 	}, [activeDelta, activePage]);
-
-	const _handleCopyToClipboard = () => {
-		navigator.clipboard.writeText(JSON.stringify(results, null, 2));
-
-		openSuccessToast({
-			message: Liferay.Language.get('copied-to-clipboard'),
-		});
-	};
 
 	const _handleDeltaChange = (delta) => () => {
 		setActiveDelta(delta);
@@ -154,66 +143,11 @@ function PreviewSidebar({
 
 			<ClayManagementToolbar.ItemList>
 				<ClayManagementToolbar.Item>
-					<PreviewModal
-						body={
-							<>
-								<ClayButton.Group spaced>
-									<ClayButton
-										displayType="secondary"
-										onClick={_handleCopyToClipboard}
-										small
-									>
-										<span className="inline-item inline-item-before">
-											<ClayIcon symbol="copy" />
-										</span>
-
-										{Liferay.Language.get(
-											'copy-to-clipboard'
-										)}
-									</ClayButton>
-
-									<ClayLink
-										displayType="secondary"
-										download={RAW_RESPONSE_FILE_NAME}
-										href={URL.createObjectURL(
-											new Blob(
-												[
-													JSON.stringify(
-														results,
-														null,
-														2
-													),
-												],
-												{
-													type: 'application/json',
-												}
-											)
-										)}
-										onClick={() => {
-											openSuccessToast({
-												message: Liferay.Language.get(
-													'downloaded-json'
-												),
-											});
-										}}
-										outline
-									>
-										<span className="inline-item inline-item-before">
-											<ClayIcon symbol="download" />
-										</span>
-
-										{Liferay.Language.get('download-json')}
-									</ClayLink>
-								</ClayButton.Group>
-
-								<CodeMirrorEditor
-									folded
-									readOnly
-									value={JSON.stringify(results, null, 2)}
-								/>
-							</>
-						}
+					<PreviewModalWithCopyDownload
+						fileName="raw_response.json"
+						folded
 						size="lg"
+						text={JSON.stringify(results, null, 2)}
 						title={Liferay.Language.get('raw-response')}
 					>
 						<ClayButton
@@ -225,7 +159,7 @@ function PreviewSidebar({
 						>
 							{Liferay.Language.get('view-raw-response')}
 						</ClayButton>
-					</PreviewModal>
+					</PreviewModalWithCopyDownload>
 				</ClayManagementToolbar.Item>
 			</ClayManagementToolbar.ItemList>
 		</ClayManagementToolbar>

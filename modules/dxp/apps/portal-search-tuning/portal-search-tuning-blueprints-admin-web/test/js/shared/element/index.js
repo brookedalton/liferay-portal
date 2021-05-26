@@ -46,6 +46,8 @@ function renderElement(props) {
 }
 
 describe('Element', () => {
+	global.URL.createObjectURL = jest.fn();
+
 	it('renders the element', () => {
 		const {container} = renderElement();
 

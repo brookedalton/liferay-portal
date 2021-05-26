@@ -41,6 +41,8 @@ function renderPreviewSidebar(props) {
 }
 
 describe('PreviewSidebar', () => {
+	global.URL.createObjectURL = jest.fn();
+
 	it('renders the preview', () => {
 		const {container} = renderPreviewSidebar();
 

@@ -22,8 +22,7 @@ import React, {useContext, useEffect, useState} from 'react';
 
 import {INPUT_TYPES} from '../../utils/inputTypes';
 import {getElementOutput, isDefined, isEmpty} from '../../utils/utils';
-import CodeMirrorEditor from '../CodeMirrorEditor';
-import PreviewModal from '../PreviewModal';
+import {PreviewModalWithCopyDownload} from '../PreviewModal';
 import ThemeContext from '../ThemeContext';
 import DateInput from './DateInput';
 import FieldInput from './FieldInput';
@@ -316,28 +315,24 @@ function Element({
 						}
 					>
 						<ClayDropDown.ItemList>
-							<PreviewModal
-								body={
-									<CodeMirrorEditor
-										readOnly
-										value={JSON.stringify(
-											getElementOutput({
-												elementTemplateJSON,
-												uiConfigurationJSON,
-												uiConfigurationValues,
-											}),
-											null,
-											'\t'
-										)}
-									/>
-								}
+							<PreviewModalWithCopyDownload
+								fileName="element.json"
 								size="lg"
+								text={JSON.stringify(
+									getElementOutput({
+										elementTemplateJSON,
+										uiConfigurationJSON,
+										uiConfigurationValues,
+									}),
+									null,
+									'\t'
+								)}
 								title={Liferay.Language.get('element-json')}
 							>
 								<ClayDropDown.Item>
 									{Liferay.Language.get('view-element-json')}
 								</ClayDropDown.Item>
-							</PreviewModal>
+							</PreviewModalWithCopyDownload>
 
 							{onDeleteElement && (
 								<ClayDropDown.Item onClick={_handleDelete}>

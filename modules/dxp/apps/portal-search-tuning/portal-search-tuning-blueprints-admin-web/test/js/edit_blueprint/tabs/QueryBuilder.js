@@ -45,6 +45,8 @@ function renderBuilder(props) {
 }
 
 describe('QueryBuilder', () => {
+	global.URL.createObjectURL = jest.fn();
+
 	it('renders the builder', () => {
 		const {container} = renderBuilder();
 
