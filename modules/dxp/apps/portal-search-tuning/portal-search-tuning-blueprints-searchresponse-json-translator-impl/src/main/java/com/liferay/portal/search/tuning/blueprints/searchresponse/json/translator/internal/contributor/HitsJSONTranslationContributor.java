@@ -71,7 +71,8 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 	immediate = true, property = "name=hits",
 	service = JSONTranslationContributor.class
 )
-public class HitsJSONTranslationContributor implements JSONTranslationContributor {
+public class HitsJSONTranslationContributor
+	implements JSONTranslationContributor {
 
 	@Override
 	public void contribute(

@@ -14,11 +14,9 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.configuration.icon;
 
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.configuration.icon.BasePortletConfigurationIcon;
 import com.liferay.portal.kernel.portlet.configuration.icon.PortletConfigurationIcon;
@@ -37,7 +35,6 @@ import java.util.ResourceBundle;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletURL;
-import javax.portlet.WindowStateException;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -69,39 +66,34 @@ public class ImportPortletConfigurationIcon
 	public String getOnClick(
 		PortletRequest portletRequest, PortletResponse portletResponse) {
 
-		try {
-			PortletURL portletURL = _portal.getControlPanelPortletURL(
+		PortletURL portletURL = PortletURLBuilder.create(
+			_portal.getControlPanelPortletURL(
 				portletRequest, BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
-				PortletRequest.RENDER_PHASE);
+				PortletRequest.RENDER_PHASE)
+		).setMVCRenderCommandName(
+			BlueprintsAdminMVCCommandNames.IMPORT
+		).setRedirect(
+			() -> {
+				ThemeDisplay themeDisplay =
+					(ThemeDisplay)portletRequest.getAttribute(
+						WebKeys.THEME_DISPLAY);
 
-			portletURL.setParameter(
-				"mvcRenderCommandName", BlueprintsAdminMVCCommandNames.IMPORT);
-			portletURL.setWindowState(LiferayWindowState.POP_UP);
-
-			ThemeDisplay themeDisplay =
-				(ThemeDisplay)portletRequest.getAttribute(
-					WebKeys.THEME_DISPLAY);
-
-			portletURL.setParameter("redirect", themeDisplay.getURLCurrent());
-
-			StringBundler sb = new StringBundler(6);
-
-			sb.append("Liferay.Util.openModal({height: '320px',");
-			sb.append("size: 'md', title: '");
-			sb.append(getMessage(portletRequest));
-			sb.append("', url: '");
-			sb.append(portletURL.toString());
-			sb.append("'});");
-
-			return sb.toString();
-		}
-		catch (WindowStateException windowStateException) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(windowStateException, windowStateException);
+				return themeDisplay.getURLCurrent();
 			}
-		}
+		).setWindowState(
+			LiferayWindowState.POP_UP
+		).build();
 
-		return StringPool.BLANK;
+		StringBundler sb = new StringBundler(6);
+
+		sb.append("Liferay.Util.openModal({height: '320px',");
+		sb.append("size: 'md', title: '");
+		sb.append(getMessage(portletRequest));
+		sb.append("', url: '");
+		sb.append(portletURL.toString());
+		sb.append("'});");
+
+		return sb.toString();
 	}
 
 	@Override
@@ -131,9 +123,6 @@ public class ImportPortletConfigurationIcon
 
 		return false;
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		ImportPortletConfigurationIcon.class);
 
 	@Reference
 	private Portal _portal;

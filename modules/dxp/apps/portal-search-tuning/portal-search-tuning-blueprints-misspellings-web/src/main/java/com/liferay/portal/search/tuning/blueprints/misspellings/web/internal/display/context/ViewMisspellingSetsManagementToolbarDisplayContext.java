@@ -21,6 +21,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
@@ -100,11 +101,11 @@ public class ViewMisspellingSetsManagementToolbarDisplayContext
 
 	@Override
 	public String getSearchActionURL() {
-		PortletURL searchURL = liferayPortletResponse.createRenderURL();
-
-		searchURL.setProperty(
-			"mvcRenderCommandName",
-			MisspellingsMVCCommandNames.VIEW_MISSPELLING_SETS);
+		PortletURL searchURL = PortletURLBuilder.createRenderURL(
+			liferayPortletResponse
+		).setMVCRenderCommandName(
+			MisspellingsMVCCommandNames.VIEW_MISSPELLING_SETS
+		).build();
 
 		searchURL.setProperty("orderByCol", getOrderByCol());
 		searchURL.setProperty("orderByType", getOrderByType());
@@ -114,11 +115,11 @@ public class ViewMisspellingSetsManagementToolbarDisplayContext
 
 	@Override
 	public List<ViewTypeItem> getViewTypeItems() {
-		PortletURL portletURL = liferayPortletResponse.createRenderURL();
-
-		portletURL.setProperty(
-			"mvcRenderCommandName",
-			MisspellingsMVCCommandNames.VIEW_MISSPELLING_SETS);
+		PortletURL portletURL = PortletURLBuilder.createRenderURL(
+			liferayPortletResponse
+		).setMVCRenderCommandName(
+			MisspellingsMVCCommandNames.VIEW_MISSPELLING_SETS
+		).build();
 
 		if (searchContainer.getDelta() > 0) {
 			portletURL.setProperty(
@@ -192,11 +193,11 @@ public class ViewMisspellingSetsManagementToolbarDisplayContext
 	}
 
 	private PortletURL _getCurrentSortingURL() {
-		PortletURL sortingURL = getPortletURL();
-
-		sortingURL.setProperty(
-			"mvcRenderCommandName",
-			MisspellingsMVCCommandNames.VIEW_MISSPELLING_SETS);
+		PortletURL sortingURL = PortletURLBuilder.create(
+			getPortletURL()
+		).setMVCRenderCommandName(
+			MisspellingsMVCCommandNames.VIEW_MISSPELLING_SETS
+		).build();
 
 		sortingURL.setProperty(SearchContainer.DEFAULT_CUR_PARAM, "0");
 

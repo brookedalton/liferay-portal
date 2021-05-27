@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.action;
 
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -43,7 +44,6 @@ import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletURL;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -148,17 +148,15 @@ public class EditElementMVCActionCommand extends BaseMVCActionCommand {
 		LiferayActionResponse liferayActionResponse =
 			(LiferayActionResponse)actionResponse;
 
-		PortletURL portletURL = liferayActionResponse.createRenderURL();
-
-		portletURL.setParameter(
-			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.EDIT_ELEMENT);
-		portletURL.setParameter(
-			"redirect", ParamUtil.getString(actionRequest, "redirect"));
-		portletURL.setParameter(
-			BlueprintsAdminWebKeys.ELEMENT_ID, String.valueOf(elementId));
-
-		return portletURL.toString();
+		return PortletURLBuilder.createRenderURL(
+			liferayActionResponse
+		).setMVCRenderCommandName(
+			BlueprintsAdminMVCCommandNames.EDIT_ELEMENT
+		).setRedirect(
+			ParamUtil.getString(actionRequest, "redirect")
+		).setParameter(
+			BlueprintsAdminWebKeys.ELEMENT_ID, String.valueOf(elementId)
+		).toString();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

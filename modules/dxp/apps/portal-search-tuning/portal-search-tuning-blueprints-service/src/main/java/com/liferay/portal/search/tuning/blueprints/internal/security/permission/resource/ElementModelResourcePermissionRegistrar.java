@@ -19,13 +19,11 @@ import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermi
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermissionFactory;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.StagedModelPermissionLogic;
-import com.liferay.portal.kernel.util.HashMapDictionary;
+import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsConstants;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Element;
 import com.liferay.portal.search.tuning.blueprints.service.ElementLocalService;
-
-import java.util.Dictionary;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -42,10 +40,6 @@ public class ElementModelResourcePermissionRegistrar {
 
 	@Activate
 	protected void activate(BundleContext bundleContext) {
-		Dictionary<String, Object> properties = new HashMapDictionary<>();
-
-		properties.put("model.class.name", Element.class.getName());
-
 		_serviceRegistration = bundleContext.registerService(
 			(Class<ModelResourcePermission<Element>>)
 				(Class<?>)ModelResourcePermission.class,
@@ -57,7 +51,9 @@ public class ElementModelResourcePermissionRegistrar {
 						_stagingPermission,
 						BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
 						Element::getElementId))),
-			properties);
+			HashMapDictionaryBuilder.<String, Object>put(
+				"model.class.name", Element.class.getName()
+			).build());
 	}
 
 	@Deactivate

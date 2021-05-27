@@ -19,6 +19,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -38,7 +39,6 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.Bluep
 import java.util.List;
 import java.util.Objects;
 
-import javax.portlet.ActionRequest;
 import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -83,12 +83,15 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 
 	@Override
 	public String getClearResultsURL() {
-		PortletURL clearResultsURL = getPortletURL();
-
-		clearResultsURL.setParameter("keywords", StringPool.BLANK);
-		clearResultsURL.setParameter(
-			"mvcRenderCommandName", getMVCRenderCommandName());
-		clearResultsURL.setParameter(BlueprintsAdminWebKeys.TAB, tab);
+		PortletURL clearResultsURL = PortletURLBuilder.create(
+			getPortletURL()
+		).setMVCRenderCommandName(
+			getMVCRenderCommandName()
+		).setKeywords(
+			StringPool.BLANK
+		).setParameter(
+			BlueprintsAdminWebKeys.TAB, tab
+		).build();
 
 		clearResultsURL.setProperty("orderByCol", getOrderByCol());
 		clearResultsURL.setProperty("orderByType", getOrderByType());
@@ -103,12 +106,13 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 
 	@Override
 	public String getSearchActionURL() {
-		PortletURL searchActionURL = getPortletURL();
-
-		searchActionURL.setParameter(
-			"mvcRenderCommandName", getMVCRenderCommandName());
-
-		searchActionURL.setParameter(BlueprintsAdminWebKeys.TAB, tab);
+		PortletURL searchActionURL = PortletURLBuilder.create(
+			getPortletURL()
+		).setMVCRenderCommandName(
+			getMVCRenderCommandName()
+		).setParameter(
+			BlueprintsAdminWebKeys.TAB, tab
+		).build();
 
 		searchActionURL.setProperty("orderByCol", getOrderByCol());
 		searchActionURL.setProperty("orderByType", getOrderByType());
@@ -118,12 +122,13 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 
 	@Override
 	public List<ViewTypeItem> getViewTypeItems() {
-		PortletURL portletURL = liferayPortletResponse.createRenderURL();
-
-		portletURL.setProperty(
-			"mvcRenderCommandName", getMVCRenderCommandName());
-
-		portletURL.setParameter(BlueprintsAdminWebKeys.TAB, tab);
+		PortletURL portletURL = PortletURLBuilder.createRenderURL(
+			liferayPortletResponse
+		).setMVCRenderCommandName(
+			getMVCRenderCommandName()
+		).setParameter(
+			BlueprintsAdminWebKeys.TAB, tab
+		).build();
 
 		if (searchContainer.getDelta() > 0) {
 			portletURL.setProperty(
@@ -148,27 +153,31 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 	}
 
 	protected String createActionURL(String actionName, String cmd) {
-		PortletURL portletURL = liferayPortletResponse.createActionURL();
-
-		portletURL.setParameter(ActionRequest.ACTION_NAME, actionName);
+		PortletURL portletURL = PortletURLBuilder.createActionURL(
+			liferayPortletResponse
+		).setActionName(
+			actionName
+		).setRedirect(
+			currentURLObj.toString()
+		).setParameter(
+			BlueprintsAdminWebKeys.TAB, tab
+		).build();
 
 		if (!Validator.isBlank(cmd)) {
 			portletURL.setParameter(Constants.CMD, Constants.ADD);
 		}
 
-		portletURL.setParameter("redirect", currentURLObj.toString());
-		portletURL.setParameter(BlueprintsAdminWebKeys.TAB, tab);
-
 		return portletURL.toString();
 	}
 
 	protected PortletURL getCurrentSortingURL() {
-		PortletURL sortingURL = getPortletURL();
-
-		sortingURL.setProperty(
-			"mvcRenderCommandName", getMVCRenderCommandName());
-
-		sortingURL.setParameter(BlueprintsAdminWebKeys.TAB, tab);
+		PortletURL sortingURL = PortletURLBuilder.create(
+			getPortletURL()
+		).setMVCRenderCommandName(
+			getMVCRenderCommandName()
+		).setParameter(
+			BlueprintsAdminWebKeys.TAB, tab
+		).build();
 
 		sortingURL.setProperty(SearchContainer.DEFAULT_CUR_PARAM, "0");
 

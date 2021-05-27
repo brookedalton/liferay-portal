@@ -9,6 +9,6 @@ dependencies {
 	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-engine-api")
 	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-engine-spi")
 	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-util")
-	
-	testCompile project(":apps:static:portal-configuration:portal-configuration-persistence-api")	
+
+	testCompile project(":apps:static:portal-configuration:portal-configuration-persistence-api")
 }

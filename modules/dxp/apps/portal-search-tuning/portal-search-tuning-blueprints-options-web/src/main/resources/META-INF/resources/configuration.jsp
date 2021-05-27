@@ -22,7 +22,8 @@ taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
-<%@ page import="com.liferay.petra.string.StringPool" %><%@
+<%@ page import="com.liferay.petra.portlet.url.builder.PortletURLBuilder" %><%@
+page import="com.liferay.petra.string.StringPool" %><%@
 page import="com.liferay.portal.kernel.portlet.LiferayWindowState" %><%@
 page import="com.liferay.portal.kernel.portlet.PortletProvider" %><%@
 page import="com.liferay.portal.kernel.portlet.PortletProviderUtil" %><%@
@@ -124,9 +125,11 @@ BlueprintsOptionsPortletPreferences blueprintsOptionsPortletPreferences = new Bl
 												'<liferay-ui:message arguments="blueprint" key="select-x" />',
 
 											<%
-											PortletURL selectBlueprintURL = PortletProviderUtil.getPortletURL(request, Blueprint.class.getName(), PortletProvider.Action.BROWSE);
-
-											selectBlueprintURL.setWindowState(LiferayWindowState.POP_UP);
+											PortletURL selectBlueprintURL = PortletURLBuilder.create(
+												PortletProviderUtil.getPortletURL(request, Blueprint.class.getName(), PortletProvider.Action.BROWSE)
+											).setWindowState(
+												LiferayWindowState.POP_UP
+											).build();
 											%>
 
 											uri: '<%= selectBlueprintURL.toString() %>',

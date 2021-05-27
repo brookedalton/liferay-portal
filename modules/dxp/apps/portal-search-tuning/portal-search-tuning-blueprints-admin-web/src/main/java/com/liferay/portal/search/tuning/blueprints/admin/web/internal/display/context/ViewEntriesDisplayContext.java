@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context;
 
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -79,17 +80,13 @@ public abstract class ViewEntriesDisplayContext<R> {
 	}
 
 	protected PortletURL getIteratorURL() {
-		PortletURL portletURL = liferayPortletResponse.createRenderURL();
-
-		portletURL.setProperty(
-			"mvcRenderCommandName", getMVCRenderCommandName());
-
-		portletURL.setParameter(
-			"mvcRenderCommandName", getMVCRenderCommandName());
-
-		portletURL.setParameter(BlueprintsAdminWebKeys.TAB, tab);
-
-		return portletURL;
+		return PortletURLBuilder.createRenderURL(
+			liferayPortletResponse
+		).setMVCRenderCommandName(
+			getMVCRenderCommandName()
+		).setParameter(
+			BlueprintsAdminWebKeys.TAB, tab
+		).build();
 	}
 
 	protected String getMVCRenderCommandName() {

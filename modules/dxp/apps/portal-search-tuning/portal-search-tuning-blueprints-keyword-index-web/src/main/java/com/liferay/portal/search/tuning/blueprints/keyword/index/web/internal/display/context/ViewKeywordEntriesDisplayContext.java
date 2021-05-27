@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.keyword.index.web.internal.display.context;
 
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -128,15 +129,13 @@ public class ViewKeywordEntriesDisplayContext {
 	}
 
 	private PortletURL _getIteratorURL() {
-		PortletURL portletURL = _liferayPortletResponse.createRenderURL();
-
-		portletURL.setProperty(
-			"mvcRenderCommandName",
-			KeywordIndexMVCCommandNames.VIEW_KEYWORD_ENTRIES);
-
-		portletURL.setParameter("tabs", _status.name());
-
-		return portletURL;
+		return PortletURLBuilder.createRenderURL(
+			_liferayPortletResponse
+		).setMVCRenderCommandName(
+			KeywordIndexMVCCommandNames.VIEW_KEYWORD_ENTRIES
+		).setParameter(
+			"tabs", _status.name()
+		).build();
 	}
 
 	private void _populateResults(SearchContainer<KeywordEntry> searchContainer)

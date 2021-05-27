@@ -19,6 +19,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
@@ -85,13 +86,13 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 
 	@Override
 	public String getSearchActionURL() {
-		PortletURL searchURL = liferayPortletResponse.createRenderURL();
-
-		searchURL.setParameter("tabs", getTab());
-
-		searchURL.setProperty(
-			"mvcRenderCommandName",
-			KeywordIndexMVCCommandNames.VIEW_KEYWORD_ENTRIES);
+		PortletURL searchURL = PortletURLBuilder.createRenderURL(
+			liferayPortletResponse
+		).setMVCRenderCommandName(
+			KeywordIndexMVCCommandNames.VIEW_KEYWORD_ENTRIES
+		).setParameter(
+			"tabs", getTab()
+		).build();
 
 		searchURL.setProperty("orderByCol", getOrderByCol());
 		searchURL.setProperty("orderByType", getOrderByType());
@@ -101,13 +102,13 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 
 	@Override
 	public List<ViewTypeItem> getViewTypeItems() {
-		PortletURL portletURL = liferayPortletResponse.createRenderURL();
-
-		portletURL.setParameter("tabs", getTab());
-
-		portletURL.setProperty(
-			"mvcRenderCommandName",
-			KeywordIndexMVCCommandNames.VIEW_KEYWORD_ENTRIES);
+		PortletURL portletURL = PortletURLBuilder.createRenderURL(
+			liferayPortletResponse
+		).setMVCRenderCommandName(
+			KeywordIndexMVCCommandNames.VIEW_KEYWORD_ENTRIES
+		).setParameter(
+			"tabs", getTab()
+		).build();
 
 		if (searchContainer.getDelta() > 0) {
 			portletURL.setProperty(
@@ -132,13 +133,13 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 	}
 
 	protected PortletURL getCurrentSortingURL() {
-		PortletURL sortingURL = getPortletURL();
-
-		sortingURL.setParameter("tabs", getTab());
-
-		sortingURL.setProperty(
-			"mvcRenderCommandName",
-			KeywordIndexMVCCommandNames.VIEW_KEYWORD_ENTRIES);
+		PortletURL sortingURL = PortletURLBuilder.create(
+			getPortletURL()
+		).setMVCRenderCommandName(
+			KeywordIndexMVCCommandNames.VIEW_KEYWORD_ENTRIES
+		).setParameter(
+			"tabs", getTab()
+		).build();
 
 		sortingURL.setProperty(SearchContainer.DEFAULT_CUR_PARAM, "0");
 

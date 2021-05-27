@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context;
 
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -105,11 +106,11 @@ public class ViewMisspellingSetsDisplayContext {
 	public SearchContainer<MisspellingSet> getSearchContainer()
 		throws PortalException, PortletException {
 
-		PortletURL portletURL = _liferayPortletResponse.createRenderURL();
-
-		portletURL.setProperty(
-			"mvcRenderCommandName",
-			MisspellingsMVCCommandNames.VIEW_MISSPELLING_SETS);
+		PortletURL portletURL = PortletURLBuilder.createRenderURL(
+			_liferayPortletResponse
+		).setMVCRenderCommandName(
+			MisspellingsMVCCommandNames.VIEW_MISSPELLING_SETS
+		).build();
 
 		SearchContainer<MisspellingSet> searchContainer = new SearchContainer<>(
 			_liferayPortletRequest,

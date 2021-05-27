@@ -16,6 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.a
 
 import com.liferay.document.library.kernel.exception.FileMimeTypeException;
 import com.liferay.document.library.kernel.exception.FileSizeException;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -49,7 +50,6 @@ import java.util.Objects;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletURL;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
 
@@ -153,11 +153,11 @@ public class ImportBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			(LiferayActionResponse)_portal.getLiferayPortletResponse(
 				actionResponse);
 
-		PortletURL portletURL = liferayActionResponse.createRenderURL();
-
-		portletURL.setWindowState(WindowState.MAXIMIZED);
-
-		return portletURL.toString();
+		return PortletURLBuilder.createRenderURL(
+			liferayActionResponse
+		).setWindowState(
+			WindowState.MAXIMIZED
+		).toString();
 	}
 
 	private void _import(

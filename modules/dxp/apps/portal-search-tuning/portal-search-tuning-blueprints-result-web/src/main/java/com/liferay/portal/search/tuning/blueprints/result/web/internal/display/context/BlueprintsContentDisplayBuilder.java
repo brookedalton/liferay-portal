@@ -17,6 +17,7 @@ package com.liferay.portal.search.tuning.blueprints.result.web.internal.display.
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Portal;
@@ -91,12 +92,13 @@ public class BlueprintsContentDisplayBuilder {
 
 				blueprintsContentDisplayContext.setIconEditTarget(title);
 
-				PortletURL editPortletURL = assetRenderer.getURLEdit(
-					_portal.getLiferayPortletRequest(_renderRequest),
-					_portal.getLiferayPortletResponse(_renderResponse));
-
-				editPortletURL.setParameter(
-					"redirect", themeDisplay.getURLCurrent());
+				PortletURL editPortletURL = PortletURLBuilder.create(
+					assetRenderer.getURLEdit(
+						_portal.getLiferayPortletRequest(_renderRequest),
+						_portal.getLiferayPortletResponse(_renderResponse))
+				).setRedirect(
+					themeDisplay.getURLCurrent()
+				).build();
 
 				blueprintsContentDisplayContext.setIconURLString(
 					editPortletURL.toString());

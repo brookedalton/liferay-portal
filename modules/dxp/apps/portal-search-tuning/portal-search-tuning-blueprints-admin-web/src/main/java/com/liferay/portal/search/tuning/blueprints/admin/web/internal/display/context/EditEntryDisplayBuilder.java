@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context;
 
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
@@ -31,8 +32,6 @@ import com.liferay.portal.search.tuning.blueprints.service.ElementService;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -111,14 +110,15 @@ public abstract class EditEntryDisplayBuilder {
 	}
 
 	protected String getSubmitFormURL(String actionName, boolean edit) {
-		ActionURL actionURL = renderResponse.createActionURL();
-
-		actionURL.setParameter(ActionRequest.ACTION_NAME, actionName);
-		actionURL.setParameter(
-			Constants.CMD, edit ? Constants.EDIT : Constants.ADD);
-		actionURL.setParameter("redirect", getRedirect());
-
-		return actionURL.toString();
+		return PortletURLBuilder.createActionURL(
+			renderResponse
+		).setActionName(
+			actionName
+		).setCMD(
+			edit ? Constants.EDIT : Constants.ADD
+		).setRedirect(
+			getRedirect()
+		).buildString();
 	}
 
 	protected JSONObject getTitleJSONObject(Map<Locale, String> titleMap) {

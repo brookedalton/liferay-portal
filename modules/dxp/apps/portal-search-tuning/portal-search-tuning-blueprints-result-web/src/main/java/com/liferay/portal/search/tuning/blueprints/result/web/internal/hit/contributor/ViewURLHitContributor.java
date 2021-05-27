@@ -19,6 +19,7 @@ import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.message.boards.model.MBMessage;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -260,14 +261,17 @@ public class ViewURLHitContributor implements HitContributor {
 			LiferayPortletResponse liferayPortletResponse, Document document)
 		throws PortletModeException, WindowStateException {
 
-		PortletURL viewContentURL = liferayPortletResponse.createRenderURL(
-			ResultWebPortletKeys.RESULT_WEB);
-
-		viewContentURL.setParameter("mvcPath", "/view_content.jsp");
-		viewContentURL.setParameter(
-			"redirect", _portal.getCurrentURL(liferayPortletRequest));
-		viewContentURL.setPortletMode(PortletMode.VIEW);
-		viewContentURL.setWindowState(WindowState.MAXIMIZED);
+		PortletURL viewContentURL = PortletURLBuilder.createRenderURL(
+			liferayPortletResponse, ResultWebPortletKeys.RESULT_WEB
+		).setMVCPath(
+			"/view_content.jsp"
+		).setRedirect(
+			_portal.getCurrentURL(liferayPortletRequest)
+		).setPortletMode(
+			PortletMode.VIEW
+		).setWindowState(
+			WindowState.MAXIMIZED
+		).build();
 
 		String entryClassName = document.getString(Field.ENTRY_CLASS_NAME);
 

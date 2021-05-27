@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context;
 
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -255,15 +256,17 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 	private PortletURL _getSelectEntityURL(String mvcRenderCommandName)
 		throws WindowStateException {
 
-		PortletURL portletURL = PortalUtil.getControlPanelPortletURL(
-			renderRequest, BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
-			PortletRequest.RENDER_PHASE);
-
-		portletURL.setParameter("mvcRenderCommandName", mvcRenderCommandName);
-		portletURL.setParameter("eventName", "selectEntity");
-		portletURL.setWindowState(LiferayWindowState.POP_UP);
-
-		return portletURL;
+		return PortletURLBuilder.create(
+			PortalUtil.getControlPanelPortletURL(
+				renderRequest, BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
+				PortletRequest.RENDER_PHASE)
+		).setMVCRenderCommandName(
+			mvcRenderCommandName
+		).setParameter(
+			"eventName", "selectEntity"
+		).setWindowState(
+			LiferayWindowState.POP_UP
+		).build();
 	}
 
 	private void _setPageTitle(EntryDisplayContext entryDisplayContext) {

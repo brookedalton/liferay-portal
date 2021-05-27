@@ -18,6 +18,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
@@ -39,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
-import javax.portlet.ActionRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -66,11 +66,11 @@ public class SelectOrganizationsDisplayContext {
 	}
 
 	public String getClearResultsURL() {
-		PortletURL clearResultsURL = getPortletURL();
-
-		clearResultsURL.setParameter("keywords", StringPool.BLANK);
-
-		return clearResultsURL.toString();
+		return PortletURLBuilder.create(
+			getPortletURL()
+		).setKeywords(
+			StringPool.BLANK
+		).toString();
 	}
 
 	public String getDisplayStyle() {
@@ -209,13 +209,15 @@ public class SelectOrganizationsDisplayContext {
 	}
 
 	public PortletURL getPortletURL() {
-		PortletURL portletURL = _renderResponse.createRenderURL();
-
-		portletURL.setParameter(
-			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.SELECT_ORGANIZATIONS);
-		portletURL.setParameter("groupId", String.valueOf(getGroupId()));
-		portletURL.setParameter("eventName", getEventName());
+		PortletURL portletURL = PortletURLBuilder.create(
+			_renderResponse.createRenderURL()
+		).setMVCRenderCommandName(
+			BlueprintsAdminMVCCommandNames.SELECT_ORGANIZATIONS
+		).setParameter(
+			"eventName", getEventName()
+		).setParameter(
+			"groupId", String.valueOf(getGroupId())
+		).build();
 
 		String displayStyle = getDisplayStyle();
 
@@ -255,13 +257,12 @@ public class SelectOrganizationsDisplayContext {
 	}
 
 	public String getSortingURL() {
-		PortletURL sortingURL = getPortletURL();
-
-		sortingURL.setParameter(
+		return PortletURLBuilder.create(
+			getPortletURL()
+		).setParameter(
 			"orderByType",
-			Objects.equals(getOrderByType(), "asc") ? "desc" : "asc");
-
-		return sortingURL.toString();
+			Objects.equals(getOrderByType(), "asc") ? "desc" : "asc"
+		).toString();
 	}
 
 	public int getTotalItems() throws PortalException {
@@ -272,12 +273,13 @@ public class SelectOrganizationsDisplayContext {
 	}
 
 	public List<ViewTypeItem> getViewTypeItems() {
-		PortletURL portletURL = _renderResponse.createActionURL();
-
-		portletURL.setParameter(
-			ActionRequest.ACTION_NAME, "changeDisplayStyle");
-		portletURL.setParameter(
-			"redirect", PortalUtil.getCurrentURL(_httpServletRequest));
+		PortletURL portletURL = PortletURLBuilder.create(
+			_renderResponse.createActionURL()
+		).setActionName(
+			"changeDisplayStyle"
+		).setRedirect(
+			PortalUtil.getCurrentURL(_httpServletRequest)
+		).build();
 
 		return new ViewTypeItemList(portletURL, getDisplayStyle()) {
 			{
