@@ -181,22 +181,9 @@ definition {
 }
 			''';
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Search Tuning",
-			panel = "Applications",
-			portlet = "Search Experiences");
-
-		Click(locator1 = "Button#PLUS");
-
-		PortletEntry.inputTitle(title = "The Closer to Liferay, the Better");
-
-		LexiconCard.clickCard(card = "Custom Clauses");
-
-		Click.clickNoWaitForVisible(
-			key_card = "Custom Clauses",
-			locator1 = "Card#CARD_CHECKBOX");
-
-		Button.click(button = "Create");
+		SearchBlueprints.addBlueprint(
+			clauseOption = "Custom Clauses",
+			name = "The Closer to Liferay, the Better");
 
 		Type.sendKeysApplicationSearch(
 			locator1 = "SearchTuning#BLUEPRINTS_FRAGMENT_QUERY_SEARCH_BAR",
@@ -527,13 +514,7 @@ definition {
 		SearchBlueprints.tearDownCP();
 
 		for (var blueprintNumber : list "1,3,2") {
-			Click(locator1 = "Button#PLUS");
-
-			PortletEntry.inputTitle(title = "Blueprint ${blueprintNumber}");
-
-			Button.click(button = "Create");
-
-			PortletEntry.save();
+			SearchBlueprints.addBlueprint(name = "Blueprint ${blueprintNumber}");
 		}
 
 		Click(locator1 = "Dropdown#FILTER_AND_ORDER");
