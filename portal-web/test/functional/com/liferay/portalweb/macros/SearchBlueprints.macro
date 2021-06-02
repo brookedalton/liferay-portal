@@ -22,6 +22,9 @@ definition {
 		}
 
 		Button.click(button = "Create");
+
+		// Workaround for LPS-133591
+		Refresh();
 	}
 
 	macro addElements {
@@ -37,6 +40,12 @@ definition {
 		PortletEntry.inputTitle(title = "${name}");
 
 		Button.click(button = "Create");
+
+		// Workaround for LPS-133591
+
+		Refresh();
+
+		SearchBlueprints.editElement(name = "${name}");
 
 		Type.typeCodeMirrorEditorNoError(
 			locator1 = "SearchTuning#BLUEPRINTS_ELEMENT_TEMPLATE_JSON",
