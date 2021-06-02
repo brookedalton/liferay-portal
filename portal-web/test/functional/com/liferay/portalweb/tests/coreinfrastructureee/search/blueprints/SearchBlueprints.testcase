@@ -186,6 +186,8 @@ definition {
 			clauseOption = "Custom Clauses",
 			name = "The Closer to Liferay, the Better");
 
+		SearchBlueprints.editBlueprint(name = "The Closer to Liferay, the Better");
+
 		Type.sendKeysApplicationSearch(
 			locator1 = "SearchTuning#BLUEPRINTS_FRAGMENT_QUERY_SEARCH_BAR",
 			value1 = "Filter by Exact Terms Match");
