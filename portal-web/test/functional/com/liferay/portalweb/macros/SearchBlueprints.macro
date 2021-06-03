@@ -141,6 +141,19 @@ definition {
 			rowEntry = "${name}");
 	}
 
+	macro editElement {
+		ApplicationsMenu.gotoPortlet(
+			category = "Search Tuning",
+			panel = "Applications",
+			portlet = "Search Experiences");
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		LexiconEntry.gotoEntryMenuItem(
+			menuItem = "Edit",
+			rowEntry = "${name}");
+	}
+
 	macro findBlueprintID {
 		var blueprintsID = selenium.getAttribute("//h4[contains(.,'${name}')]/following-sibling::h5[2]/span[contains(@class,'id-text')]@textContent");
 
