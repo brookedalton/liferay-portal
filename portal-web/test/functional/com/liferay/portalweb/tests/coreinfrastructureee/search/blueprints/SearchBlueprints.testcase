@@ -91,25 +91,17 @@ definition {
 
 		SearchBlueprints.addBlueprint(name = "Los Angeles Boost");
 
-		var blueprintsID = SearchBlueprints.findBlueprintID(name = "Los Angeles Boost");
-
-		SitePages.openPagesAdmin(siteURLKey = "guest");
-
-		ContentPages.addPage(pageName = "Reactive Widget");
-
-		PageEditor.addWidget(portletName = "Blueprints Search");
-
-		SearchBlueprints.configureSearchBlueprintsWidget(searchBlueprintID = "${blueprintsID}");
-
-		PageEditor.clickPublish();
-
 		var portalURL = PropsUtil.get("portal.url");
 
-		Navigator.openSpecificURL(url = "${portalURL}/web/guest/reactive-widget");
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		SearchBlueprints.searchReactiveSearchWidget(searchTerm = "cafe");
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
 
-		SearchBlueprints.viewBlueprintsSearchResults(
+		SearchBlueprints.selectBlueprintFromOptionsWidget(name = "Los Angeles Boost");
+
+		SearchPortlets.searchEmbedded(searchTerm = "cafe");
+
+		SearchResultPortlet.viewSearchResults(
 			searchAssetTitle = "Cafe",
 			searchAssetType = "Web Content Article");
 
@@ -125,11 +117,11 @@ definition {
 
 		Portlet.viewNoPermissionPG();
 
-		Navigator.openSpecificURL(url = "${portalURL}/web/guest/reactive-widget");
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		SearchBlueprints.searchReactiveSearchWidget(searchTerm = "cafe");
+		SearchPortlets.searchEmbedded(searchTerm = "cafe");
 
-		SearchBlueprints.viewBlueprintsSearchResults(
+		SearchResultPortlet.viewSearchResults(
 			searchAssetTitle = "Cafe",
 			searchAssetType = "Web Content Article");
 	}
@@ -216,17 +208,13 @@ definition {
 			elasticsearchQuery = "${elasticsearchQueryJSON}",
 			fragment = "Paste any Elasticsearch query");
 
-		var blueprintsID = SearchBlueprints.findBlueprintID(name = "The Closer to Liferay, the Better");
+		var portalURL = PropsUtil.get("portal.url");
 
-		SitePages.openPagesAdmin(siteURLKey = "guest");
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		ContentPages.addPage(pageName = "Reactive Widget");
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
 
-		PageEditor.addWidget(portletName = "Blueprints Search");
-
-		SearchBlueprints.configureSearchBlueprintsWidget(searchBlueprintID = "${blueprintsID}");
-
-		PageEditor.clickPublish();
+		SearchBlueprints.selectBlueprintFromOptionsWidget(name = "The Closer to Liferay, the Better");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
@@ -282,13 +270,11 @@ definition {
 
 		PortletEntry.publish();
 
-		var portalURL = PropsUtil.get("portal.url");
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		Navigator.openSpecificURL(url = "${portalURL}/web/guest/reactive-widget");
+		SearchPortlets.searchEmbedded(searchTerm = "location");
 
-		SearchBlueprints.searchReactiveSearchWidget(searchTerm = "location");
-
-		SearchBlueprints.viewBlueprintsSearchResultsSpecificOrder(resultsList = "Closest Location,Closer Location,Close Location");
+		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Closest Location,Closer Location,Close Location");
 	}
 
 	test CreateBoostAssetType {
@@ -296,17 +282,13 @@ definition {
 
 		SearchBlueprints.addBlueprint(name = "My Blueprint");
 
-		var blueprintsID = SearchBlueprints.findBlueprintID(name = "My Blueprint");
+		var portalURL = PropsUtil.get("portal.url");
 
-		SitePages.openPagesAdmin(siteURLKey = "guest");
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		ContentPages.addPage(pageName = "Reactive Widget");
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
 
-		PageEditor.addWidget(portletName = "Blueprints Search");
-
-		SearchBlueprints.configureSearchBlueprintsWidget(searchBlueprintID = "${blueprintsID}");
-
-		PageEditor.clickPublish();
+		SearchBlueprints.selectBlueprintFromOptionsWidget(name = "My Blueprint");
 
 		JSONWebcontent.addWebContent(
 			content = "Liferay",
@@ -317,13 +299,11 @@ definition {
 			entryContent = "Liferay Liferay",
 			entryTitle = "Liferay Blogs Entry");
 
-		var portalURL = PropsUtil.get("portal.url");
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		Navigator.openSpecificURL(url = "${portalURL}/web/guest/reactive-widget");
+		SearchPortlets.searchEmbedded(searchTerm = "liferay");
 
-		SearchBlueprints.searchReactiveSearchWidget(searchTerm = "liferay");
-
-		SearchBlueprints.viewBlueprintsSearchResultsSpecificOrder(resultsList = "Liferay Blogs Entry,Liferay Web Content");
+		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Liferay Blogs Entry,Liferay Web Content");
 
 		SearchBlueprints.editBlueprint(name = "My Blueprint");
 
@@ -332,11 +312,11 @@ definition {
 			fragment = "Boost Asset Type",
 			numberBoost = "1000");
 
-		Navigator.openSpecificURL(url = "${portalURL}/web/guest/reactive-widget");
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		SearchBlueprints.searchReactiveSearchWidget(searchTerm = "liferay");
+		SearchPortlets.searchEmbedded(searchTerm = "liferay");
 
-		SearchBlueprints.viewBlueprintsSearchResultsSpecificOrder(resultsList = "Liferay Web Content,Liferay Blogs Entry");
+		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Liferay Web Content,Liferay Blogs Entry");
 	}
 
 	@priority = "4"
@@ -345,17 +325,13 @@ definition {
 
 		SearchBlueprints.addBlueprint(name = "Hide Test and Experimental Content");
 
-		var blueprintsID = SearchBlueprints.findBlueprintID(name = "Hide Test and Experimental Content");
+		var portalURL = PropsUtil.get("portal.url");
 
-		SitePages.openPagesAdmin(siteURLKey = "guest");
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		ContentPages.addPage(pageName = "Reactive Widget");
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
 
-		PageEditor.addWidget(portletName = "Blueprints Search");
-
-		SearchBlueprints.configureSearchBlueprintsWidget(searchBlueprintID = "${blueprintsID}");
-
-		PageEditor.clickPublish();
+		SearchBlueprints.selectBlueprintFromOptionsWidget(name = "Hide Test and Experimental Content");
 
 		JSONWebcontent.addWebContent(
 			content = "",
@@ -378,14 +354,12 @@ definition {
 			entryContent = "Liferay Liferay",
 			entryTitle = "Liferay Blogs Entry");
 
-		var portalURL = PropsUtil.get("portal.url");
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		Navigator.openSpecificURL(url = "${portalURL}/web/guest/reactive-widget");
-
-		SearchBlueprints.searchReactiveSearchWidget(searchTerm = "Content");
+		SearchPortlets.searchEmbedded(searchTerm = "Content");
 
 		for (var searchAssetTitle : list "Content,Test Content,Experimental Content") {
-			SearchBlueprints.viewBlueprintsSearchResults(
+			SearchResultPortlet.viewSearchResults(
 				searchAssetTitle = "${searchAssetTitle}",
 				searchAssetType = "Web Content Article");
 		}
@@ -470,11 +444,11 @@ definition {
 			tag1 = "test",
 			tag2 = "experimental");
 
-		Navigator.openSpecificURL(url = "${portalURL}/web/guest/reactive-widget");
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		SearchBlueprints.searchReactiveSearchWidget(searchTerm = "Content");
+		SearchPortlets.searchEmbedded(searchTerm = "Content");
 
-		SearchBlueprints.viewBlueprintsSearchResults(
+		SearchResultPortlet.viewSearchResults(
 			searchAssetTitle = "Content",
 			searchAssetType = "Web Content Article");
 
