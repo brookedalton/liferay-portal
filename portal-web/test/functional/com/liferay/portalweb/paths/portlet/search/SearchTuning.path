@@ -124,6 +124,11 @@
 	<td>//input[contains(@aria-label, "${key_fieldLabel}") and @type='text']</td>
 	<td></td>
 </tr>
+<tr>
+	<td>BLUEPRINTS_TABLE_CHOOSE</td>
+	<td>//button[@data-entityname='${key_blueprintName}']</td>
+	<td></td>
+</tr>
 <!--RESULT_RANKINGS-->
 <tr>
 	<td>RESULT_RANKINGS_ACTIVE_TOGGLE_SWITCH</td>
