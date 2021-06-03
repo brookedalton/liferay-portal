@@ -24,6 +24,7 @@ definition {
 		Button.click(button = "Create");
 
 		// Workaround for LPS-133591
+
 		Refresh();
 	}
 
@@ -209,6 +210,38 @@ definition {
 		}
 
 		WaitForLiferayEvent.initializeLiferayEventLog();
+	}
+
+	macro selectBlueprintFromOptionsWidget {
+		Portlet.gotoPortletOptions(
+			portletName = "Blueprints Options",
+			portletOption = "Configuration");
+
+		SelectFrame(locator1 = "IFrame#CONFIGURATION");
+
+		Button.clickSelect();
+
+		SelectFrameTop();
+
+		SelectFrame(
+			key_title = "Select Blueprint",
+			locator1 = "IFrame#MODAL_ANY");
+
+		var key_blueprintName = "${name}";
+
+		AssertClick(
+			locator1 = "SearchTuning#BLUEPRINTS_TABLE_CHOOSE",
+			value1 = "Choose");
+
+		SelectFrameTop();
+
+		SelectFrame(locator1 = "IFrame#CONFIGURATION");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		IFrame.closeFrame();
 	}
 
 	macro tearDownCP {
