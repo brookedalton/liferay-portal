@@ -10,58 +10,23 @@
 <tbody>
 <!--BLUEPRINTS-->
 <tr>
-	<td>BLUEPRINTS_ADD_QUERY_FRAGMENT</td>
-	<td>//div[contains(@class,'autofit-col') and contains(.,'${key_fragmentName}')]/following-sibling::div/button[contains(.,'Add')]</td>
+	<td>BLUEPRINTS_ADD_QUERY_ELEMENTS_HEADER</td>
+	<td>//div[contains(@class,'sidebar-header')]//span[contains(.,'Add Query Elements')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>BLUEPRINTS_ASSET_ENTRY_LIST_TITLE_SPECIFIC_ORDER</td>
-	<td>//div[contains(@class,'search-container-list')]//li[${resultOrder}]/div//a</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_ASSET_ENTRY_TABLE_TITLE</td>
-	<td>//li[contains(@class,'list-group-item') and contains(.,'${key_searchAssetTitle}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_ASSET_ENTRY_TABLE_SUMMARY_SPECIFIC</td>
-	<td>//li[contains(@class,'list-group-item') and contains(.,'${key_searchAssetTitle}')]//p[contains(.,'${key_searchAssetSummary}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_ASSET_ENTRY_TABLE_TITLE_SPECIFIC</td>
-	<td>//li[contains(@class,'list-group-item') and contains(.,'${key_searchAssetTitle}')][.//p[@class='result-subtext list-group-subtext' and contains(.,'${key_searchAssetType}')]]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_ASSET_ENTRY_TABLE_TITLE_SPECIFIC_ORDER</td>
-	<td>//div[contains(@class,'search-results')]//li[${resultOrder}]/div//a</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_ASSET_ENTRY_TABLE_TYPE_SPECIFIC</td>
-	<td>//li[contains(@class,'list-group-item') and contains(.,'${key_searchAssetTitle}')]//p[contains(.,'${key_searchAssetType}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_ASSET_ENTRY_TABLE_TYPE_SPECIFIC_DATE</td>
-	<td>//li[contains(@class,'list-group-item') and contains(.,'${key_searchAssetTitle}')]//p[contains(.,'${key_searchAssetType}')]/span[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_CLEAR_BUTTON</td>
-	<td>//button[contains(@title,'Clear')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_ELASTICSEARCH_QUERY_JSON</td>
-	<td>//div[contains(@class,'custom-json')]//div[contains(@class,'CodeMirror cm-s-default')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_FRAGMENT_QUERY_SEARCH_BAR</td>
+	<td>BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_BAR</td>
 	<td>//div[contains(@class,'open')]//input[contains(@placeholder,'Search')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_CLEAR</td>
+	<td>//div[contains(@class,'add-element-sidebar')]//button[contains(@title,'Clear')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ELASTICSEARCH_QUERY_JSON_EDITOR</td>
+	<td>//div[contains(@class,'custom-json')]//div[contains(@class,'CodeMirror cm-s-default')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -75,13 +40,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>BLUEPRINTS_ELEMENT_TEMPLATE_JSON</td>
-	<td>//div[contains(@class,'element-header') and contains(.,'Element Template (JSON')]/following-sibling::div//div[contains(@class,'CodeMirror cm-s-default')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_ELEMENT_UI_CONFIGURATION_JSON</td>
-	<td>//div[contains(@class,'element-header') and contains(.,'UI Configuration (JSON')]/following-sibling::div//div[contains(@class,'CodeMirror cm-s-default')]</td>
+	<td>BLUEPRINTS_OPTIONS_WIDGET_CHOOSE</td>
+	<td>//button[@data-entityname='${key_blueprintName}']</td>
 	<td></td>
 </tr>
 <tr>
@@ -105,8 +65,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>BLUEPRINTS_QUERY_FRAGMENT_NAME</td>
-	<td>//p[contains(.,'${key_fragmentName}') and contains(@class, 'list-group-title')]</td>
+	<td>BLUEPRINTS_QUERY_ELEMENT_ADD_BUTTON</td>
+	<td>//div[contains(@class,'autofit-col') and contains(.,'${key_elementName}')]/following-sibling::div/button[contains(.,'Add')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_QUERY_ELEMENT_ADD_NAME</td>
+	<td>//p[contains(.,'${key_elementName}') and contains(@class, 'list-group-title')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -114,24 +79,15 @@
 	<td>//input[contains(@aria-label, "${key_fieldLabel}") and @type='text']</td>
 	<td></td>
 </tr>
+<!--CUSTOM_ELEMENT-->
 <tr>
-	<td>BLUEPRINTS_RESULTS_PORTLET_SEARCH_QUERY</td>
-	<td>//div[contains(@class,'search-total-label')]</td>
+	<td>CUSTOM_ELEMENT_TEMPLATE_EDITOR</td>
+	<td>//div[contains(@class,'element-header') and contains(.,'Element Template (JSON')]/following-sibling::div//div[contains(@class,'CodeMirror cm-s-default')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>BLUEPRINTS_SEARCH_BAR</td>
-	<td>//div[contains(@class,'Blueprints')]//input[contains(@placeholder,'Search')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_SEARCH_SIDE_BAR</td>
-	<td>//div[contains(@class,'Blueprints')]//div[contains(@class,'sidebar')][2]//input[contains(@placeholder,'Search')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_TABLE_CHOOSE</td>
-	<td>//button[@data-entityname='${key_blueprintName}']</td>
+	<td>CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR</td>
+	<td>//div[contains(@class,'element-header') and contains(.,'UI Configuration (JSON')]/following-sibling::div//div[contains(@class,'CodeMirror cm-s-default')]</td>
 	<td></td>
 </tr>
 </tbody>
