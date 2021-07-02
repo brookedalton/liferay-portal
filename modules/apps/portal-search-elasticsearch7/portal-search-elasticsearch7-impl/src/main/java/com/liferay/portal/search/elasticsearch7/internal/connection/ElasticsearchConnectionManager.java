@@ -251,7 +251,7 @@ public class ElasticsearchConnectionManager
 			elasticsearchConfigurationWrapper.restClientLoggerLevel());
 
 		if (operationModeResolver.isProductionModeEnabled()) {
-			if (Validator.isBlank(
+			if (_isConfigurationNotSet(
 					elasticsearchConfigurationWrapper.
 						remoteClusterConnectionId())) {
 
@@ -415,6 +415,14 @@ public class ElasticsearchConnectionManager
 			preferLocalCluster, ", Cross-Cluster Replication Enabled: ",
 			isCrossClusterReplicationEnabled(), ". Enable INFO logs on ",
 			ElasticsearchConnectionManager.class, " for more information");
+	}
+
+	private boolean _isConfigurationNotSet(String value) {
+		if (Validator.isBlank(value) || value.equals("[]")) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
