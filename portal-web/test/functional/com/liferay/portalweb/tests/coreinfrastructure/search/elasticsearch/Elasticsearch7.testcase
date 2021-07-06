@@ -580,6 +580,7 @@ definition {
 	}
 
 	test SwitchSidecarToRemote {
+		property portal.acceptance = "brooke";
 		property embedded.elasticsearch.only = "true";
 		property test.name.skip.portal.instance = "Elasticsearch7#SwitchSidecarToRemote";
 
