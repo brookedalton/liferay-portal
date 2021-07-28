@@ -810,6 +810,7 @@ definition {
 
 	test ViewElementJSONViaBlueprintsQueryBuilder {
 		property browser.chrome.bin.args = "--allow-no-sandbox-job";
+		property portal.acceptance = "brooke";
 
 		SearchExperiences.openSearchExperiencesAdmin();
 
@@ -1069,6 +1070,8 @@ definition {
 	}
 
 	test ViewRawResponseViaBlueprintsPreview {
+		property portal.acceptance = "brooke";
+
 		JSONWebcontent.addWebContent(
 			content = "WC Content",
 			groupName = "Guest",
