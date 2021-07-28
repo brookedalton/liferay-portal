@@ -821,6 +821,8 @@ definition {
 	}
 
 	test ViewElementJSONViaBlueprintsQueryBuilder {
+		property portal.acceptance = "brooke";
+
 		SearchExperiences.openSearchExperiencesAdmin();
 
 		SearchExperiences.addBlueprint(name = "Element JSON Blueprint");
@@ -1081,6 +1083,8 @@ definition {
 	}
 
 	test ViewRawResponseViaBlueprintsPreview {
+		property portal.acceptance = "brooke";
+
 		JSONWebcontent.addWebContent(
 			content = "WC Content",
 			groupName = "Guest",
