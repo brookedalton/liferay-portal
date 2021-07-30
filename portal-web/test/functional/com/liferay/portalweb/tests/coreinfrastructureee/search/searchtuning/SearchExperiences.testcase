@@ -186,6 +186,8 @@ definition {
 			locator1 = "WCEditWebContent#GEOLOCATION_LEAFLET_MARKER_DRAG_HANDLE",
 			locator2 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
 
+		takeScreenshot();
+
 		PortletEntry.publish();
 
 		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
@@ -204,9 +206,13 @@ definition {
 
 		Panel.expandPanel(panel = "Categorization");
 
+		ScrollWebElementIntoView(locator1 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
+
 		DragAndDrop.javaScriptDragAndDropToObject(
 			locator1 = "WCEditWebContent#GEOLOCATION_LEAFLET_MARKER_DRAG_HANDLE",
 			locator2 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
+
+		takeScreenshot();
 
 		PortletEntry.publish();
 
@@ -247,6 +253,12 @@ definition {
 		SearchExperiences.addQueryElement(
 			elasticsearchQuery = "${elasticsearchQueryJSON}",
 			element = "Paste any Elasticsearch query");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "location");
+
+		takeScreenshot();
 
 		PortletEntry.save();
 
