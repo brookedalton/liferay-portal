@@ -835,7 +835,7 @@ definition {
 			fileName = "element.json",
 			text = "clauses");
 
-		Click.javaScriptClick(locator1 = "Button#COPY");
+		Click.pauseJavaScriptClick(locator1 = "Button#COPY");
 
 		SearchExperiences.viewCopiedContent(text = "clauses");
 	}
@@ -1102,7 +1102,9 @@ definition {
 			fileName = "raw_response.json",
 			text = "hits");
 
-		Click.javaScriptClick(locator1 = "Button#COPY");
+		Pause(locator1 = "1000");
+
+		Click.pauseJavaScriptClick(locator1 = "Button#COPY");
 
 		SearchExperiences.viewCopiedContent(text = "hits");
 	}
