@@ -184,6 +184,22 @@ definition {
 		selenium.assertLiferayErrors();
 	}
 
+	function pauseJavaScriptClick {
+		WaitForSPARefresh();
+
+		selenium.waitForVisible();
+
+		selenium.pause("1000");
+
+		Click.javaScriptClick();
+
+		selenium.pause("1000");
+
+		selenium.assertJavaScriptErrors();
+
+		selenium.assertLiferayErrors();
+	}
+
 	function waitForMenuToggleJSClick {
 		WaitForSPARefresh();
 
