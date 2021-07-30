@@ -162,6 +162,8 @@ definition {
 	}
 
 	test BoostWithCustomElasticsearchQuery {
+		property portal.acceptance = "brooke";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
