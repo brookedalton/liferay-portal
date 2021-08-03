@@ -843,8 +843,6 @@ definition {
 			key_jsonText = "clauses",
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_VIEW_ELEMENT_JSON_TEXT");
 
-		SelectFrameTop();
-
 		Click(locator1 = "Link#DOWNLOAD");
 
 		SearchExperiences.viewDownloadedContent(
