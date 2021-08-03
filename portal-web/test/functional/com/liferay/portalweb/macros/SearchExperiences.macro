@@ -188,7 +188,9 @@ definition {
 	}
 
 	macro viewCopiedContent {
-		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		WebContentNavigator.gotoAddCP();
 
 		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME_2");
 
