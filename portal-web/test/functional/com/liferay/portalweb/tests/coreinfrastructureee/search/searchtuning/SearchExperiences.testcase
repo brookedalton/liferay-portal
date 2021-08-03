@@ -845,6 +845,8 @@ definition {
 
 		Click(locator1 = "Link#DOWNLOAD");
 
+		Pause(locator1 = "3000");
+
 		SearchExperiences.viewDownloadedContent(
 			fileName = "element.json",
 			text = "clauses");
