@@ -827,8 +827,6 @@ definition {
 			key_jsonText = "clauses",
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_VIEW_ELEMENT_JSON_TEXT");
 
-		SelectFrameTop();
-
 		Click(locator1 = "Link#DOWNLOAD");
 
 		SearchExperiences.viewDownloadedContent(
@@ -836,6 +834,8 @@ definition {
 			text = "clauses");
 
 		Click.javaScriptClick(locator1 = "Button#COPY");
+
+		Click.mouseDownMouseUp(locator1 = "Modal#CLOSE_BUTTON");
 
 		SearchExperiences.viewCopiedContent(text = "clauses");
 	}
@@ -1094,8 +1094,6 @@ definition {
 			key_searchExplanation = "hits",
 			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION");
 
-		SelectFrameTop();
-
 		Click(locator1 = "Link#DOWNLOAD");
 
 		SearchExperiences.viewDownloadedContent(
@@ -1103,6 +1101,8 @@ definition {
 			text = "hits");
 
 		Click.javaScriptClick(locator1 = "Button#COPY");
+
+		Click.mouseDownMouseUp(locator1 = "Modal#CLOSE_BUTTON");
 
 		SearchExperiences.viewCopiedContent(text = "hits");
 	}
