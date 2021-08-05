@@ -189,7 +189,8 @@ public class BlueprintsSearchRequestContributor
 		).withSearchContextGet(
 			searchContext -> GetterUtil.getString(
 				searchContext.getAttribute(
-					SearchContextAttributeKeys.FEDERATED_SEARCH_KEY))
+					SearchContextAttributeKeys.FEDERATED_SEARCH_KEY),
+				null)
 		);
 	}
 
