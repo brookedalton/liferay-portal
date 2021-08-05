@@ -14,8 +14,8 @@
 
 package com.liferay.search.experiences.blueprints.options.web.internal.portlet.shared.search;
 
-import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.web.portlet.shared.search.PortletSharedSearchContributor;
 import com.liferay.portal.search.web.portlet.shared.search.PortletSharedSearchSettings;
 import com.liferay.search.experiences.blueprints.engine.constants.SearchContextAttributeKeys;
@@ -49,23 +49,30 @@ public class BlueprintsOptionsPortletSharedSearchContributor
 					portletSharedSearchSettings.
 						getPortletPreferencesOptional());
 
-		SearchContext searchContext =
-			portletSharedSearchSettings.getSearchContext();
+		SearchRequestBuilder searchRequestBuilder =
+			portletSharedSearchSettings.getFederatedSearchRequestBuilder(
+				blueprintsOptionsPortletPreferences.
+					getFederatedSearchKeyOptional());
 
-		searchContext.setAttribute(
-			SearchContextAttributeKeys.BLUEPRINT_ID,
-			blueprintsOptionsPortletPreferences.getBlueprintIdString());
+		searchRequestBuilder.withSearchContext(
+			searchContext -> {
+				searchContext.setAttribute(
+					SearchContextAttributeKeys.BLUEPRINT_ID,
+					blueprintsOptionsPortletPreferences.getBlueprintIdString());
 
-		searchContext.setAttribute(
-			SearchContextAttributeKeys.FEDERATED_SEARCH_KEY,
-			blueprintsOptionsPortletPreferences.getFederatedSearchKeyString());
+				searchContext.setAttribute(
+					SearchContextAttributeKeys.FEDERATED_SEARCH_KEY,
+					blueprintsOptionsPortletPreferences.
+						getFederatedSearchKeyString());
 
-		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
-			portletSharedSearchSettings.getRenderRequest());
+				HttpServletRequest httpServletRequest =
+					_portal.getHttpServletRequest(
+						portletSharedSearchSettings.getRenderRequest());
 
-		searchContext.setAttribute(
-			SearchContextAttributeKeys.IP_ADDRESS,
-			httpServletRequest.getRemoteAddr());
+				searchContext.setAttribute(
+					SearchContextAttributeKeys.IP_ADDRESS,
+					httpServletRequest.getRemoteAddr());
+			});
 	}
 
 	@Reference
