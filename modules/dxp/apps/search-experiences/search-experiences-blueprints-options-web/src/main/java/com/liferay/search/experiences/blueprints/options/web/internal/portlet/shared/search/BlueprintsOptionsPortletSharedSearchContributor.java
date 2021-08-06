@@ -14,7 +14,9 @@
 
 package com.liferay.search.experiences.blueprints.options.web.internal.portlet.shared.search;
 
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.web.portlet.shared.search.PortletSharedSearchContributor;
 import com.liferay.portal.search.web.portlet.shared.search.PortletSharedSearchSettings;
@@ -56,9 +58,16 @@ public class BlueprintsOptionsPortletSharedSearchContributor
 
 		searchRequestBuilder.withSearchContext(
 			searchContext -> {
-				searchContext.setAttribute(
-					SearchContextAttributeKeys.BLUEPRINT_ID,
-					blueprintsOptionsPortletPreferences.getBlueprintIdString());
+				String blueprintId = GetterUtil.getString(
+					searchContext.getAttribute(
+						SearchContextAttributeKeys.BLUEPRINT_ID));
+
+				if (Validator.isBlank(blueprintId)) {
+					searchContext.setAttribute(
+						SearchContextAttributeKeys.BLUEPRINT_ID,
+						blueprintsOptionsPortletPreferences.
+							getBlueprintIdString());
+				}
 
 				searchContext.setAttribute(
 					SearchContextAttributeKeys.FEDERATED_SEARCH_KEY,
