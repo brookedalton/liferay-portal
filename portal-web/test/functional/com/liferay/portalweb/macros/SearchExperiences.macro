@@ -188,17 +188,26 @@ definition {
 	}
 
 	macro viewCopiedContent {
-		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
+		WaitForSPARefresh();
 
-		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME_2");
+		var javascript = '''
+			var readText = navigator.clipboard.readText();
 
-		Click(locator1 = "CKEditor#BODY");
+			return readText;
+''';
 
-		RobotType.robotTypeShortcut(locator1 = "Ctrl + v");
+		var clipText= selenium.getEval("${javascript}");
 
-		WaitForElementPresent(
-			key_text = "${text}",
-			locator1 = "CKEditor#BODY_TEXT");
+		echo("## Clipboard text: ${clipText}");
+
+		return "${clipText}";
+
+		if (contains("${clipText}", "${text}")) {
+			echo("File ${clipText} contains text ${text}");
+		}
+		else {
+			fail("File ${clipText} does not contain text ${text}");
+		}
 	}
 
 	macro viewDownloadedContent {
