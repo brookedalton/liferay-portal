@@ -809,6 +809,8 @@ definition {
 	}
 
 	test ViewElementJSONViaBlueprintsQueryBuilder {
+		property browser.chrome.bin.args = "--allow-no-sandbox-job";
+
 		SearchExperiences.openSearchExperiencesAdmin();
 
 		SearchExperiences.addBlueprint(name = "Element JSON Blueprint");
@@ -834,8 +836,6 @@ definition {
 			text = "clauses");
 
 		Click.javaScriptClick(locator1 = "Button#COPY");
-
-		Click.mouseDownMouseUp(locator1 = "Modal#CLOSE_BUTTON");
 
 		SearchExperiences.viewCopiedContent(text = "clauses");
 	}
@@ -1101,8 +1101,6 @@ definition {
 			text = "hits");
 
 		Click.javaScriptClick(locator1 = "Button#COPY");
-
-		Click.mouseDownMouseUp(locator1 = "Modal#CLOSE_BUTTON");
 
 		SearchExperiences.viewCopiedContent(text = "hits");
 	}
