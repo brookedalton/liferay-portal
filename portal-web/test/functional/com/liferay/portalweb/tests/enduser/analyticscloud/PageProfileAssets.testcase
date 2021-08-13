@@ -15,6 +15,8 @@ definition {
 		TestCase.setUpPortalInstance();
 
 		ACUtils.launchDXP();
+
+		ACUtils.addSiteAndPage();
 	}
 
 	tearDown {
@@ -30,12 +32,59 @@ definition {
 	}
 
 	@description = "Feature ID: Legacy | Automation ID: LRAC-8368 | Test Summary: Page profile assets card shows which assets are on the page"
-	@ignore = "true"
 	@priority = "5"
 	test ShowsWhichAssetsOnPage {
+		ACUtils.createBlogsAndAddToPage();
 
-		// TODO LRAC-8368 ShowsWhichAssetsOnPage
+		ACUtils.createWCAndAddToPage();
 
+		var propertyName = ACDXPSettings.connectDXPtoAnalyticsCloud(siteName = "Site Name");
+
+		JSONUser.addUser(
+			userEmailAddress = "ac@liferay.com",
+			userFirstName = "ac",
+			userLastName = "ac",
+			userScreenName = "ac");
+
+		ACDXPSettings.syncNewContactData();
+
+		User.logoutAndLoginPG(
+			userLoginEmailAddress = "ac@liferay.com",
+			userLoginFullName = "ac ac");
+
+		for (var n : list "1,2,3") {
+			Navigator.gotoSitePage(
+				pageName = "AC Page",
+				siteName = "Site Name");
+		}
+
+		ACUtils.closeAllSessions();
+
+		Pause(locator1 = "30000");
+
+		ACUtils.launchAC();
+
+		ACProperties.switchProperty(propertyName = "${propertyName}");
+
+		ACNavigation.goToSites();
+
+		ACNavigation.switchTab(tabName = "Pages");
+
+		ACTimeFilter.clickTimeFilterButton();
+
+		ACTimeFilter.setLast24Hours();
+
+		ACNavigation.openItem(itemName = "AC Page - Site Name - Liferay DXP");
+
+		ACNavigation.viewActiveSwitchTab(tabName = "Overview");
+
+		ACCards.viewCards(cardTitle = "Displayed Assets");
+
+		ScrollBy(value1 = "0, 500");
+
+		for (var assetName : list "Blogs AC Title,Web Content AC Title") {
+			ACAssets.viewAssets(assetName = "${assetName}");
+		}
 	}
 
 }
