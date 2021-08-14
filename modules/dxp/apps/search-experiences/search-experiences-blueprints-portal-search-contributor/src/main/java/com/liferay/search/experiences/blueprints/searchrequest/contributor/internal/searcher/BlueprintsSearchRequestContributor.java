@@ -100,14 +100,14 @@ public class BlueprintsSearchRequestContributor
 
 		if (channelGroupId > 0) {
 			blueprintsAttributesBuilder.addAttribute(
-				"commerce_channel_group_id", channelGroupId);
+				"channel_group_id", channelGroupId);
 		}
 
 		long[] accountGroupIds = getCommerceAccountGroupIds(searchRequest);
 
 		if (accountGroupIds.length > 0) {
 			blueprintsAttributesBuilder.addAttribute(
-				"commerce_account_group_ids", accountGroupIds);
+				"account_group_ids", accountGroupIds);
 		}
 	}
 
