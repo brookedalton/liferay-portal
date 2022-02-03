@@ -593,7 +593,7 @@ definition {
 
 		AntCommand(
 			locator1 = "build-test-elasticsearch7.xml",
-			value1 = "start-elasticsearch");
+			value1 = "start-elasticsearch -Delastic.logging.enabled=true -Drest.client.logger.level=INFO");
 
 		WaitForConsoleTextPresent(value1 = "Stopping sidecar Elasticsearch");
 
