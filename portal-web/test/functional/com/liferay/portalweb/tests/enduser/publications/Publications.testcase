@@ -420,6 +420,26 @@ definition {
 			changesList = "WC Title 3,WC Title 2,WC Title 1");
 	}
 
+	@priority = "4"
+	test PublicationsHistoryIsPreserved {
+		JSONPublications.addPublication(publicationName = "Publication Name");
+
+		JSONPublications.selectPublication(publicationName = "Publication Name");
+
+		JSONWebcontent.addWebContent(
+			content = "WC WebContent Content",
+			groupName = "Guest",
+			title = "WC WebContent Title");
+
+		PublicationsNavigator.gotoPublish(
+			gotoPublicationsAdmin = "true",
+			publicationName = "Publication Name");
+
+		Publications.publishPublication(publicationName = "Publication Name");
+
+		PublicationsNavigator.assertPublicationIsPreserved(publicationName = "Publication Name");
+	}
+
 	@priority = "5"
 	test PublishParallelPublications {
 		property app.server.types = "jboss,tcserver,tomcat,weblogic,websphere,wildfly";
