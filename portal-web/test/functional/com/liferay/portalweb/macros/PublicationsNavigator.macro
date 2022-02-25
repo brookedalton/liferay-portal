@@ -10,6 +10,30 @@ definition {
 		MenuItem.clickNoError(menuItem = "${menuItem}");
 	}
 
+	macro assertPublicationIsPreserved {
+		WaitForSPARefresh();
+
+		RunScript(locator1 = "window.history.go(-1)");
+
+		AssertTextPresent(
+			key_publicationName = "Production",
+			locator1 = "Publications#PUBLICATIONS_INDICATOR_TITLE",
+			value1 = "Production");
+
+		AssertElementNotPresent(
+			key_changeTitle = "Conflicting Changes",
+			locator1 = "PublicationsChanges#CHANGE_TITLE");
+
+		RunScript(locator1 = "window.history.go(-1)");
+
+		LexiconEntry.changeDisplayStyle(displayStyle = "list");
+
+		AssertTextEquals(
+			key_publicationName = "${publicationName}",
+			locator1 = "Publications#LIST_PUBLISHED_STATUS",
+			value1 = "Published");
+	}
+
 	macro gotoChangeDetailsNavbar {
 		Click(
 			key_navBarTitle = "${navBarTitle}",
