@@ -584,6 +584,7 @@ definition {
 	@priority = "4"
 	test SwitchSidecarToRemote {
 		property embedded.elasticsearch.only = "true";
+		property portal.acceptance = "brooke";
 		property test.name.skip.portal.instance = "Elasticsearch7#SwitchSidecarToRemote";
 
 		JSONWebcontent.addWebContent(
@@ -601,7 +602,7 @@ definition {
 
 		AntCommand(
 			locator1 = "build-test-elasticsearch7.xml",
-			value1 = "start-elasticsearch");
+			value1 = "start-elasticsearch -Delastic.logging.enabled=true -Drest.client.logger.level=INFO");
 
 		WaitForConsoleTextPresent(value1 = "Stopping sidecar Elasticsearch");
 
@@ -636,6 +637,8 @@ definition {
 		AssertTextNotEquals.assertNotPartialText(
 			locator1 = "SearchAdmin#CONNECTION_ID",
 			value1 = "__SIDECAR__");
+
+		WaitForConsoleTextPresent(value1 = "Returning connection with ID: __REMOTE__");
 
 		SearchAdministration.executeReindex();
 
