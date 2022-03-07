@@ -44,6 +44,9 @@ definition {
 	test AddElementToQueryBuilder {
 		property environment.acceptance = "true";
 		property portal.acceptance = "true";
+		property test.name.skip.portal.instance = "Blueprints#AddElementToQueryBuilder";
+
+		SearchAdministration.executeReindex();
 
 		Blueprints.openBlueprintsAdmin();
 
@@ -62,6 +65,8 @@ definition {
 
 	test ApplyBlueprintIDToSearchViaLLSO {
 		property test.name.skip.portal.instance = "Blueprints#ApplyBlueprintToSearchViaLLSO";
+
+		SearchAdministration.executeReindex();
 
 		Blueprints.openBlueprintsAdmin();
 
@@ -188,6 +193,8 @@ definition {
 
 	test ApplyBlueprintToContentPageViaLLSO {
 		property test.name.skip.portal.instance = "Blueprints#ApplyBlueprintToContentPageViaLLSO";
+
+		SearchAdministration.executeReindex();
 
 		JSONBlog.addEntry(
 			entryContent = "",
