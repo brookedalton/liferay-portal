@@ -105,6 +105,9 @@
 				<replacetoken><![CDATA[JAVA="$JAVA_HOME/bin/java"]]></replacetoken>
 				<replacevalue><![CDATA[JAVA="/opt/java/jdk11/bin/java"]]></replacevalue>
 			</replace>
+
+			<echo append="true" file="${elasticsearch.dir}/config/elasticsearch.yml" if:true="${elasticsearch.jdk11.enabled}">${line.separator}xpack.security.transport.ssl.supported_protocols: [ "TLSv1.1", "TLSv1.2" ]
+xpack.security.http.ssl.supported_protocols: [ "TLSv1.1", "TLSv1.2" ]</echo>
 		</sequential>
 	</macrodef>
 
