@@ -3781,7 +3781,7 @@ log.sanitizer.enabled=false</echo>
 	</target>
 
 	<target name="functional-alpine310-tomcat90-mysql57-jdk8">
-		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" />
 	</target>
 
 	<target name="functional-bundle-alpine310-tomcat90-mysql57-jdk8">
@@ -4704,7 +4704,7 @@ log.sanitizer.enabled=false</echo>
 	</target>
 
 	<target name="functional-centos8-tomcat90-mysql57-jdk8">
-		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" />
 	</target>
 
 	<target name="functional-debian7-tomcat90-mysql57-jdk8">
@@ -4726,7 +4726,7 @@ log.sanitizer.enabled=false</echo>
 	<target name="functional-jboss74-mysql57-jdk8">
 		<set-app-server-version-number app.server.type="jboss" app.server.version="7.4.0" />
 
-		<run-functional-test app.server.type="jboss" app.server.version="7.4.0" database.type="mysql" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="jboss" app.server.version="7.4.0" database.type="mysql" />
 	</target>
 
 	<target name="functional-orcllinux6-tomcat90-mysql57-jdk8">
@@ -4734,15 +4734,15 @@ log.sanitizer.enabled=false</echo>
 	</target>
 
 	<target name="functional-orcllinux7-tomcat90-mysql57-jdk8">
-		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" />
 	</target>
 
 	<target name="functional-orcllinux8-tomcat90-mysql57-jdk8">
-		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" />
 	</target>
 
 	<target name="functional-redhat8-tomcat90-mysql57-jdk8">
-		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" />
 	</target>
 
 	<target name="functional-smoke-bundle-jboss-mysql57-jdk8">
@@ -5084,7 +5084,7 @@ log.sanitizer.enabled=false</echo>
 	</target>
 
 	<target name="functional-suse15-tomcat90-mysql57-jdk8">
-		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" />
 	</target>
 
 	<target name="functional-tomcat90-db2111-jdk8">
@@ -5224,11 +5224,11 @@ log.sanitizer.enabled=false</echo>
 	</target>
 
 	<target name="functional-ubuntu18-tomcat90-mysql57-jdk8">
-		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" />
 	</target>
 
 	<target name="functional-ubuntu20-tomcat90-mysql57-jdk8">
-		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" />
 	</target>
 
 	<target name="functional-upgrade-jboss73-mysql57-jdk8">
