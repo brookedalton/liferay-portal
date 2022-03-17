@@ -29,6 +29,7 @@ definition {
 
 	@priority = "4"
 	test AssertIndexOnStartup {
+		property environment.acceptance = "false";
 		property test.assert.warning.exceptions = "true";
 		property test.name.skip.portal.instance = "Elasticsearch7#AssertIndexOnStartup";
 
@@ -514,6 +515,7 @@ definition {
 
 	@priority = "5"
 	test OSGiConfigSmokeTest {
+		property environment.acceptance = "false";
 		property embedded.elasticsearch.only = "true";
 		property osgi.module.configuration.file.names = "com.liferay.portal.search.elasticsearch7.configuration.ElasticsearchConfiguration.config";
 		property osgi.module.configurations = "clusterName=&quot;LiferayElasticsearchCluster1&quot;";
@@ -528,6 +530,7 @@ definition {
 
 	@priority = "5"
 	test SearchWithNonLiferayIndex {
+		property environment.acceptance = "false";
 		property embedded.elasticsearch.only = "true";
 		property test.name.skip.portal.instance = "Elasticsearch7#SearchWithNonLiferayIndex";
 
@@ -583,6 +586,7 @@ definition {
 
 	@priority = "4"
 	test SwitchSidecarToRemote {
+		property environment.acceptance = "false";
 		property embedded.elasticsearch.only = "true";
 		property test.name.skip.portal.instance = "Elasticsearch7#SwitchSidecarToRemote";
 
