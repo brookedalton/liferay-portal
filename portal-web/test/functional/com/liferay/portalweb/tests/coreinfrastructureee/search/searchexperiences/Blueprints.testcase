@@ -295,6 +295,8 @@ definition {
 	}
 
 	test ApplyBlueprintWithUserCustomExpandoFieldElement {
+		property portal.acceptance = "brooke";
+
 		JSONWebcontent.addWebContent(
 			content = "",
 			groupName = "Guest",
