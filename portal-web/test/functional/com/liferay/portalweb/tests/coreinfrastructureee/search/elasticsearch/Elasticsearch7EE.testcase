@@ -31,6 +31,7 @@ definition {
 	@priority = "5"
 	test LearningToRankSmoke {
 		property elasticsearch.ltr.enabled = "true";
+		property minimum.slave.ram = "24";
 		property remote.elasticsearch.enabled = "true";
 		property search.environment.suite.exclude = "true";
 		property test.name.skip.portal.instance = "Elasticsearch7EE#LearningToRankSmoke";
