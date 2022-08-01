@@ -57,6 +57,8 @@ definition {
 
 		SearchPortlets.searchEmbedded(searchTerm = "alien");
 
+		takeScreenshot();
+
 		var assetEntryTitleListNoLtr = "";
 		var iterator = "1";
 
