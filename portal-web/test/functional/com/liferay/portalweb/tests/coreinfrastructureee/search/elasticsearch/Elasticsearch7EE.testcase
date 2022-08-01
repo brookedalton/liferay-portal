@@ -51,6 +51,8 @@ definition {
 			language = "Groovy",
 			script = "${script}");
 
+		SearchAdministration.executeReindex();
+
 		Navigator.openURL();
 
 		SearchPortlets.searchEmbedded(searchTerm = "alien");
