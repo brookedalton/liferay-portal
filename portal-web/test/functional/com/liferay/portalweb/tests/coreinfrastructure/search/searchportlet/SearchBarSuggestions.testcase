@@ -42,6 +42,8 @@ definition {
 	@description = "This is a use case for LPS-159730."
 	@priority = "4"
 	test AssertURLforSuggestionsResults {
+		property portal.acceptance = "brooke";
+
 		JSONWebcontent.addWebContent(
 			content = "WC WebContent Content",
 			description = "WC WebContent Description",
