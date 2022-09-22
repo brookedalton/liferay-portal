@@ -60,10 +60,6 @@ definition {
 			locator1 = "Search#EMBEDDED_SEARCH_BAR",
 			value1 = "Apple");
 
-		SearchBarSuggestions.viewSuggestions(
-			searchAssetDescription = "WC WebContent Description",
-			searchAssetTitle = "Apple");
-
 		SearchBarSuggestions.gotoSuggestionResultDetails(searchAssetTitle = "Apple");
 
 		SearchBarSuggestions.viewSuggestionResultDetails(searchAssetTitle = "Apple");
