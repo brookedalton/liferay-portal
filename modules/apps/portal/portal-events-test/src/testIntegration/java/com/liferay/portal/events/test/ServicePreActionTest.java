@@ -20,6 +20,7 @@ import com.liferay.portal.events.ServicePreAction;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.ResourceAction;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
@@ -29,7 +30,6 @@ import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
-import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
@@ -300,18 +300,14 @@ public class ServicePreActionTest {
 		}
 		finally {
 			if (!hasGuestViewPermission) {
-				Role role = _roleLocalService.getRole(
-					_group.getCompanyId(), RoleConstants.GUEST);
+				ResourceAction resourceAction =
+					_resourceActionLocalService.getResourceAction(
+						Layout.class.getName(), ActionKeys.VIEW);
 
-				for (Layout layout :
-						_layoutLocalService.getLayouts(_group.getCompanyId())) {
-
-					_resourcePermissionLocalService.setResourcePermissions(
-						layout.getCompanyId(), Layout.class.getName(),
-						ResourceConstants.SCOPE_INDIVIDUAL,
-						String.valueOf(layout.getPrimaryKey()),
-						role.getRoleId(), new String[] {ActionKeys.VIEW});
-				}
+				_resourcePermissionLocalService.addResourcePermissions(
+					Layout.class.getName(), RoleConstants.GUEST,
+					ResourceConstants.SCOPE_INDIVIDUAL,
+					resourceAction.getBitwiseValue());
 			}
 		}
 
@@ -327,9 +323,6 @@ public class ServicePreActionTest {
 
 	@DeleteAfterTestRun
 	private Group _group;
-
-	@Inject
-	private LayoutLocalService _layoutLocalService;
 
 	private final MockHttpServletRequest _mockHttpServletRequest =
 		new MockHttpServletRequest();
