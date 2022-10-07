@@ -17,7 +17,6 @@ package com.liferay.portal.events.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.portal.events.ServicePreAction;
-import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.ResourceAction;
@@ -25,11 +24,9 @@ import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.role.RoleConstants;
-import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
-import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
@@ -38,7 +35,6 @@ import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -52,10 +48,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,28 +69,9 @@ public class ServicePreActionTest {
 	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
 		new LiferayIntegrationTestRule();
 
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		_company = CompanyTestUtil.addCompany();
-
-		_companyThreadLocalCompanyId = CompanyThreadLocal.getCompanyId();
-
-		CompanyThreadLocal.setCompanyId(_company.getCompanyId());
-	}
-
-	@AfterClass
-	public static void tearDownClass() throws Exception {
-		CompanyThreadLocal.setCompanyId(_companyThreadLocalCompanyId);
-
-		UserTestUtil.setUser(
-			UserTestUtil.getAdminUser(_companyThreadLocalCompanyId));
-
-		CompanyLocalServiceUtil.deleteCompany(_company.getCompanyId());
-	}
-
 	@Before
 	public void setUp() throws Exception {
-		_group = GroupTestUtil.addGroupToCompany(_company.getCompanyId());
+		_group = GroupTestUtil.addGroup();
 
 		LayoutTestUtil.addTypePortletLayout(_group);
 
@@ -105,8 +80,6 @@ public class ServicePreActionTest {
 
 		_mockHttpServletRequest.setRequestURI(
 			_portal.getPathMain() + "/portal/login");
-
-		_mockHttpServletRequest.setAttribute(WebKeys.COMPANY, _company);
 
 		_mockHttpServletRequest.setAttribute(
 			WebKeys.VIRTUAL_HOST_LAYOUT_SET, _group.getPublicLayoutSet());
@@ -287,7 +260,7 @@ public class ServicePreActionTest {
 
 		try {
 			if (signedIn) {
-				_user = UserTestUtil.addUser(_company);
+				_user = UserTestUtil.addUser();
 			}
 			else {
 				_user = _portal.initUser(_mockHttpServletRequest);
@@ -317,9 +290,6 @@ public class ServicePreActionTest {
 
 		return themeDisplay.getPlid();
 	}
-
-	private static Company _company;
-	private static long _companyThreadLocalCompanyId;
 
 	@DeleteAfterTestRun
 	private Group _group;
