@@ -401,10 +401,6 @@ public class LayoutTestUtil {
 			boolean hidden)
 		throws Exception {
 
-		Group group = GroupLocalServiceUtil.getGroup(groupId);
-
-		User user = UserTestUtil.getAdminUser(group.getCompanyId());
-
 		String friendlyURL =
 			StringPool.SLASH + FriendlyURLNormalizerUtil.normalize(name);
 
@@ -429,6 +425,10 @@ public class LayoutTestUtil {
 			serviceContext.setAttribute(
 				"layoutPrototypeUuid", layoutPrototype.getUuid());
 		}
+
+		Group group = GroupLocalServiceUtil.getGroup(groupId);
+
+		User user = UserTestUtil.getAdminUser(group.getCompanyId());
 
 		return LayoutLocalServiceUtil.addLayout(
 			user.getUserId(), groupId, privateLayout,
