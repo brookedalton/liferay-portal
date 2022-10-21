@@ -3703,4 +3703,34 @@ definition {
 			searchAssetType = "Web Content Article");
 	}
 
+	@priority = "3"
+	test ContentPagesInSearchResultsShouldLinkToThePage {
+		task("Add a New Page") {
+			JSONLayout.addPublicLayout(
+				groupName = "Guest",
+				layoutName = "Example Page",
+				type = "content");
+			JSONLayout.publishLayout(
+				groupName = "Guest",
+				layoutName = "Example Page");
+		}
+		task("Search for 'Example Page'") {
+			SearchPortlets.searchEmbedded(searchTerm = "Example Page");
+		}
+		task("Uncheck the 'Display Selected Result in Context' box into 'Configuration'") {
+			SearchResultPortlet.configureSearchResults(
+				disableDisplaySelectedResultInContext = "true");
+		}
+		task("Search for 'Example Page' again") {
+			ProductMenu.gotoHomePage();
+			SearchPortlets.searchEmbedded(searchTerm = "Example Page");
+		}
+		task("Click on the Search Result") {
+			Search.gotoResultAssetViaTitle(searchAssetTitle = "Example Page");
+		}
+		task("Assert Search bar is avaible") {
+			AssertElementPresent(locator1 = "WorkflowMetricsProcessListView#SEARCH_BAR_INPUT");
+		}
+	}	
+
 }
