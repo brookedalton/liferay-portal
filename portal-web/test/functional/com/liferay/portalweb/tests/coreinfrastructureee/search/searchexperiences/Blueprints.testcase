@@ -3836,6 +3836,8 @@ definition {
 			locator1 = "Blueprints#CODE_MIRROR_EDITOR",
 			value1 = "${elementSourceJson}");
 
+		Pause(locator1 = "400");
+
 		Click(
 			ariaLabel = "Edit Title",
 			locator1 = "Blueprints#BLUEPRINTS_EDIT_PAGE_HEADER_TITLE");
