@@ -32,9 +32,6 @@ const ImportSXPBlueprintModal = ({componentId, redirectURL}) => {
 	});
 
 	const _handleClose = (redirect) => {
-		setErrorMessage('');
-		setImportFile(null);
-
 		onClose(false);
 
 		if (redirect) {
