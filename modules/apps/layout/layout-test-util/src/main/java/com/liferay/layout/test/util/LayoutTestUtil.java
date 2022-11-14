@@ -27,9 +27,7 @@ import com.liferay.portal.kernel.model.LayoutSetPrototype;
 import com.liferay.portal.kernel.model.LayoutTemplate;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
-import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutPrototypeLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutServiceUtil;
@@ -40,7 +38,6 @@ import com.liferay.portal.kernel.test.randomizerbumpers.UniqueStringRandomizerBu
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
-import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -434,10 +431,6 @@ public class LayoutTestUtil {
 			}
 		}
 
-		Group group = GroupLocalServiceUtil.getGroup(groupId);
-
-		User user = UserTestUtil.getAdminUser(group.getCompanyId());
-
 		String description = "This is a test page.";
 
 		ServiceContext serviceContext =
@@ -451,7 +444,7 @@ public class LayoutTestUtil {
 		}
 
 		return LayoutLocalServiceUtil.addLayout(
-			user.getUserId(), groupId, privateLayout,
+			TestPropsValues.getUserId(), groupId, privateLayout,
 			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID, name, null, description,
 			LayoutConstants.TYPE_PORTLET, hidden, friendlyURL, serviceContext);
 	}
@@ -565,10 +558,8 @@ public class LayoutTestUtil {
 		LayoutTypePortlet layoutTypePortlet =
 			(LayoutTypePortlet)layout.getLayoutType();
 
-		User user = UserTestUtil.getAdminUser(layout.getCompanyId());
-
 		layoutTypePortlet.setLayoutTemplateId(
-			user.getUserId(), layoutTemplateId);
+			TestPropsValues.getUserId(), layoutTemplateId);
 
 		return LayoutServiceUtil.updateLayout(
 			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
