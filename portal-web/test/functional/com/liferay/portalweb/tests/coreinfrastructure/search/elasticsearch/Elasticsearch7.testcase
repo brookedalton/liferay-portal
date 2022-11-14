@@ -582,7 +582,7 @@ definition {
 
 		SearchAdministration.executeReindex();
 
-		SearchAdministration.openSearchAdmin();  
+		SearchAdministration.openSearchAdmin();
 
 		Navigator.gotoPage(pageName = "Home");
 
