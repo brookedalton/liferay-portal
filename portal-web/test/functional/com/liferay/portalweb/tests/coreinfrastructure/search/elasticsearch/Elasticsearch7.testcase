@@ -563,6 +563,10 @@ definition {
 		property test.assert.warning.exceptions = "true";
 		property test.name.skip.portal.instance = "Elasticsearch7#SearchAfterRedeployingElasticsearchConnector";
 
+		// Pause for the Elasticsearch set up. See LPS-168748 for more details.
+
+		Pause(locator1 = "120000");
+
 		GogoShell.openGogoShellAdmin();
 
 		var moduleId = GogoShell.getModuleID(moduleName = "com.liferay.portal.search.elasticsearch7.impl");
