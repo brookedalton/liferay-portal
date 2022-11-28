@@ -949,6 +949,18 @@ definition {
 			searchAssetType = "Web Content Article");
 	}
 
+	test CanAccessTheRawRequestJSONWhenUsingThePreviewToTestBlueprint {
+		Blueprints.openBlueprintsAdmin();
+
+		Blueprints.createBlueprint(title = "Test Blueprint");
+
+		Click(locator1 = "Blueprints#BLUEPRINTS_PREVIEW_SIDE_BAR_BUTTON");
+
+		Blueprints.searchBlueprintsPreview(searchTerm = "");
+		Click(locator1 = "Blueprints#BLUEPRINTS_PREVIEW_RAW_REQUEST_JSON");
+		AssertElementPresent(locator1 = "Blueprints#BLUEPRINTS_RAW_REQUEST_JSON_CONTENT");
+	}
+
 	test CancelChangesToBlueprintForm {
 		Blueprints.openBlueprintsAdmin();
 
