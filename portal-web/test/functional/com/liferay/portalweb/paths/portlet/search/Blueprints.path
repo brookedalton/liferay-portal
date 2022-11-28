@@ -291,6 +291,21 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_PREVIEW_SIDE_BAR_BUTTON</td>
+	<td>//button[contains(@data-testid,'previewSidebarButton')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_PREVIEW_RAW_REQUEST_JSON</td>
+	<td>//button[contains(@class,'raw-request')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_RAW_REQUEST_JSON_CONTENT</td>
+	<td>//div[contains(@class,'CodeMirror-sizer')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_PREVIEW_RAW_RESPONSE_JSON</td>
 	<td>//span[contains(@class,'cm-string') and contains(.,'${responseString}')]</td>
 	<td></td>
