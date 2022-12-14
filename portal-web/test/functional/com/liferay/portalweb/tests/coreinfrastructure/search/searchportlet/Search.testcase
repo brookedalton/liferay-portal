@@ -1167,6 +1167,35 @@ definition {
 		SearchPortlets.viewCopiedContent(text = "_shards");
 	}
 
+	@priority = "3"
+	test DeleteWCFolderWithinPublication {
+		JSONWebcontent.addFolder(
+			folderName = "WC Folder Name",
+			groupName = "Global");
+
+		JSONPublications.enablePublications();
+
+		JSONPublications.addPublication(publicationName = "Publication Name");
+
+		Publications.selectPublication(publicationName = "Publication Name");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "Global");
+
+		WebContent.deleteCP(
+			siteURLKey = "Global",
+			webContentTitle = "WC Folder Name");
+
+		PublicationsNavigator.gotoPublish(
+			gotoPublicationsAdmin = "true",
+			publicationName = "Publication Name");
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "Message#SUCCESS",
+			value1 = "No unresolved conflicts, ready to publish.");
+
+		Publications.publishPublication(publicationName = "Publication Name");
+	}
+
 	@priority = "4"
 	test DisableEnterpriseSearch {
 		property license.required = "true";
