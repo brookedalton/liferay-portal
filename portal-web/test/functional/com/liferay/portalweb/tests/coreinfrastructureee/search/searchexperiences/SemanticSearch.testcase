@@ -25,10 +25,10 @@ definition {
 	test AssertBlacklistedSentenceTransformersAreUnavailable {
 		property custom.properties = "feature.flag.LPS-163688=true";
 		property osgi.module.configuration.file.names = "com.liferay.portal.component.blacklist.internal.configuration.ComponentBlacklistConfiguration.config";
-		property osgi.module.configurations = "blacklistComponentNames=[\"com.liferay.search.experiences.internal.ml.sentence.embedding.TXTAISentenceTransformer\",\"com.liferay.search.experiences.internal.ml.sentence.embedding.HuggingFaceInferenceAPISentenceTransformer\"]";
+		property osgi.module.configurations = "blacklistComponentNames=[\"com.liferay.search.experiences.internal.ml.text.embedding.TXTAISentenceTransformer\",\"com.liferay.search.experiences.internal.ml.sentence.embedding.HuggingFaceInferenceAPISentenceTransformer\"]";
 		property test.name.skip.portal.instance = "SemanticSearch#AssertBlacklistedSentenceTransformersAreUnavailable";
 
-		WaitForConsoleTextPresent(value1 = "Disabling com.liferay.search.experiences.internal.ml.sentence.embedding.TXTAISentenceTransformer");
+		WaitForConsoleTextPresent(value1 = "Disabling com.liferay.search.experiences.internal.ml.text.embedding.TXTAISentenceTransformer");
 
 		WaitForConsoleTextPresent(value1 = "Disabling com.liferay.search.experiences.internal.ml.sentence.embedding.HuggingFaceInferenceAPISentenceTransformer");
 
@@ -58,7 +58,7 @@ definition {
 
 		OSGiConfig.deleteOSGiConfigFile(osgiConfigFileName = "com.liferay.portal.component.blacklist.internal.configuration.ComponentBlacklistConfiguration.config");
 
-		WaitForConsoleTextPresent(value1 = "Enabling com.liferay.search.experiences.internal.ml.sentence.embedding.TXTAISentenceTransformer");
+		WaitForConsoleTextPresent(value1 = "Enabling com.liferay.search.experiences.internal.ml.text.embedding.TXTAISentenceTransformer");
 
 		WaitForConsoleTextPresent(value1 = "Enabling com.liferay.search.experiences.internal.ml.sentence.embedding.HuggingFaceInferenceAPISentenceTransformer");
 
@@ -301,7 +301,7 @@ definition {
 		PortalSettings.openToConfigInInstanceSettings(portletId = "com.liferay.search.experiences.configuration.SemanticSearchConfiguration");
 
 		Select(
-			ariaLabel = "Sentence Transformer",
+			ariaLabel = "Text Embedding Provider",
 			locator1 = "Select#ANY_ARIA_LABEL",
 			value1 = "txtai");
 
