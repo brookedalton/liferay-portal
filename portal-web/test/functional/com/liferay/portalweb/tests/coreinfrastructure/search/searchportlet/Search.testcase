@@ -1375,6 +1375,7 @@ definition {
 		}
 	}
 
+	@priority = "3"
 	test CanOrderTagFacetTerms {
 		task ("Create the tags and the Web Contents") {
 			for (var tagList : list "engineering,product,2021,2022") {
@@ -1446,6 +1447,7 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-162049."
+	@priority = "3"
 	test CanOrderTypeFacetTerms {
 		JSONDocument.addFile(
 			dmDocumentDescription = "DM Document Description",
