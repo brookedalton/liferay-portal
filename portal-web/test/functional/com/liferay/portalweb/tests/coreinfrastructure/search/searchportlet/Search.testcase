@@ -1445,38 +1445,27 @@ definition {
 		}
 	}
 
-	@description = "This is a use case for LPS-162049. When configuring the Type Facet, I can choose from different ordering options so that facet terms are displayed according to the sort strategy"
-	@priority = "3"
+	@description = "This is a use case for LPS-162049."
 	test CanOrderTypeFacetTerms {
-		task ("Add some Wiki Page examples") {
-			for (var wikiNumber : list "1,2,3,4") {
+		JSONDocument.addFile(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentTitle = "DM Document Title",
+			groupName = "Guest");
+
+		task ("Add Wiki Pages") {
+			for (var count : list "1,2,3") {
 				JSONWiki.addWikiPage(
 					groupName = "Guest",
 					wikiNodeName = "Main",
 					wikiPageContent = "Wiki Page Content",
-					wikiPageName = "Wiki Page ${wikiNumber}");
+					wikiPageName = "Wiki Page ${count}");
 			}
 		}
 
-		task ("Add some Documents examples") {
-			for (var documentNumber : list "1,2") {
-				JSONDocument.addFile(
-					dmDocumentDescription = "DM Document Description",
-					dmDocumentTitle = "DM Document ${documentNumber}",
-					groupName = "Guest");
-			}
-		}
-
-		task ("Add user and some folders examples") {
-			JSONUser.addUser(
-				userEmailAddress = "userea@liferay.com",
-				userFirstName = "userfn",
-				userLastName = "userln",
-				userScreenName = "usersn");
-
-			for (var folder : list "Folder 1,Folder 2,Folder 3,Folder 4,Folder 5,Folder 6") {
+		task ("Add document folders") {
+			for (var count : list "1,2,3,4") {
 				JSONFolder.addFolder(
-					dmFolderName = "${folder}",
+					dmFolderName = "Folder ${count}",
 					groupName = "Guest");
 			}
 		}
