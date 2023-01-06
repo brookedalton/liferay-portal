@@ -136,18 +136,9 @@ path.repo: ${liferay.home}/data/elasticsearch7/repo</echo>
 		<sequential>
 			<echo append="true" file="${elasticsearch.dir}/config/elasticsearch.yml">${line.separator}bootstrap.system_call_filter: false
 cluster.name: LiferayElasticsearchCluster
+http.host: _local_,_site_
 ingest.geoip.downloader.enabled: false
 xpack.license.self_generated.type: trial</echo>
-
-			<get-browser-property property.name="browser.docker.image" />
-
-			<if>
-				<isset property="browser.docker.image" />
-				<then>
-					<echo append="true" file="${elasticsearch.dir}/config/elasticsearch.yml">
-					${line.separator}http.host: _local_,_site_</echo>
-				</then>
-			</if>
 		</sequential>
 	</macrodef>
 
@@ -865,9 +856,9 @@ ${line.separator}CATALINA_OPTS="${CATALINA_OPTS} -Djavax.net.ssl.trustStore=${el
 
 			<configure-elasticsearch-jdk11 if:true="${elasticsearch.jdk11.enabled}" />
 
-			<antcall target="start-elasticsearch-node" />
-
 			<set-x-pack-user-passwords />
+
+			<antcall target="start-elasticsearch-node" />
 
 			<if>
 				<equals arg1="${elastic.pki.authentication.enabled}" arg2="true" />
