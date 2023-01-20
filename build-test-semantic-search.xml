@@ -73,6 +73,8 @@ txtaiHostAddress="http://${txtai.container.ip}:8000"</echo>
 
 		<build-txtai-docker-image />
 
+		<get-docker-image-id property.name="image.id" />
+
 		<start-docker-container image="txtai-api" name="${container.prefix}_txtai_${image.id}">\
 			-p 8000:8000 \
 		</start-docker-container>
