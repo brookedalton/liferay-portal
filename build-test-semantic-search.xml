@@ -89,8 +89,8 @@ txtaiHostAddress="http://${txtai.container.ip}:8000"</echo>
 	</target>
 
 	<target name="stop-txtai">
-		<get-docker-image-id property.name="image.id" />
+		<check-docker-container />
 
-		<stop-docker-container name="${container.prefix}_txtai_${image.id}" />
+		<stop-docker-container name="${container.prefix}_txtai_" />
 	</target>
 </project>
