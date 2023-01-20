@@ -34,6 +34,22 @@ RUN python -c "from txtai.api import API; API('config.yml', False)"</echo>
 		</sequential>
 	</macrodef>
 
+	<macrodef name="check-docker-container">
+		<sequential>
+			<get-docker-image-id property.name="image.id" />
+
+			<if>
+				<equals arg1="${image.id}" arg2="" />
+				<then>
+					<echo>No txtai container running</echo>
+				</then>
+				<else>
+					<stop-docker-container name="${container.prefix}_txtai_${image.id}" />
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="configure-portal-txtai-osgi-properties">
 		<sequential>
 			<exec executable="/bin/bash" outputproperty="txtai.container.ip">
@@ -59,17 +75,7 @@ txtaiHostAddress="http://${txtai.container.ip}:8000"</echo>
 	</macrodef>
 
 	<target name="set-up-txtai">
-		<get-docker-image-id property.name="image.id" />
-
-		<if>
-			<equals arg1="${image.id}" arg2="" />
-			<then>
-				<echo>No txtai container running</echo>
-			</then>
-			<else>
-				<stop-docker-container name="${container.prefix}_txtai_${image.id}" />
-			</else>
-		</if>
+		<check-docker-container />
 
 		<build-txtai-docker-image />
 
