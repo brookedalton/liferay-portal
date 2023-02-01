@@ -309,8 +309,8 @@ public class CompanyIndexFactory
 				createIndices(restHighLevelClient.indices(), companyId);
 			}
 			catch (Exception exception) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(
+				if (_log.isInfoEnabled()) {
+					_log.info(
 						"Unable to reinitialize index for company " + companyId,
 						exception);
 				}
