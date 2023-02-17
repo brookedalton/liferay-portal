@@ -44,6 +44,7 @@ import com.liferay.portal.search.tuning.rankings.web.internal.index.RankingIndex
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexName;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexNameBuilder;
 import com.liferay.portal.search.tuning.rankings.web.internal.storage.RankingStorageAdapter;
+import com.liferay.portal.search.tuning.rankings.web.internal.util.RankingUtil;
 
 import java.io.IOException;
 
@@ -53,9 +54,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -317,18 +315,9 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 	private List<String> _getAliases(
 		EditRankingMVCActionRequest editRankingMVCActionRequest) {
 
-		List<String> strings = new ArrayList<>(
-			editRankingMVCActionRequest.getAliases());
-
-		Stream<String> stream = strings.stream();
-
-		Predicate<String> predicate = this::_isUpdateSpecial;
-
-		return stream.filter(
-			predicate.negate()
-		).collect(
-			Collectors.toList()
-		);
+		return ListUtil.filter(
+			editRankingMVCActionRequest.getAliases(),
+			string -> !_isUpdateSpecial(string));
 	}
 
 	private String _getCompanyIndexName() {
@@ -339,18 +328,21 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 		String oldName,
 		EditRankingMVCActionRequest editRankingMVCActionRequest) {
 
-		List<String> strings = editRankingMVCActionRequest.getAliases();
+		List<String> strings = TransformUtil.transform(
+			editRankingMVCActionRequest.getAliases(),
+			alias -> {
+				if (_isUpdateSpecial(alias)) {
+					return _stripUpdateSpecial(alias);
+				}
 
-		Stream<String> stream = strings.stream();
+				return null;
+			});
 
-		return stream.filter(
-			this::_isUpdateSpecial
-		).map(
-			this::_stripUpdateSpecial
-		).findAny(
-		).orElse(
-			oldName
-		);
+		if (strings.isEmpty()) {
+			return oldName;
+		}
+
+		return strings.get(0);
 	}
 
 	private String[] _getRankingDocumentIds(
@@ -448,17 +440,9 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 		Collection<String> queryStrings = ranking.getQueryStrings();
 
 		if (editRankingMVCActionRequest.isCmd(Constants.UPDATE)) {
-			List<String> aliases = _getAliases(editRankingMVCActionRequest);
-
-			queryStrings = Stream.concat(
-				Stream.of(ranking.getQueryString()), aliases.stream()
-			).filter(
-				string -> !Validator.isBlank(string)
-			).distinct(
-			).sorted(
-			).collect(
-				Collectors.toList()
-			);
+			queryStrings = RankingUtil.getQueryStrings(
+				ranking.getQueryString(),
+				_getAliases(editRankingMVCActionRequest));
 		}
 
 		if (_detectedDuplicateQueryStrings(ranking, queryStrings)) {

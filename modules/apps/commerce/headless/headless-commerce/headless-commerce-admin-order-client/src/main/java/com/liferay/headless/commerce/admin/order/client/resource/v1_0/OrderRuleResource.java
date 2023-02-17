@@ -95,11 +95,11 @@ public interface OrderRuleResource {
 	public HttpInvoker.HttpResponse deleteOrderRuleHttpResponse(Long id)
 		throws Exception;
 
-	public void deleteOrderRuleBatch(Long id, String callbackURL, Object object)
+	public void deleteOrderRuleBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deleteOrderRuleBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public OrderRule getOrderRule(Long id) throws Exception;
@@ -780,12 +780,11 @@ public interface OrderRuleResource {
 			return httpInvoker.invoke();
 		}
 
-		public void deleteOrderRuleBatch(
-				Long id, String callbackURL, Object object)
+		public void deleteOrderRuleBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				deleteOrderRuleBatchHttpResponse(id, callbackURL, object);
+				deleteOrderRuleBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -814,7 +813,7 @@ public interface OrderRuleResource {
 		}
 
 		public HttpInvoker.HttpResponse deleteOrderRuleBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -849,8 +848,6 @@ public interface OrderRuleResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-order/v1.0/order-rules/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

@@ -269,7 +269,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response deleteOrderBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -278,7 +277,7 @@ public class Mutation {
 			_orderResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			orderResource -> orderResource.deleteOrderBatch(
-				id, callbackURL, object));
+				callbackURL, object));
 	}
 
 	@GraphQLField
@@ -345,7 +344,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response deleteOrderItemBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -354,7 +352,7 @@ public class Mutation {
 			_orderItemResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			orderItemResource -> orderItemResource.deleteOrderItemBatch(
-				id, callbackURL, object));
+				callbackURL, object));
 	}
 
 	@GraphQLField
@@ -384,7 +382,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response updateOrderItemBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -393,7 +390,7 @@ public class Mutation {
 			_orderItemResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			orderItemResource -> orderItemResource.putOrderItemBatch(
-				id, callbackURL, object));
+				callbackURL, object));
 	}
 
 	@GraphQLField
@@ -425,7 +422,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response createOrderIdOrderItemBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -434,7 +430,7 @@ public class Mutation {
 			_orderItemResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			orderItemResource -> orderItemResource.postOrderIdOrderItemBatch(
-				id, callbackURL, object));
+				callbackURL, object));
 	}
 
 	@GraphQLField
@@ -476,7 +472,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response deleteOrderNoteBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -485,7 +480,7 @@ public class Mutation {
 			_orderNoteResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			orderNoteResource -> orderNoteResource.deleteOrderNoteBatch(
-				id, callbackURL, object));
+				callbackURL, object));
 	}
 
 	@GraphQLField
@@ -530,7 +525,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response createOrderIdOrderNoteBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -539,7 +533,7 @@ public class Mutation {
 			_orderNoteResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			orderNoteResource -> orderNoteResource.postOrderIdOrderNoteBatch(
-				id, callbackURL, object));
+				callbackURL, object));
 	}
 
 	@GraphQLField
@@ -609,7 +603,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response deleteOrderRuleBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -618,7 +611,7 @@ public class Mutation {
 			_orderRuleResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			orderRuleResource -> orderRuleResource.deleteOrderRuleBatch(
-				id, callbackURL, object));
+				callbackURL, object));
 	}
 
 	@GraphQLField
@@ -697,7 +690,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response createOrderRuleIdOrderRuleAccountBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -707,7 +699,7 @@ public class Mutation {
 			this::_populateResourceContext,
 			orderRuleAccountResource ->
 				orderRuleAccountResource.postOrderRuleIdOrderRuleAccountBatch(
-					id, callbackURL, object));
+					callbackURL, object));
 	}
 
 	@GraphQLField
@@ -776,7 +768,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response createOrderRuleIdOrderRuleAccountGroupBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -787,7 +778,7 @@ public class Mutation {
 			orderRuleAccountGroupResource ->
 				orderRuleAccountGroupResource.
 					postOrderRuleIdOrderRuleAccountGroupBatch(
-						id, callbackURL, object));
+						callbackURL, object));
 	}
 
 	@GraphQLField
@@ -853,7 +844,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response createOrderRuleIdOrderRuleChannelBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -863,7 +853,7 @@ public class Mutation {
 			this::_populateResourceContext,
 			orderRuleChannelResource ->
 				orderRuleChannelResource.postOrderRuleIdOrderRuleChannelBatch(
-					id, callbackURL, object));
+					callbackURL, object));
 	}
 
 	@GraphQLField
@@ -930,7 +920,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response createOrderRuleIdOrderRuleOrderTypeBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -941,7 +930,7 @@ public class Mutation {
 			orderRuleOrderTypeResource ->
 				orderRuleOrderTypeResource.
 					postOrderRuleIdOrderRuleOrderTypeBatch(
-						id, callbackURL, object));
+						callbackURL, object));
 	}
 
 	@GraphQLField
@@ -1011,7 +1000,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response deleteOrderTypeBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -1020,7 +1008,7 @@ public class Mutation {
 			_orderTypeResourceComponentServiceObjects,
 			this::_populateResourceContext,
 			orderTypeResource -> orderTypeResource.deleteOrderTypeBatch(
-				id, callbackURL, object));
+				callbackURL, object));
 	}
 
 	@GraphQLField
@@ -1099,7 +1087,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response createOrderTypeIdOrderTypeChannelBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -1109,7 +1096,7 @@ public class Mutation {
 			this::_populateResourceContext,
 			orderTypeChannelResource ->
 				orderTypeChannelResource.postOrderTypeIdOrderTypeChannelBatch(
-					id, callbackURL, object));
+					callbackURL, object));
 	}
 
 	@GraphQLField
@@ -1200,7 +1187,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response deleteTermBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -1208,8 +1194,7 @@ public class Mutation {
 		return _applyComponentServiceObjects(
 			_termResourceComponentServiceObjects,
 			this::_populateResourceContext,
-			termResource -> termResource.deleteTermBatch(
-				id, callbackURL, object));
+			termResource -> termResource.deleteTermBatch(callbackURL, object));
 	}
 
 	@GraphQLField
@@ -1282,7 +1267,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response createTermIdTermOrderTypeBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -1292,7 +1276,7 @@ public class Mutation {
 			this::_populateResourceContext,
 			termOrderTypeResource ->
 				termOrderTypeResource.postTermIdTermOrderTypeBatch(
-					id, callbackURL, object));
+					callbackURL, object));
 	}
 
 	private <T, R, E1 extends Throwable, E2 extends Throwable> R

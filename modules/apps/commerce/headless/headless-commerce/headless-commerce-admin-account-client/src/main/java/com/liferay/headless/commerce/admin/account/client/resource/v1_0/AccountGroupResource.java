@@ -94,12 +94,11 @@ public interface AccountGroupResource {
 	public HttpInvoker.HttpResponse deleteAccountGroupHttpResponse(Long id)
 		throws Exception;
 
-	public void deleteAccountGroupBatch(
-			Long id, String callbackURL, Object object)
+	public void deleteAccountGroupBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deleteAccountGroupBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public AccountGroup getAccountGroup(Long id) throws Exception;
@@ -762,12 +761,11 @@ public interface AccountGroupResource {
 			return httpInvoker.invoke();
 		}
 
-		public void deleteAccountGroupBatch(
-				Long id, String callbackURL, Object object)
+		public void deleteAccountGroupBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				deleteAccountGroupBatchHttpResponse(id, callbackURL, object);
+				deleteAccountGroupBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -796,7 +794,7 @@ public interface AccountGroupResource {
 		}
 
 		public HttpInvoker.HttpResponse deleteAccountGroupBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -831,8 +829,6 @@ public interface AccountGroupResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-account/v1.0/accountGroups/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

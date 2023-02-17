@@ -17,9 +17,7 @@ package com.liferay.segments.asah.connector.internal.criteria.contributor;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.criteria.FileEntryItemSelectorReturnType;
 import com.liferay.item.selector.criteria.file.criterion.FileItemSelectorCriterion;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -30,12 +28,14 @@ import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.odata.entity.EntityModel;
+import com.liferay.segments.asah.connector.internal.criteria.mapper.SegmentsCriteriaJSONObjectMapperImpl;
 import com.liferay.segments.asah.connector.internal.odata.entity.EventEntityModel;
 import com.liferay.segments.criteria.Criteria;
 import com.liferay.segments.criteria.contributor.SegmentsCriteriaContributor;
+import com.liferay.segments.criteria.mapper.SegmentsCriteriaJSONObjectMapper;
 import com.liferay.segments.field.Field;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.portlet.PortletRequest;
@@ -60,10 +60,13 @@ public class EventSegmentsCriteriaContributor
 	public static final String KEY = "event";
 
 	@Override
-	public JSONObject getCriteriaJSONObject(Criteria criteria) {
-		return JSONUtil.put(
-			"conjunctionName",
-			_getCriterionConjunction(criteria.getCriterion(getKey())));
+	public JSONObject getCriteriaJSONObject(Criteria criteria)
+		throws Exception {
+
+		SegmentsCriteriaJSONObjectMapper segmentsCriteriaJSONObjectMapper =
+			new SegmentsCriteriaJSONObjectMapperImpl();
+
+		return segmentsCriteriaJSONObjectMapper.toJSONObject(criteria, this);
 	}
 
 	@Override
@@ -78,13 +81,46 @@ public class EventSegmentsCriteriaContributor
 
 	@Override
 	public List<Field> getFields(PortletRequest portletRequest) {
-		return Collections.singletonList(
+		return Arrays.asList(
 			new Field(
-				"downloadDocumentsAndMedia",
+				"documentDownloaded",
 				_language.get(
 					_portal.getLocale(portletRequest),
 					"downloaded-document-and-media"),
-				"event", null, _getSelectEntity(portletRequest)));
+				"event", null, _getSelectEntity(portletRequest)),
+			new Field(
+				"formSubmitted",
+				_language.get(
+					_portal.getLocale(portletRequest), "submitted-form"),
+				"event"),
+			new Field(
+				"formViewed",
+				_language.get(_portal.getLocale(portletRequest), "viewed-form"),
+				"event"),
+			new Field(
+				"pageViewed",
+				_language.get(_portal.getLocale(portletRequest), "viewed-page"),
+				"event"),
+			new Field(
+				"blogCommented",
+				_language.get(
+					_portal.getLocale(portletRequest), "commented-on-blog"),
+				"event"),
+			new Field(
+				"blogViewed",
+				_language.get(_portal.getLocale(portletRequest), "viewed-blog"),
+				"event"),
+			new Field(
+				"documentPreviewed",
+				_language.get(
+					_portal.getLocale(portletRequest),
+					"viewed-document-and-media"),
+				"event"),
+			new Field(
+				"webContentViewed",
+				_language.get(
+					_portal.getLocale(portletRequest), "viewed-web-content"),
+				"event"));
 	}
 
 	@Override
@@ -116,14 +152,6 @@ public class EventSegmentsCriteriaContributor
 		if (_serviceRegistration != null) {
 			_serviceRegistration.unregister();
 		}
-	}
-
-	private String _getCriterionConjunction(Criteria.Criterion criterion) {
-		if (criterion == null) {
-			return StringPool.BLANK;
-		}
-
-		return criterion.getConjunction();
 	}
 
 	private Field.SelectEntity _getSelectEntity(PortletRequest portletRequest) {

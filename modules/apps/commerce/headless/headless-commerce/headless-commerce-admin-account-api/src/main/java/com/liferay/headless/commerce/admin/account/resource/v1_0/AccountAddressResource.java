@@ -71,8 +71,7 @@ public interface AccountAddressResource {
 
 	public Response deleteAccountAddress(Long id) throws Exception;
 
-	public Response deleteAccountAddressBatch(
-			Long id, String callbackURL, Object object)
+	public Response deleteAccountAddressBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public AccountAddress getAccountAddress(Long id) throws Exception;
@@ -85,8 +84,7 @@ public interface AccountAddressResource {
 			Long id, AccountAddress accountAddress)
 		throws Exception;
 
-	public Response putAccountAddressBatch(
-			Long id, String callbackURL, Object object)
+	public Response putAccountAddressBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public Page<AccountAddress>
@@ -107,7 +105,7 @@ public interface AccountAddressResource {
 		throws Exception;
 
 	public Response postAccountIdAccountAddressBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(

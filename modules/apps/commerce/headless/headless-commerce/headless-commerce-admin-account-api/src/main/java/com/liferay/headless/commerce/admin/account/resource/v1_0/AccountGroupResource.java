@@ -81,8 +81,7 @@ public interface AccountGroupResource {
 
 	public Response deleteAccountGroup(Long id) throws Exception;
 
-	public Response deleteAccountGroupBatch(
-			Long id, String callbackURL, Object object)
+	public Response deleteAccountGroupBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public AccountGroup getAccountGroup(Long id) throws Exception;

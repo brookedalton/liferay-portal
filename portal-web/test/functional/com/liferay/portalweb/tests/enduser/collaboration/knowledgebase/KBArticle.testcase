@@ -353,6 +353,33 @@ definition {
 			roleTitle = "site member");
 	}
 
+	@description = "This test checks that a user can edit from an article."
+	@priority = 4
+	test CanEditArticleViaToolbar {
+		property custom.properties = "feature.flag.LPS-166643=true";
+
+		JSONKnowledgeBase.addkBArticle(
+			groupName = "Guest",
+			kbArticleContent = "Knowledge Base Article Content",
+			kbArticleTitle = "Knowledge Base Article Title");
+
+		KBArticle.openToKBArticleInSite(
+			groupName = "Guest",
+			kbArticleTitle = "Knowledge Base Article Title",
+			siteURLKey = "guest");
+
+		KBArticle.editCP(
+			editActionToolbar = "true",
+			kbArticleContentEdit = "Knowledge Base Article Content Edit",
+			kbArticleTitleEdit = "Knowledge Base Article Title Edit");
+
+		KBAdmin.openKBAdmin(siteURLKey = "guest");
+
+		KBArticle.viewCP(
+			kbArticleContent = "Knowledge Base Article Content Edit",
+			kbArticleTitle = "Knowledge Base Article Title Edit");
+	}
+
 	@description = "This test ensures that a user can edit the kb entry from the navigation pane."
 	@priority = 5
 	test CanEditEntryFromNavigationPane {
@@ -985,6 +1012,24 @@ definition {
 		AssertElementPresent(
 			key_service = "youtube",
 			locator1 = "BlogsEntry#CONTENT_VIDEO");
+	}
+
+	@description = "This test checks that all the correct actions appear after selecting an article."
+	@priority = 5
+	test CorrectActionsAppearInToolbarAfterSelectingArticle {
+		property custom.properties = "feature.flag.LPS-166643=true";
+
+		JSONKnowledgeBase.addkBArticle(
+			groupName = "Guest",
+			kbArticleContent = "Knowledge Base Article Content",
+			kbArticleTitle = "Knowledge Base Article Title");
+
+		KBArticle.openToKBArticleInSite(
+			groupName = "Guest",
+			kbArticleTitle = "Knowledge Base Article Title",
+			siteURLKey = "guest");
+
+		KBArticle.viewActionsDetailsToolbar(moreActions = "true");
 	}
 
 	@priority = 3

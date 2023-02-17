@@ -97,12 +97,12 @@ public interface WarehouseOrderTypeResource {
 		throws Exception;
 
 	public void postWarehouseIdWarehouseOrderTypeBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
 			postWarehouseIdWarehouseOrderTypeBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 		throws Exception;
 
 	public static class Builder {
@@ -715,12 +715,12 @@ public interface WarehouseOrderTypeResource {
 		}
 
 		public void postWarehouseIdWarehouseOrderTypeBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				postWarehouseIdWarehouseOrderTypeBatchHttpResponse(
-					id, callbackURL, object);
+					callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -750,7 +750,7 @@ public interface WarehouseOrderTypeResource {
 
 		public HttpInvoker.HttpResponse
 				postWarehouseIdWarehouseOrderTypeBatchHttpResponse(
-					Long id, String callbackURL, Object object)
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -785,8 +785,6 @@ public interface WarehouseOrderTypeResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-inventory/v1.0/warehouses/warehouse-order-types/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

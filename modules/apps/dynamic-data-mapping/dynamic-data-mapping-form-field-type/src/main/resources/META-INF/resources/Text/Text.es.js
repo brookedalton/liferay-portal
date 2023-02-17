@@ -15,6 +15,7 @@
 import ClayAutocomplete from '@clayui/autocomplete';
 import ClayDropDown from '@clayui/drop-down';
 import {ClayInput} from '@clayui/form';
+import {ClayTooltipProvider} from '@clayui/tooltip';
 import {usePrevious} from '@liferay/frontend-js-react-web';
 import {normalizeFieldName} from 'data-engine-js-components-web';
 import {sub} from 'frontend-js-web';
@@ -22,6 +23,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {FieldBase} from '../FieldBase/ReactFieldBase.es';
 import {useSyncValue} from '../hooks/useSyncValue.es';
+import {getTooltipTitle} from '../util/tooltip';
 import withConfirmationField from '../util/withConfirmationField.es';
 
 const CounterContainer = ({
@@ -159,25 +161,32 @@ const Text = ({
 
 	return (
 		<>
-			<ClayInput
-				className="ddm-field-text"
-				dir={Liferay.Language.direction[editingLanguageId]}
-				disabled={disabled}
-				id={id}
-				lang={editingLanguageId?.replace('_', '-')}
-				maxLength={showCounter ? '' : maxLength}
-				name={name}
-				onBlur={(event) => {
-					onBlur(event);
-					handleChangeInput(event);
-				}}
-				onChange={handleChangeInput}
-				onFocus={onFocus}
-				placeholder={placeholder}
-				ref={inputRef}
-				type="text"
-				value={value}
-			/>
+			<ClayTooltipProvider autoAlign>
+				<div
+					data-tooltip-align="top"
+					{...getTooltipTitle({placeholder, value})}
+				>
+					<ClayInput
+						className="ddm-field-text"
+						dir={Liferay.Language.direction[editingLanguageId]}
+						disabled={disabled}
+						id={id}
+						lang={editingLanguageId?.replace('_', '-')}
+						maxLength={showCounter ? '' : maxLength}
+						name={name}
+						onBlur={(event) => {
+							onBlur(event);
+							handleChangeInput(event);
+						}}
+						onChange={handleChangeInput}
+						onFocus={onFocus}
+						placeholder={placeholder}
+						ref={inputRef}
+						type="text"
+						value={value}
+					/>
+				</div>
+			</ClayTooltipProvider>
 
 			<CounterContainer
 				counter={value?.length}
@@ -214,24 +223,31 @@ const Textarea = ({
 
 	return (
 		<>
-			<textarea
-				className="ddm-field-text form-control"
-				dir={Liferay.Language.direction[editingLanguageId]}
-				disabled={disabled}
-				id={id}
-				lang={editingLanguageId?.replace('_', '-')}
-				name={name}
-				onBlur={onBlur}
-				onChange={(event) => {
-					setValue(event.target.value);
-					onChange(event);
-				}}
-				onFocus={onFocus}
-				placeholder={placeholder}
-				style={disabled ? {resize: 'none'} : null}
-				type="text"
-				value={value}
-			/>
+			<ClayTooltipProvider autoAlign>
+				<div
+					data-tooltip-align="top"
+					{...getTooltipTitle({placeholder, value})}
+				>
+					<textarea
+						className="ddm-field-text form-control"
+						dir={Liferay.Language.direction[editingLanguageId]}
+						disabled={disabled}
+						id={id}
+						lang={editingLanguageId?.replace('_', '-')}
+						name={name}
+						onBlur={onBlur}
+						onChange={(event) => {
+							setValue(event.target.value);
+							onChange(event);
+						}}
+						onFocus={onFocus}
+						placeholder={placeholder}
+						style={disabled ? {resize: 'none'} : null}
+						type="text"
+						value={value}
+					/>
+				</div>
+			</ClayTooltipProvider>
 
 			<CounterContainer
 				counter={value?.length}

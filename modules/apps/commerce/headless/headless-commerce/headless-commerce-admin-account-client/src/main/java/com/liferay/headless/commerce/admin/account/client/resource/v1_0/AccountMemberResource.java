@@ -105,11 +105,11 @@ public interface AccountMemberResource {
 		throws Exception;
 
 	public void postAccountIdAccountMemberBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse postAccountIdAccountMemberBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public void deleteAccountIdAccountMember(Long id, Long userId)
@@ -803,12 +803,12 @@ public interface AccountMemberResource {
 		}
 
 		public void postAccountIdAccountMemberBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				postAccountIdAccountMemberBatchHttpResponse(
-					id, callbackURL, object);
+					callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -838,7 +838,7 @@ public interface AccountMemberResource {
 
 		public HttpInvoker.HttpResponse
 				postAccountIdAccountMemberBatchHttpResponse(
-					Long id, String callbackURL, Object object)
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -873,8 +873,6 @@ public interface AccountMemberResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-account/v1.0/accounts/accountMembers/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

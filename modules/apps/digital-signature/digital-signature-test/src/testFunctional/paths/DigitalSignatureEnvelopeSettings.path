@@ -16,8 +16,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>DIGITAL_SIGNATURE_UNSUPORTTED_FILE</td>
+	<td>DIGITAL_SIGNATURE_UNSUPPORTED_FILE</td>
 	<td>//p[contains(., 'This file extension is not supported by DocuSign.')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ANY_DISABLED_BUTTON</td>
+	<td>//button[@disabled and contains (text(),'${key_value}')]</td>
 	<td></td>
 </tr>
 </tbody>

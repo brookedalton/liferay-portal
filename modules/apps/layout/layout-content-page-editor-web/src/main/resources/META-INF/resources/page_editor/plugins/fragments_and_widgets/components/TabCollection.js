@@ -112,7 +112,7 @@ TabPortletItems.proptypes = {
 
 function TabCollectionCollapse({children, open, setOpen, title}) {
 	const handleOpen = (nextOpen) => {
-		setOpen(!nextOpen);
+		setOpen(nextOpen);
 	};
 
 	const {isActive, setElement} = useKeyboardNavigation({
@@ -126,7 +126,7 @@ function TabCollectionCollapse({children, open, setOpen, title}) {
 			role="none"
 		>
 			<button
-				aria-expanded={open}
+				aria-expanded={open ? 'true' : 'false'}
 				aria-haspopup="menu"
 				className={classNames(
 					'btn',

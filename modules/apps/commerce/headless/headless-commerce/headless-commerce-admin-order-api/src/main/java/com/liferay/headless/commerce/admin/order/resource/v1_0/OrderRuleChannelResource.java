@@ -83,7 +83,7 @@ public interface OrderRuleChannelResource {
 		throws Exception;
 
 	public Response postOrderRuleIdOrderRuleChannelBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(

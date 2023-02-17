@@ -79,8 +79,7 @@ public interface PriceListResource {
 
 	public Response deletePriceList(Long id) throws Exception;
 
-	public Response deletePriceListBatch(
-			Long id, String callbackURL, Object object)
+	public Response deletePriceListBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public PriceList getPriceList(Long id) throws Exception;

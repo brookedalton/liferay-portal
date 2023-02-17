@@ -96,6 +96,30 @@ definition {
 		ClientExtensionGeneral.viewEmptyRemoteTable();
 	}
 
+	@description = "Add Client Extension with DB Partitioning enabled."
+	@priority = 5
+	test CanBeDisplayedWithDBPartitioning {
+		property database.partition.enabled = "true";
+		property database.types = "mysql";
+
+		task ("Given Client Extension admin page") {
+			ClientExtensionGeneral.goToRemoteAppsPortlet();
+		}
+
+		task ("When Click Add Button") {
+			ClientExtensionGeneral.addCustomElement(
+				entryHtmlName = "vanilla-counter",
+				entryName = "Vanilla Counter",
+				entryURL = " http://remote-component-test.wincent.com/packages/vanilla-counter/index.js");
+		}
+
+		task ("Then Custom Elements admin page lists the Name and Type") {
+			ClientExtensionGeneral.viewTableEntries(
+				entryName = "Vanilla Counter",
+				entryType = "Custom Element");
+		}
+	}
+
 	@description = "Verify that the client extension is not available on the workflow page"
 	@priority = 3
 	test CannotConfigureWorkflowSiteLevel {

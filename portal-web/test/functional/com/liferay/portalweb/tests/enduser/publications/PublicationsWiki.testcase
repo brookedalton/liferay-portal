@@ -77,6 +77,142 @@ definition {
 		Publications.publishPublication(publicationName = "Publication Name");
 	}
 
+	@description = "Can edit Wiki Pages Within Publications"
+	@priority = 3
+	test CanEditWikiPageWithinPublications {
+		task ("Create Wiki Node and Wiki Page with Attachment") {
+			JSONWiki.addWikiNode(
+				groupName = "Guest",
+				wikiNodeDescription = "Wiki Node Description",
+				wikiNodeName = "Wiki Node Test");
+
+			JSONWiki.addWikiPage(
+				groupName = "Guest",
+				wikiNodeName = "Wiki Node Test",
+				wikiPageContent = "Wiki Page Content",
+				wikiPageName = "Wiki Page Test");
+
+			JSONWiki.addAttachmentToWikiPage(
+				fileName = "Document_1.txt",
+				groupName = "Guest",
+				mimeType = "text/txt",
+				wikiNodeName = "Wiki Node Test",
+				wikiPageName = "Wiki Page Test");
+		}
+
+		JSONPublications.addPublication(publicationName = "Test Publication");
+
+		JSONPublications.selectPublication(publicationName = "Test Publication");
+
+		task ("Edit Wiki Node and Wiki Page") {
+			WikiNavigator.openWikiAdmin(siteURLKey = "guest");
+
+			WikiNode.editCP(
+				wikiNodeDescription = "Wiki Node Description",
+				wikiNodeDescriptionEdit = "Wiki Node Description Edit",
+				wikiNodeName = "Wiki Node Test",
+				wikiNodeNameEdit = "WIKI NODE");
+
+			WikiNavigator.gotoNode(wikiNodeName = "WIKI NODE");
+
+			WikiPage.editPageCP(
+				groupName = "Guest",
+				siteURLKey = "guest",
+				wikiNodeName = "WIKI NODE",
+				wikiPageContentEdit = "WIKI PAGE",
+				wikiPageTitle = "Wiki Page Test");
+		}
+
+		task ("View the publications changes for wiki") {
+			PublicationsNavigator.gotoReviewChanges(
+				gotoPublicationsAdmin = "true",
+				publicationName = "Test Publication");
+
+			PublicationsChanges.viewChanges(
+				changeCategory = "Wiki Node",
+				changeOrder = 1,
+				changeSite = "Guest",
+				changeTitle = "WIKI NODE",
+				changeType = "Modified",
+				changeUser = "Test Test");
+
+			PublicationsChanges.viewChanges(
+				changeCategory = "Wiki Page",
+				changeOrder = 2,
+				changeSite = "Guest",
+				changeTitle = "Wiki Page Test",
+				changeType = "Modified",
+				changeUser = "Test Test");
+		}
+
+		task ("Publish the publication") {
+			JSONPublications.publishPublication(publicationName = "Test Publication");
+
+			Publications.viewPublicationPublished(publicationName = "Test Publication");
+		}
+	}
+
+	@description = "This is a use case for LPS-174885. Resolve typical conflicts when using wiki with publications"
+	@priority = 3
+	test CanResolveConflictingPublicationsAutomatically {
+		task ("Add Wiki Node and Wiki Page") {
+			JSONWiki.addWikiNode(
+				groupName = "Guest",
+				wikiNodeDescription = "Wiki Node Description",
+				wikiNodeName = "Wiki Node Name");
+
+			JSONWiki.addWikiPage(
+				groupName = "Guest",
+				wikiNodeName = "Wiki Node Name",
+				wikiPageContent = "Wiki Page Content",
+				wikiPageName = "Wiki Page Test");
+		}
+
+		JSONPublications.addPublication(publicationName = "Publication Name 1");
+
+		JSONPublications.selectPublication(publicationName = "Publication Name 1");
+
+		task ("Edit Wiki Name Content within Publication Name 1") {
+			WikiNavigator.openWikiAdmin(siteURLKey = "guest");
+
+			WikiPage.editPageCP(
+				groupName = "Guest",
+				siteURLKey = "guest",
+				wikiNodeName = "Wiki Node Name",
+				wikiPageContentEdit = "Some content for Publication Name 1",
+				wikiPageTitle = "Wiki Page Test");
+		}
+
+		JSONPublications.addPublication(publicationName = "Publication Name 2");
+
+		JSONPublications.selectPublication(publicationName = "Publication Name 2");
+
+		task ("Edit Wiki Name Content within Publication Name 2") {
+			WikiNavigator.openWikiAdmin(siteURLKey = "guest");
+
+			WikiPage.editPageCP(
+				groupName = "Guest",
+				siteURLKey = "guest",
+				wikiNodeName = "Wiki Node Name",
+				wikiPageContentEdit = "Some content for Publication Name 2",
+				wikiPageTitle = "Wiki Page Test");
+		}
+
+		task ("Publish publications and assert that was successful") {
+			PublicationsNavigator.gotoPublish(
+				gotoPublicationsAdmin = "true",
+				publicationName = "Publication Name 2");
+
+			Publications.publishPublication(publicationName = "Publication Name 2");
+
+			PublicationsNavigator.gotoPublish(
+				gotoPublicationsAdmin = "true",
+				publicationName = "Publication Name 1");
+
+			Publications.publishPublication(publicationName = "Publication Name 1");
+		}
+	}
+
 	@description = "This is a use case for LPS-173707. Multiple 'Your request repeated successfully' messages appear when switching between publications on a page with many Asset Publishers"
 	@priority = 3
 	test DoesNotDisplaySuccessMessageWhenSwitchingToProduction {

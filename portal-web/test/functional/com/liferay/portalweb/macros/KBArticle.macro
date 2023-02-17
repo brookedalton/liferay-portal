@@ -475,6 +475,11 @@ definition {
 					kbArticleTitle = ${kbArticleTitle},
 					menuItem = "Edit");
 			}
+			else if (isSet(editActionToolbar)) {
+				Click(
+					key_text = "pencil",
+					locator1 = "Icon#ANY");
+			}
 			else {
 				Click(
 					key_rowEntry = ${kbArticleTitle},
@@ -1021,15 +1026,24 @@ definition {
 	}
 
 	macro subscribeCP {
-		if (isSet(kbArticleTitle)) {
+		if (isSet(subscribeActionToolbar)) {
 			Click(
-				key_rowEntry = ${kbArticleTitle},
-				locator1 = "Icon#ROW_VERTICAL_ELLIPSIS");
+				key_kbArticleTitle = ${kbArticleTitle},
+				locator1 = "KnowledgeBase#DESCRIPTIVE_VIEW_ARTICLE_TITLE");
 
-			MenuItem.click(menuItem = "Subscribe");
+			Click(locator1 = "Button#SUBSCRIBE");
 		}
 		else {
-			LexiconEntry.gotoHeaderMenuItem(menuItem = "Subscribe");
+			if (isSet(kbArticleTitle)) {
+				Click(
+					key_rowEntry = ${kbArticleTitle},
+					locator1 = "Icon#ROW_VERTICAL_ELLIPSIS");
+
+				MenuItem.click(menuItem = "Subscribe");
+			}
+			else {
+				LexiconEntry.gotoHeaderMenuItem(menuItem = "Subscribe");
+			}
 		}
 
 		Alert.viewSuccessMessage();
@@ -1051,6 +1065,64 @@ definition {
 
 			Alert.viewSuccessMessage();
 		}
+	}
+
+	macro viewActionsDetailsToolbar {
+		AssertVisible(
+			key_text = "pencil",
+			locator1 = "Icon#ANY");
+
+		AssertVisible(
+			key_text = "info-circle-open",
+			locator1 = "Icon#ANY");
+
+		AssertVisible(locator1 = "Button#SUBSCRIBE");
+
+		AssertVisible(locator1 = "Icon#TOOLBAR_ELLIPSIS");
+
+		if (isSet(moreActions)) {
+			Click(locator1 = "Icon#TOOLBAR_ELLIPSIS");
+
+			MenuItem.viewVisible(menuItem = "Edit");
+
+			MenuItem.viewVisible(menuItem = "Add Child Article");
+
+			MenuItem.viewVisible(menuItem = "Subscribe");
+
+			MenuItem.viewVisible(menuItem = "History");
+
+			MenuItem.viewVisible(menuItem = "Print");
+
+			MenuItem.viewVisible(menuItem = "Move");
+
+			MenuItem.viewVisible(menuItem = "Permissions");
+
+			MenuItem.viewVisible(menuItem = "Delete");
+		}
+	}
+
+	macro viewActiveActionsManagementToolbar {
+		AssertElementNotPresent(locator1 = "Checkbox#LEXICON_SELECT_ALL_CONTAINER_DISABLED");
+
+		AssertElementNotPresent(locator1 = "ManagementBar#FILTER_AND_ORDER_DISABLED");
+
+		AssertElementNotPresent(locator1 = "ManagementBar#ORDER_ICON_GENERIC_BUTTON_DISABLED");
+
+		AssertElementNotPresent(locator1 = "TextInput#SEARCH_DISABLED");
+
+		AssertVisible(locator1 = "Checkbox#LEXICON_SELECT_ALL_CONTAINER");
+
+		AssertVisible(locator1 = "ManagementBar#FILTER_AND_ORDER");
+
+		AssertVisible(locator1 = "ManagementBar#ORDER_ICON_GENERIC_BUTTON");
+
+		AssertVisible(locator1 = "TextInput#SEARCH");
+
+		ManagementBar.clickInfo();
+
+		AssertVisible(
+			key_title = ${title},
+			locator1 = "Header#H4_TITLE");
 	}
 
 	macro viewArticleHistoryCP {
@@ -1233,9 +1305,17 @@ definition {
 				locator1 = "KnowledgeBase#PAGE_TREE_ITEM_HIGHLIGHT");
 		}
 		else {
-			AssertTextEquals(
-				locator1 = "KnowledgeBase#DESCRIPTIVE_VIEW_ARTICLE_TITLE",
-				value1 = ${kbArticleTitle});
+			if (isSet(indexNumber)) {
+				AssertTextEquals(
+					indexNumber = ${indexNumber},
+					locator1 = "KnowledgeBase#DESCRIPTIVE_VIEW_ARTICLE_TITLE_SPECIFIC",
+					value1 = ${kbArticleTitle});
+			}
+			else {
+				AssertTextEquals(
+					locator1 = "KnowledgeBase#DESCRIPTIVE_VIEW_ARTICLE_TITLE",
+					value1 = ${kbArticleTitle});
+			}
 
 			if (isSet(kbStatus)) {
 				AssertTextEquals(
@@ -1373,7 +1453,7 @@ definition {
 					value1 = "Knowledge base is empty.");
 			}
 			else if (isSet(suggestions)) {
-				AssertTextEquals(
+				AssertTextEquals.assertPartialText(
 					locator1 = "Message#EMPTY_INFO",
 					value1 = "There are no suggestions.");
 			}
@@ -1387,6 +1467,10 @@ definition {
 			AssertTextEquals.assertPartialText(
 				locator1 = "Message#EMPTY_INFO",
 				value1 = "No articles were found.");
+
+			if (isSet(disabledActionToolbar)) {
+				AssertElementPresent(locator1 = "TextInput#SEARCH_DISABLED");
+			}
 		}
 
 		AssertElementNotPresent(locator1 = "KnowledgeBase#ARTICLE_TABLE_KB_GENERIC");
@@ -1639,6 +1723,18 @@ definition {
 		AssertTextEquals(
 			locator1 = "KnowledgeBaseArticle#CONTENT",
 			value1 = ${kbArticleContent});
+	}
+
+	macro viewSearchResultNotPresent {
+		AssertElementNotPresent(
+			key_kbArticleTitle = ${kbArticleTitle},
+			locator1 = "KnowledgeBase#DESCRIPTIVE_VIEW_ARTICLE_TITLE");
+	}
+
+	macro viewSearchResults {
+		AssertVisible(
+			key_kbArticleTitle = ${kbArticleTitle},
+			locator1 = "KnowledgeBase#DESCRIPTIVE_VIEW_ARTICLE_TITLE");
 	}
 
 	macro viewSourceURLCP {

@@ -46,7 +46,13 @@ public class JSONTBatchEngineExportTaskItemWriterImpl
 
 		_unsyncPrintWriter = new UnsyncPrintWriter(outputStream);
 
-		_unsyncPrintWriter.write("{\"configuration\":\n");
+		_unsyncPrintWriter.write(
+			"{\"actions\":\n{\"createBatch\": {\"href\": \"");
+		_unsyncPrintWriter.write(
+			"/o/headless-batch-engine/v1.0/import-task/");
+		_unsyncPrintWriter.write(batchEngineImportConfiguration.getClassName());
+		_unsyncPrintWriter.write(
+			"\", \"method\": \"POST\"}},\n\"configuration\":\n");
 		_unsyncPrintWriter.write(
 			_objectWriter.writeValueAsString(batchEngineImportConfiguration));
 		_unsyncPrintWriter.write(",\n");

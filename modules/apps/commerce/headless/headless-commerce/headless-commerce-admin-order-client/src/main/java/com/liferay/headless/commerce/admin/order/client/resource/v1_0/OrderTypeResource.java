@@ -102,11 +102,11 @@ public interface OrderTypeResource {
 	public HttpInvoker.HttpResponse deleteOrderTypeHttpResponse(Long id)
 		throws Exception;
 
-	public void deleteOrderTypeBatch(Long id, String callbackURL, Object object)
+	public void deleteOrderTypeBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deleteOrderTypeBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public OrderType getOrderType(Long id) throws Exception;
@@ -878,12 +878,11 @@ public interface OrderTypeResource {
 			return httpInvoker.invoke();
 		}
 
-		public void deleteOrderTypeBatch(
-				Long id, String callbackURL, Object object)
+		public void deleteOrderTypeBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				deleteOrderTypeBatchHttpResponse(id, callbackURL, object);
+				deleteOrderTypeBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -912,7 +911,7 @@ public interface OrderTypeResource {
 		}
 
 		public HttpInvoker.HttpResponse deleteOrderTypeBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -947,8 +946,6 @@ public interface OrderTypeResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-order/v1.0/order-types/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

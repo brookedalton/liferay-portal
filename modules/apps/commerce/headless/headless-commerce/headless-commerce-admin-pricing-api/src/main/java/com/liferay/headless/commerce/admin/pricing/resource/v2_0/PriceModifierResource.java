@@ -75,7 +75,7 @@ public interface PriceModifierResource {
 		throws Exception;
 
 	public Response postPriceListIdPriceModifierBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public void deletePriceModifierByExternalReferenceCode(
@@ -92,8 +92,7 @@ public interface PriceModifierResource {
 
 	public void deletePriceModifier(Long id) throws Exception;
 
-	public Response deletePriceModifierBatch(
-			Long id, String callbackURL, Object object)
+	public Response deletePriceModifierBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public PriceModifier getPriceModifier(Long id) throws Exception;

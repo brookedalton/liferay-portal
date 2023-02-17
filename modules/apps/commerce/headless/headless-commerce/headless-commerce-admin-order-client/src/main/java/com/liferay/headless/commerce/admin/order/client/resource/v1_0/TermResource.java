@@ -91,11 +91,11 @@ public interface TermResource {
 	public HttpInvoker.HttpResponse deleteTermHttpResponse(Long id)
 		throws Exception;
 
-	public void deleteTermBatch(Long id, String callbackURL, Object object)
+	public void deleteTermBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deleteTermBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public Term getTerm(Long id) throws Exception;
@@ -769,11 +769,11 @@ public interface TermResource {
 			return httpInvoker.invoke();
 		}
 
-		public void deleteTermBatch(Long id, String callbackURL, Object object)
+		public void deleteTermBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse = deleteTermBatchHttpResponse(
-				id, callbackURL, object);
+				callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -802,7 +802,7 @@ public interface TermResource {
 		}
 
 		public HttpInvoker.HttpResponse deleteTermBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -837,8 +837,6 @@ public interface TermResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-order/v1.0/terms/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

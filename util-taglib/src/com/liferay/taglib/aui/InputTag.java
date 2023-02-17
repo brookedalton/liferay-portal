@@ -88,9 +88,7 @@ public class InputTag extends BaseInputTag {
 
 				baseType = type;
 			}
-			else if (Objects.equals(type, "toggle-card") ||
-					 Objects.equals(type, "toggle-switch")) {
-
+			else if (Objects.equals(type, "toggle-switch")) {
 				baseType = "checkbox";
 			}
 		}
@@ -262,9 +260,7 @@ public class InputTag extends BaseInputTag {
 
 				id = AUIUtil.normalizeId(fieldParam);
 			}
-			else if (!Objects.equals(type, "assetTags") &&
-					 !Objects.equals(type, "radio")) {
-
+			else if (!Objects.equals(type, "radio")) {
 				id = AUIUtil.normalizeId(name);
 			}
 			else {
@@ -275,10 +271,6 @@ public class InputTag extends BaseInputTag {
 		}
 
 		String forLabel = id;
-
-		if (Objects.equals(type, "assetTags")) {
-			forLabel = forLabel.concat("assetTagNames");
-		}
 
 		String languageId = getLanguageId();
 

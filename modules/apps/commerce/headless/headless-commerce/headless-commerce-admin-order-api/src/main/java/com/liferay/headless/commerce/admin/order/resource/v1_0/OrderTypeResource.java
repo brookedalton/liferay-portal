@@ -82,8 +82,7 @@ public interface OrderTypeResource {
 
 	public void deleteOrderType(Long id) throws Exception;
 
-	public Response deleteOrderTypeBatch(
-			Long id, String callbackURL, Object object)
+	public Response deleteOrderTypeBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public OrderType getOrderType(Long id) throws Exception;

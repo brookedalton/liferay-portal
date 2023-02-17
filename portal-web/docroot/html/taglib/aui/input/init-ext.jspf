@@ -34,7 +34,7 @@ boolean radioField = baseType.equals("radio");
 
 boolean showForLabel = true;
 
-if (type.equals("assetCategories") || baseType.equals(Date.class.getName())) {
+if (baseType.equals(Date.class.getName())) {
 	showForLabel = false;
 }
 
@@ -55,10 +55,6 @@ String fieldCssClass = AUIUtil.buildCss(AUIUtil.FIELD_PREFIX, disabled, first, l
 
 if (baseType.equals("email") || baseType.equals("password") || baseType.equals("text") || baseType.equals("textarea")) {
 	fieldCssClass += " form-control";
-}
-
-if (type.equals("toggle-card")) {
-	fieldCssClass += " toggle-card";
 }
 
 if (type.equals("toggle-switch")) {

@@ -79,12 +79,12 @@ public interface PriceModifierResource {
 		throws Exception;
 
 	public void postPriceListIdPriceModifierBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
 			postPriceListIdPriceModifierBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 		throws Exception;
 
 	public void deletePriceModifierByExternalReferenceCode(
@@ -119,12 +119,11 @@ public interface PriceModifierResource {
 	public HttpInvoker.HttpResponse deletePriceModifierHttpResponse(Long id)
 		throws Exception;
 
-	public void deletePriceModifierBatch(
-			Long id, String callbackURL, Object object)
+	public void deletePriceModifierBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deletePriceModifierBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public PriceModifier getPriceModifier(Long id) throws Exception;
@@ -587,12 +586,12 @@ public interface PriceModifierResource {
 		}
 
 		public void postPriceListIdPriceModifierBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				postPriceListIdPriceModifierBatchHttpResponse(
-					id, callbackURL, object);
+					callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -622,7 +621,7 @@ public interface PriceModifierResource {
 
 		public HttpInvoker.HttpResponse
 				postPriceListIdPriceModifierBatchHttpResponse(
-					Long id, String callbackURL, Object object)
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -657,8 +656,6 @@ public interface PriceModifierResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-pricing/v2.0/price-lists/price-modifiers/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);
@@ -987,12 +984,11 @@ public interface PriceModifierResource {
 			return httpInvoker.invoke();
 		}
 
-		public void deletePriceModifierBatch(
-				Long id, String callbackURL, Object object)
+		public void deletePriceModifierBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				deletePriceModifierBatchHttpResponse(id, callbackURL, object);
+				deletePriceModifierBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -1021,7 +1017,7 @@ public interface PriceModifierResource {
 		}
 
 		public HttpInvoker.HttpResponse deletePriceModifierBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -1056,8 +1052,6 @@ public interface PriceModifierResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-pricing/v2.0/price-modifiers/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

@@ -47,11 +47,11 @@ public interface AvailabilityEstimateResource {
 		throws Exception;
 
 	public void deleteAvailabilityEstimateBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deleteAvailabilityEstimateBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public AvailabilityEstimate getAvailabilityEstimate(Long id)
@@ -68,12 +68,11 @@ public interface AvailabilityEstimateResource {
 			Long id, AvailabilityEstimate availabilityEstimate)
 		throws Exception;
 
-	public void putAvailabilityEstimateBatch(
-			Long id, String callbackURL, Object object)
+	public void putAvailabilityEstimateBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse putAvailabilityEstimateBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public Page<AvailabilityEstimate>
@@ -244,12 +243,12 @@ public interface AvailabilityEstimateResource {
 		}
 
 		public void deleteAvailabilityEstimateBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				deleteAvailabilityEstimateBatchHttpResponse(
-					id, callbackURL, object);
+					callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -279,7 +278,7 @@ public interface AvailabilityEstimateResource {
 
 		public HttpInvoker.HttpResponse
 				deleteAvailabilityEstimateBatchHttpResponse(
-					Long id, String callbackURL, Object object)
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -314,8 +313,6 @@ public interface AvailabilityEstimateResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-site-setting/v1.0/availabilityEstimate/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);
@@ -479,12 +476,11 @@ public interface AvailabilityEstimateResource {
 		}
 
 		public void putAvailabilityEstimateBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				putAvailabilityEstimateBatchHttpResponse(
-					id, callbackURL, object);
+				putAvailabilityEstimateBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -514,7 +510,7 @@ public interface AvailabilityEstimateResource {
 
 		public HttpInvoker.HttpResponse
 				putAvailabilityEstimateBatchHttpResponse(
-					Long id, String callbackURL, Object object)
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -549,8 +545,6 @@ public interface AvailabilityEstimateResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-site-setting/v1.0/availabilityEstimate/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

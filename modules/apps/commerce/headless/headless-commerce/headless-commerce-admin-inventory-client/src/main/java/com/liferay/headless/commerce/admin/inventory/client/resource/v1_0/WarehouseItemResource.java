@@ -92,12 +92,11 @@ public interface WarehouseItemResource {
 	public HttpInvoker.HttpResponse deleteWarehouseItemHttpResponse(Long id)
 		throws Exception;
 
-	public void deleteWarehouseItemBatch(
-			Long id, String callbackURL, Object object)
+	public void deleteWarehouseItemBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deleteWarehouseItemBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public WarehouseItem getWarehouseItem(Long id) throws Exception;
@@ -149,12 +148,12 @@ public interface WarehouseItemResource {
 		throws Exception;
 
 	public void postWarehouseIdWarehouseItemBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
 			postWarehouseIdWarehouseItemBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 		throws Exception;
 
 	public static class Builder {
@@ -724,12 +723,11 @@ public interface WarehouseItemResource {
 			return httpInvoker.invoke();
 		}
 
-		public void deleteWarehouseItemBatch(
-				Long id, String callbackURL, Object object)
+		public void deleteWarehouseItemBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				deleteWarehouseItemBatchHttpResponse(id, callbackURL, object);
+				deleteWarehouseItemBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -758,7 +756,7 @@ public interface WarehouseItemResource {
 		}
 
 		public HttpInvoker.HttpResponse deleteWarehouseItemBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -793,8 +791,6 @@ public interface WarehouseItemResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-inventory/v1.0/warehouseItems/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);
@@ -1306,12 +1302,12 @@ public interface WarehouseItemResource {
 		}
 
 		public void postWarehouseIdWarehouseItemBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				postWarehouseIdWarehouseItemBatchHttpResponse(
-					id, callbackURL, object);
+					callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -1341,7 +1337,7 @@ public interface WarehouseItemResource {
 
 		public HttpInvoker.HttpResponse
 				postWarehouseIdWarehouseItemBatchHttpResponse(
-					Long id, String callbackURL, Object object)
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -1376,8 +1372,6 @@ public interface WarehouseItemResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-inventory/v1.0/warehouses/warehouseItems/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

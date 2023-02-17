@@ -25,6 +25,34 @@ definition {
 		}
 	}
 
+	@description = "This test ensures that the Sidebar can be expanded/collapsed by clicking on the icon that corresponds to the section where he is."
+	@priority = 3
+	test CanPageTreeExpandAndCollapseByClickingSameSectionIcon {
+		KBAdmin.openKBAdmin(siteURLKey = "guest");
+
+		KBArticle.closePageTreePanel(section = "Folders and Articles");
+
+		AssertElementPresent(locator1 = "KnowledgeBase#PAGE_TREE_PANEL_COLLAPSED");
+
+		AssertElementPresent(locator1 = "ProductMenu#PRODUCT_MENU_CLOSED");
+
+		KBArticle.openPageTreePanel(section = "Templates");
+
+		AssertElementPresent(locator1 = "KnowledgeBase#PAGE_TREE_PANEL_OPENED");
+
+		KBArticle.closePageTreePanel(section = "Templates");
+
+		AssertElementPresent(locator1 = "KnowledgeBase#PAGE_TREE_PANEL_COLLAPSED");
+
+		KBArticle.openPageTreePanel(section = "Templates");
+
+		AssertElementPresent(locator1 = "KnowledgeBase#PAGE_TREE_PANEL_OPENED");
+
+		KBArticle.openPageTreePanel(section = "Folders and Articles");
+
+		AssertElementPresent(locator1 = "KnowledgeBase#PAGE_TREE_PANEL_OPENED");
+	}
+
 	@description = "This test ensures that an article in the folder is displayed in the KB page tree when the folder is expanded."
 	@priority = 5
 	test CanViewArticleInFolderThroughPageTreePanel {
@@ -108,6 +136,22 @@ definition {
 		KBArticle.selectFolderThroughPageTreePanel(kbChildFolderName = "KB Child Folder");
 
 		KBArticle.viewDefaultCP(featureFlag = "true");
+	}
+
+	@description = "This test ensures that when the product menu is open, the sidebar is collapsed. They can't open at the same time."
+	@priority = 3
+	test PageTreeAndProductMenuCanNotOpenAtSameTime {
+		KBAdmin.openKBAdmin(siteURLKey = "guest");
+
+		AssertElementPresent(locator1 = "ProductMenu#PRODUCT_MENU_CLOSED");
+
+		AssertElementPresent(locator1 = "KnowledgeBase#PAGE_TREE_PANEL_OPENED");
+
+		ProductMenuHelper.openProductMenu();
+
+		AssertElementPresent(locator1 = "KnowledgeBase#PAGE_TREE_PANEL_COLLAPSED");
+
+		AssertElementPresent(locator1 = "ProductMenu#PRODUCT_MENU_OPENED");
 	}
 
 	@description = "This test ensures that the KB page tree is opened after opening sections, and it is collapsed after opening the product menu."

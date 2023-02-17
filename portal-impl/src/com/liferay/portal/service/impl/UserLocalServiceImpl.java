@@ -5703,6 +5703,8 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 				String newDigest = user.getDigest(password);
 
 				if (!newDigest.equals(digest)) {
+					user = userPersistence.fetchByPrimaryKey(user.getUserId());
+
 					user.setDigest(newDigest);
 
 					user = userPersistence.update(user);

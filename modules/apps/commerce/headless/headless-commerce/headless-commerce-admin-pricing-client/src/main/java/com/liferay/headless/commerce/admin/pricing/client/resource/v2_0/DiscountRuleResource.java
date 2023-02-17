@@ -45,12 +45,11 @@ public interface DiscountRuleResource {
 	public HttpInvoker.HttpResponse deleteDiscountRuleHttpResponse(Long id)
 		throws Exception;
 
-	public void deleteDiscountRuleBatch(
-			Long id, String callbackURL, Object object)
+	public void deleteDiscountRuleBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deleteDiscountRuleBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public DiscountRule getDiscountRule(Long id) throws Exception;
@@ -103,11 +102,11 @@ public interface DiscountRuleResource {
 		throws Exception;
 
 	public void postDiscountIdDiscountRuleBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse postDiscountIdDiscountRuleBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public static class Builder {
@@ -267,12 +266,11 @@ public interface DiscountRuleResource {
 			return httpInvoker.invoke();
 		}
 
-		public void deleteDiscountRuleBatch(
-				Long id, String callbackURL, Object object)
+		public void deleteDiscountRuleBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				deleteDiscountRuleBatchHttpResponse(id, callbackURL, object);
+				deleteDiscountRuleBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -301,7 +299,7 @@ public interface DiscountRuleResource {
 		}
 
 		public HttpInvoker.HttpResponse deleteDiscountRuleBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -336,8 +334,6 @@ public interface DiscountRuleResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-pricing/v2.0/discount-rules/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);
@@ -875,12 +871,12 @@ public interface DiscountRuleResource {
 		}
 
 		public void postDiscountIdDiscountRuleBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				postDiscountIdDiscountRuleBatchHttpResponse(
-					id, callbackURL, object);
+					callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -910,7 +906,7 @@ public interface DiscountRuleResource {
 
 		public HttpInvoker.HttpResponse
 				postDiscountIdDiscountRuleBatchHttpResponse(
-					Long id, String callbackURL, Object object)
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -945,8 +941,6 @@ public interface DiscountRuleResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-pricing/v2.0/discounts/discount-rules/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

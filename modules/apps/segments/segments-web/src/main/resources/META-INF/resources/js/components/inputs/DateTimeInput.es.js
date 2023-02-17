@@ -12,80 +12,91 @@
  * details.
  */
 
+import ClayDatePicker from '@clayui/date-picker';
 import {format, isValid, parse, parseISO} from 'date-fns';
 import propTypes from 'prop-types';
 import React from 'react';
 
 import {PROPERTY_TYPES} from '../../utils/constants.es';
 
-const INPUT_DATE_FORMAT = 'yyyy-MM-dd';
+const OUTPUT_DATE_FORMAT = 'yyyy-MM-dd';
+const INPUT_DATE_FORMAT = 'yyyy/MM/dd';
 
 class DateTimeInput extends React.Component {
 	static propTypes = {
 		disabled: propTypes.bool,
 		onChange: propTypes.func.isRequired,
 		propertyLabel: propTypes.string.isRequired,
+		propertyType: propTypes.string.isRequired,
 		value: propTypes.string,
 	};
 
-	state = {};
+	constructor(props) {
+		super(props);
+		const isoString =
+			PROPERTY_TYPES.DATE_TIME === props.propertyType
+				? props.value
+				: parse(
+						props.value,
+						OUTPUT_DATE_FORMAT,
+						new Date()
+				  ).toISOString();
 
-	static getDerivedStateFromProps(props, state) {
-		let returnVal = null;
+		const actualValue = format(new Date(isoString), INPUT_DATE_FORMAT);
 
-		if (props.value !== state.initialValue) {
-			returnVal = {
-				initialValue: props.value,
-				value: format(new Date(props.value), INPUT_DATE_FORMAT),
-			};
-		}
-
-		return returnVal;
+		this.state = {
+			expanded: false,
+			previousValue: actualValue,
+			value: actualValue,
+		};
 	}
 
-	_handleDateChange = (event) => {
-		const value = event.target.value;
-
-		this.setState({value});
+	_handleDateChange = (value) => {
+		this.setState({
+			value,
+		});
 	};
 
-	_handleDateBlur = (event) => {
-		const dateObj = parseISO(event.target.value);
+	_handleExpandedChange = (expandedState) => {
+		this.setState({expanded: expandedState});
+
+		if (expandedState === false) {
+			this._saveDateTimeValue();
+		}
+	};
+
+	_saveDateTimeValue = () => {
+		const dateObj = parseISO(this.state.value.replaceAll('/', '-'));
+
+		let dateInput = '';
+		let dateOutput = '';
 
 		if (isValid(dateObj)) {
-			const date = format(dateObj, INPUT_DATE_FORMAT);
-
-			this.setState(
-				{
-					value: event.target.value,
-				},
-				() => {
-					this.props.onChange({
-						type: PROPERTY_TYPES.DATE_TIME,
-						value: parse(
-							date,
-							INPUT_DATE_FORMAT,
-							new Date()
-						).toISOString(),
-					});
-				}
-			);
+			dateInput = format(new Date(this.state.value), INPUT_DATE_FORMAT);
+			dateOutput = format(new Date(this.state.value), OUTPUT_DATE_FORMAT);
 		}
 		else {
-			const resetDate = format(new Date(), INPUT_DATE_FORMAT);
+			dateInput = format(new Date(), INPUT_DATE_FORMAT);
+			dateOutput = format(new Date(), OUTPUT_DATE_FORMAT);
+		}
 
+		if (this.state.previousValue !== dateInput || !isValid(dateObj)) {
 			this.setState(
 				{
-					value: resetDate,
+					previousValue: dateInput,
+					value: dateInput,
 				},
 				() => {
 					this.props.onChange({
-						type: PROPERTY_TYPES.DATE_TIME,
-						value: parse(
-							resetDate,
-							INPUT_DATE_FORMAT,
-							new Date()
-						).toISOString(),
+						type: this.props.propertyType,
+						value:
+							this.props.propertyType === PROPERTY_TYPES.DATE_TIME
+								? parse(
+										dateOutput,
+										OUTPUT_DATE_FORMAT,
+										new Date()
+								  ).toISOString()
+								: dateOutput,
 					});
 				}
 			);
@@ -93,22 +104,56 @@ class DateTimeInput extends React.Component {
 	};
 
 	render() {
-		const {value} = this.state;
+		const {expanded, value} = this.state;
 		const {disabled, propertyLabel} = this.props;
 
 		return (
 			<div className="criterion-input date-input">
-				<input
-					aria-label={`${propertyLabel}: ${Liferay.Language.get(
-						'select-date'
-					)}`}
-					className="form-control"
+				<ClayDatePicker
+					ariaLabels={{
+						buttonChooseDate: `${propertyLabel}: ${Liferay.Language.get(
+							'select-date'
+						)}`,
+						buttonDot: `${Liferay.Language.get(
+							'select-current-date'
+						)}`,
+						buttonNextMonth: `${Liferay.Language.get(
+							'select-next-month'
+						)}`,
+						buttonPreviousMonth: `${Liferay.Language.get(
+							'select-previous-month'
+						)}`,
+						dialog: `${Liferay.Language.get('select-date')}`,
+						input: `${propertyLabel}: ${Liferay.Language.get(
+							'input-a-value'
+						)}`,
+					}}
 					data-testid="date-input"
+					dateFormat="yyyy/MM/dd"
 					disabled={disabled}
-					onBlur={this._handleDateBlur}
+					expanded={expanded}
+					months={[
+						`${Liferay.Language.get('january')}`,
+						`${Liferay.Language.get('february')}`,
+						`${Liferay.Language.get('march')}`,
+						`${Liferay.Language.get('april')}`,
+						`${Liferay.Language.get('may')}`,
+						`${Liferay.Language.get('june')}`,
+						`${Liferay.Language.get('july')}`,
+						`${Liferay.Language.get('august')}`,
+						`${Liferay.Language.get('september')}`,
+						`${Liferay.Language.get('october')}`,
+						`${Liferay.Language.get('november')}`,
+						`${Liferay.Language.get('december')}`,
+					]}
+					onBlur={this._saveDateTimeValue}
 					onChange={this._handleDateChange}
-					type="date"
+					onExpandedChange={this._handleExpandedChange}
 					value={value}
+					years={{
+						end: new Date().getFullYear(),
+						start: 1900,
+					}}
 				/>
 			</div>
 		);

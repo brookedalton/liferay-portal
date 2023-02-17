@@ -83,7 +83,7 @@ public interface OrderRuleOrderTypeResource {
 		throws Exception;
 
 	public Response postOrderRuleIdOrderRuleOrderTypeBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(

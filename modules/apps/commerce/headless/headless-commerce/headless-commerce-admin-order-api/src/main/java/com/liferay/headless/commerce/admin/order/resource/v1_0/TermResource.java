@@ -77,7 +77,7 @@ public interface TermResource {
 
 	public void deleteTerm(Long id) throws Exception;
 
-	public Response deleteTermBatch(Long id, String callbackURL, Object object)
+	public Response deleteTermBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public Term getTerm(Long id) throws Exception;

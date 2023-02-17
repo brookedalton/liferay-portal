@@ -93,7 +93,7 @@ public interface MeasurementUnitResource {
 	public void deleteMeasurementUnit(Long id) throws Exception;
 
 	public Response deleteMeasurementUnitBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public MeasurementUnit getMeasurementUnit(Long id) throws Exception;

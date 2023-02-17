@@ -72,12 +72,11 @@ public interface PriceEntryResource {
 	public HttpInvoker.HttpResponse deletePriceEntryHttpResponse(Long id)
 		throws Exception;
 
-	public void deletePriceEntryBatch(
-			Long id, String callbackURL, Object object)
+	public void deletePriceEntryBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deletePriceEntryBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public PriceEntry getPriceEntry(Long id) throws Exception;
@@ -126,11 +125,11 @@ public interface PriceEntryResource {
 		throws Exception;
 
 	public void postPriceListIdPriceEntryBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse postPriceListIdPriceEntryBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public static class Builder {
@@ -510,12 +509,11 @@ public interface PriceEntryResource {
 			return httpInvoker.invoke();
 		}
 
-		public void deletePriceEntryBatch(
-				Long id, String callbackURL, Object object)
+		public void deletePriceEntryBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				deletePriceEntryBatchHttpResponse(id, callbackURL, object);
+				deletePriceEntryBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -544,7 +542,7 @@ public interface PriceEntryResource {
 		}
 
 		public HttpInvoker.HttpResponse deletePriceEntryBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -579,8 +577,6 @@ public interface PriceEntryResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-pricing/v1.0/priceEntries/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);
@@ -1091,12 +1087,11 @@ public interface PriceEntryResource {
 		}
 
 		public void postPriceListIdPriceEntryBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				postPriceListIdPriceEntryBatchHttpResponse(
-					id, callbackURL, object);
+				postPriceListIdPriceEntryBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -1126,7 +1121,7 @@ public interface PriceEntryResource {
 
 		public HttpInvoker.HttpResponse
 				postPriceListIdPriceEntryBatchHttpResponse(
-					Long id, String callbackURL, Object object)
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -1161,8 +1156,6 @@ public interface PriceEntryResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-pricing/v1.0/priceLists/priceEntries/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

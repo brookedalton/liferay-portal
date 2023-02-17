@@ -83,7 +83,7 @@ public interface WarehouseChannelResource {
 		throws Exception;
 
 	public Response postWarehouseIdWarehouseChannelBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(

@@ -27,12 +27,39 @@ definition {
 	}
 
 	@description = "This test checks that articles can be sorted by alphabetical order."
-	@ignore = "Test Stub"
 	@priority = 3
 	test AssetsCanBeSortedByAlphabeticalOrder {
+		property custom.properties = "feature.flag.LPS-166643=true";
 
-		// TODO LPS-166644
+		JSONKnowledgeBase.addkBFolder(
+			groupName = "Guest",
+			kbFolderDescription = "KB Folder Description",
+			kbFolderName = "KB Folder");
 
+		JSONKnowledgeBase.addkBArticle(
+			folderName = "KB Folder",
+			groupName = "Guest",
+			kbArticleContent = "KB Article A",
+			kbArticleTitle = "KB Article A");
+
+		JSONKnowledgeBase.addkBArticle(
+			folderName = "KB Folder",
+			groupName = "Guest",
+			kbArticleContent = "KB Article B",
+			kbArticleTitle = "KB Article B");
+
+		KBAdmin.openKBAdmin(siteURLKey = "guest");
+
+		KBFolder.gotoCP(kbFolderName = "KB Folder");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Title");
+
+		Click(locator1 = "ManagementBar#ORDER_ICON_GENERIC_BUTTON");
+
+		KBArticle.viewCP(
+			indexNumber = 1,
+			kbArticleContent = "KB Article B",
+			kbArticleTitle = "KB Article B");
 	}
 
 	@description = "This test checks that articles can be sorted by the modified date."
@@ -98,6 +125,41 @@ definition {
 		KBFolder.viewFolderNameCP(kbFolderName = "KB Folder");
 
 		Button.viewNotPresent(button = "New");
+	}
+
+	@description = "This test checks that all articles in a folder can be deleted via Toolbar."
+	@priority = 3
+	test CanDeleteAllArticlesViaToolbar {
+		property custom.properties = "feature.flag.LPS-156421=true${line.separator}feature.flag.LPS-166643=true";
+
+		JSONKnowledgeBase.addkBFolder(
+			groupName = "Guest",
+			kbFolderDescription = "KB Folder Description",
+			kbFolderName = "KB Folder");
+
+		JSONKnowledgeBase.addkBArticle(
+			folderName = "KB Folder",
+			groupName = "Guest",
+			kbArticleContent = "Knowledge Base Article Content 1",
+			kbArticleTitle = "Knowledge Base Article Title 1");
+
+		JSONKnowledgeBase.addkBArticle(
+			folderName = "KB Folder",
+			groupName = "Guest",
+			kbArticleContent = "Knowledge Base Article Content 2",
+			kbArticleTitle = "Knowledge Base Article Title 2");
+
+		KBAdmin.openKBAdmin(siteURLKey = "guest");
+
+		KBArticle.openPageTreePanel(section = "Folders and Articles");
+
+		KBArticle.selectFolderThroughPageTreePanel(kbFolderName = "KB Folder");
+
+		KBArticle.selectAllCP();
+
+		KBArticle.deleteCP();
+
+		KBArticle.viewDefaultCP(featureFlag = "true");
 	}
 
 	@priority = 4
@@ -303,12 +365,32 @@ definition {
 	}
 
 	@description = "This test checks that the management toolbar displays the checkbox, Filter & Order button, Order By button, search bar, and the info icon"
-	@ignore = "Test Stub"
 	@priority = 5
 	test CorrectActionsAppearInToolbarAfterSelectingFolder {
+		property custom.properties = "feature.flag.LPS-166643=true";
 
-		// TODO LPS-166644
+		JSONKnowledgeBase.addkBFolder(
+			groupName = "Guest",
+			kbFolderDescription = "KB Folder Description",
+			kbFolderName = "KB Folder");
 
+		KBAdmin.openKBAdmin(siteURLKey = "guest");
+
+		KBFolder.gotoCP(kbFolderName = "KB Folder");
+
+		KBArticle.viewDefaultCP(disabledActionToolbar = "true");
+
+		JSONKnowledgeBase.addkBArticle(
+			folderName = "KB Folder",
+			groupName = "Guest",
+			kbArticleContent = "Knowledge Base Article Content",
+			kbArticleTitle = "Knowledge Base Article Title");
+
+		KBAdmin.openKBAdmin(siteURLKey = "guest");
+
+		KBFolder.gotoCP(kbFolderName = "KB Folder");
+
+		KBArticle.viewActiveActionsManagementToolbar(title = "KB Folder");
 	}
 
 	@priority = 3

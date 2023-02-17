@@ -86,7 +86,7 @@ public interface AccountOrganizationResource {
 		throws Exception;
 
 	public Response postAccountIdAccountOrganizationBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public Response deleteAccountIdAccountOrganization(

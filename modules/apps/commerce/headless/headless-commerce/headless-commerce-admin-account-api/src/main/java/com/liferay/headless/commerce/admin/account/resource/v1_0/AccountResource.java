@@ -93,8 +93,7 @@ public interface AccountResource {
 
 	public Response deleteAccount(Long id) throws Exception;
 
-	public Response deleteAccountBatch(
-			Long id, String callbackURL, Object object)
+	public Response deleteAccountBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public Account getAccount(Long id) throws Exception;

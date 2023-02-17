@@ -114,11 +114,11 @@ public interface TierPriceResource {
 	public HttpInvoker.HttpResponse deleteTierPriceHttpResponse(Long id)
 		throws Exception;
 
-	public void deleteTierPriceBatch(Long id, String callbackURL, Object object)
+	public void deleteTierPriceBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deleteTierPriceBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public TierPrice getTierPrice(Long id) throws Exception;
@@ -964,12 +964,11 @@ public interface TierPriceResource {
 			return httpInvoker.invoke();
 		}
 
-		public void deleteTierPriceBatch(
-				Long id, String callbackURL, Object object)
+		public void deleteTierPriceBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				deleteTierPriceBatchHttpResponse(id, callbackURL, object);
+				deleteTierPriceBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -998,7 +997,7 @@ public interface TierPriceResource {
 		}
 
 		public HttpInvoker.HttpResponse deleteTierPriceBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -1033,8 +1032,6 @@ public interface TierPriceResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-pricing/v2.0/tier-prices/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

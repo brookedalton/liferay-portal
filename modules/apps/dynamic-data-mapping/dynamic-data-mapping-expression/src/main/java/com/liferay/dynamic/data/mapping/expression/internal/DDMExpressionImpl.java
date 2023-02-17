@@ -22,8 +22,11 @@ import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunctionFactory;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunctionRegistry;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionObserver;
 import com.liferay.dynamic.data.mapping.expression.DDMExpressionParameterAccessor;
-import com.liferay.dynamic.data.mapping.expression.internal.parser.DDMExpressionLexer;
-import com.liferay.dynamic.data.mapping.expression.internal.parser.DDMExpressionParser;
+import com.liferay.dynamic.data.mapping.expression.internal.parser.DDMExpressionDSLExpressionVisitor;
+import com.liferay.dynamic.data.mapping.expression.internal.parser.DDMExpressionEvaluatorVisitor;
+import com.liferay.dynamic.data.mapping.expression.internal.parser.DDMExpressionModelVisitor;
+import com.liferay.dynamic.data.mapping.expression.internal.parser.generated.DDMExpressionLexer;
+import com.liferay.dynamic.data.mapping.expression.internal.parser.generated.DDMExpressionParser;
 import com.liferay.dynamic.data.mapping.expression.model.Expression;
 
 import java.math.BigDecimal;
@@ -49,11 +52,28 @@ public class DDMExpressionImpl<T> implements DDMExpression<T> {
 		try {
 			DDMExpressionEvaluatorVisitor ddmExpressionEvaluatorVisitor =
 				new DDMExpressionEvaluatorVisitor(
-					_ddmExpressionFunctionFactories, _variables,
 					_ddmExpressionActionHandler, _ddmExpressionFieldAccessor,
-					_ddmExpressionObserver, _ddmExpressionParameterAccessor);
+					_ddmExpressionFunctionFactories, _ddmExpressionObserver,
+					_ddmExpressionParameterAccessor, _variables);
 
 			return (T)_expressionContext.accept(ddmExpressionEvaluatorVisitor);
+		}
+		catch (Exception exception) {
+			throw new DDMExpressionException(exception);
+		}
+	}
+
+	@Override
+	public com.liferay.petra.sql.dsl.expression.Expression<?> getDSLExpression()
+		throws DDMExpressionException {
+
+		try {
+			DDMExpressionDSLExpressionVisitor
+				ddmExpressionDSLExpressionVisitor =
+					new DDMExpressionDSLExpressionVisitor(_variables);
+
+			return (com.liferay.petra.sql.dsl.expression.Expression<?>)
+				_expressionContext.accept(ddmExpressionDSLExpressionVisitor);
 		}
 		catch (Exception exception) {
 			throw new DDMExpressionException(exception);

@@ -91,11 +91,11 @@ public interface OrderItemResource {
 	public HttpInvoker.HttpResponse deleteOrderItemHttpResponse(Long id)
 		throws Exception;
 
-	public void deleteOrderItemBatch(Long id, String callbackURL, Object object)
+	public void deleteOrderItemBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deleteOrderItemBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public OrderItem getOrderItem(Long id) throws Exception;
@@ -116,11 +116,11 @@ public interface OrderItemResource {
 			Long id, OrderItem orderItem)
 		throws Exception;
 
-	public void putOrderItemBatch(Long id, String callbackURL, Object object)
+	public void putOrderItemBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse putOrderItemBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public Page<OrderItem> getOrderByExternalReferenceCodeOrderItemsPage(
@@ -156,12 +156,11 @@ public interface OrderItemResource {
 			Long id, OrderItem orderItem)
 		throws Exception;
 
-	public void postOrderIdOrderItemBatch(
-			Long id, String callbackURL, Object object)
+	public void postOrderIdOrderItemBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse postOrderIdOrderItemBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public static class Builder {
@@ -729,12 +728,11 @@ public interface OrderItemResource {
 			return httpInvoker.invoke();
 		}
 
-		public void deleteOrderItemBatch(
-				Long id, String callbackURL, Object object)
+		public void deleteOrderItemBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				deleteOrderItemBatchHttpResponse(id, callbackURL, object);
+				deleteOrderItemBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -763,7 +761,7 @@ public interface OrderItemResource {
 		}
 
 		public HttpInvoker.HttpResponse deleteOrderItemBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -798,8 +796,6 @@ public interface OrderItemResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-order/v1.0/orderItems/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);
@@ -1040,12 +1036,11 @@ public interface OrderItemResource {
 			return httpInvoker.invoke();
 		}
 
-		public void putOrderItemBatch(
-				Long id, String callbackURL, Object object)
+		public void putOrderItemBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				putOrderItemBatchHttpResponse(id, callbackURL, object);
+				putOrderItemBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -1074,7 +1069,7 @@ public interface OrderItemResource {
 		}
 
 		public HttpInvoker.HttpResponse putOrderItemBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -1109,8 +1104,6 @@ public interface OrderItemResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-order/v1.0/orderItems/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);
@@ -1467,12 +1460,11 @@ public interface OrderItemResource {
 			return httpInvoker.invoke();
 		}
 
-		public void postOrderIdOrderItemBatch(
-				Long id, String callbackURL, Object object)
+		public void postOrderIdOrderItemBatch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				postOrderIdOrderItemBatchHttpResponse(id, callbackURL, object);
+				postOrderIdOrderItemBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -1501,7 +1493,7 @@ public interface OrderItemResource {
 		}
 
 		public HttpInvoker.HttpResponse postOrderIdOrderItemBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -1536,8 +1528,6 @@ public interface OrderItemResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-order/v1.0/orders/orderItems/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

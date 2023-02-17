@@ -79,8 +79,7 @@ public interface DiscountResource {
 
 	public void deleteDiscount(Long id) throws Exception;
 
-	public Response deleteDiscountBatch(
-			Long id, String callbackURL, Object object)
+	public Response deleteDiscountBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public Discount getDiscount(Long id) throws Exception;

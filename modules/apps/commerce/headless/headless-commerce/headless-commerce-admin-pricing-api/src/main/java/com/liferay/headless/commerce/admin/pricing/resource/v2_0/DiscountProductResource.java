@@ -81,7 +81,7 @@ public interface DiscountProductResource {
 		throws Exception;
 
 	public Response postDiscountIdDiscountProductBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(

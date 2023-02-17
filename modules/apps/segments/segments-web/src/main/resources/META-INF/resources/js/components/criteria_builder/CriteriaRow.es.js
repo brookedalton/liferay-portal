@@ -38,7 +38,6 @@ import {
 } from '../../utils/utils.es';
 import BooleanInput from '../inputs/BooleanInput.es';
 import CollectionInput from '../inputs/CollectionInput.es';
-import DateInput from '../inputs/DateInput.es';
 import DateTimeInput from '../inputs/DateTimeInput.es';
 import DecimalInput from '../inputs/DecimalInput.es';
 import IntegerInput from '../inputs/IntegerInput.es';
@@ -246,10 +245,17 @@ class CriteriaRow extends Component {
 		type,
 		value,
 	}) => {
-		const parsedValue =
-			type === PROPERTY_TYPES.DATE || type === PROPERTY_TYPES.DATE_TIME
-				? dateToInternationalHuman(value)
-				: value;
+		let parsedValue = null;
+
+		if (type === PROPERTY_TYPES.DATE) {
+			parsedValue = dateToInternationalHuman(value.replaceAll('-', '/'));
+		}
+		else if (type === PROPERTY_TYPES.DATE_TIME) {
+			parsedValue = dateToInternationalHuman(value);
+		}
+		else {
+			parsedValue = value;
+		}
 
 		return (
 			<span>
@@ -345,7 +351,7 @@ class CriteriaRow extends Component {
 		const inputComponentsMap = {
 			[PROPERTY_TYPES.BOOLEAN]: BooleanInput,
 			[PROPERTY_TYPES.COLLECTION]: CollectionInput,
-			[PROPERTY_TYPES.DATE]: DateInput,
+			[PROPERTY_TYPES.DATE]: DateTimeInput,
 			[PROPERTY_TYPES.DATE_TIME]: DateTimeInput,
 			[PROPERTY_TYPES.DOUBLE]: DecimalInput,
 			[PROPERTY_TYPES.ID]: SelectEntityInput,
@@ -364,6 +370,7 @@ class CriteriaRow extends Component {
 				onChange={this._handleTypedInputChange}
 				options={selectedProperty.options}
 				propertyLabel={propertyLabel}
+				propertyType={selectedProperty.type}
 				renderEmptyValueErrors={renderEmptyValuesErrors}
 				selectEntity={selectedProperty.selectEntity}
 				value={value}

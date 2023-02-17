@@ -18,12 +18,14 @@ import {
 	TestrayCaseType,
 	TestrayComponent,
 	TestrayProductVersion,
+	TestrayProject,
 	TestrayRoutine,
 	TestrayRun,
 	TestrayTeam,
 	UserAccount,
 } from '../services/rest';
 import {SearchBuilder} from '../util/search';
+import {CaseResultStatuses, TaskStatuses} from '../util/statuses';
 
 export type Filters = {
 	[key: string]: RendererFields[];
@@ -59,7 +61,7 @@ const transformData = <T = any>(response: any): T[] => {
 
 const dataToOptions = <T = any>(
 	entries: T[],
-	transformAction?: (entry: T) => {label: string; value: number}
+	transformAction?: (entry: T) => {label: string; value: number | string}
 ) =>
 	entries.map((entry: any) =>
 		transformAction
@@ -70,14 +72,14 @@ const dataToOptions = <T = any>(
 const baseFilters: Filter = {
 	assignee: {
 		label: i18n.translate('assignee'),
-		name: 'assignee',
+		name: 'assignedUsers',
 		resource: '/user-accounts',
 		transformData(item) {
 			return dataToOptions(
 				transformData<UserAccount>(item),
 				(userAccount) => ({
 					label: `${userAccount.givenName} ${userAccount.additionalName}`,
-					value: userAccount.id,
+					value: userAccount.givenName,
 				})
 			);
 		},
@@ -110,6 +112,16 @@ const baseFilters: Filter = {
 		name: 'description',
 		type: 'textarea',
 	},
+	dueStatus: {
+		label: i18n.translate('status'),
+		name: 'dueStatus',
+		type: 'checkbox',
+	},
+	erros: {
+		label: i18n.translate('errors'),
+		name: 'errors',
+		type: 'textarea',
+	},
 	hasRequirements: {
 		disabled: true,
 		label: i18n.translate('has-requirements'),
@@ -138,6 +150,15 @@ const baseFilters: Filter = {
 			)}`,
 		transformData(item) {
 			return dataToOptions(transformData<TestrayProductVersion>(item));
+		},
+		type: 'select',
+	},
+	project: {
+		label: i18n.translate('project'),
+		name: 'projectId',
+		resource: '/projects?fields=id,name',
+		transformData(item) {
+			return dataToOptions(transformData<TestrayProject>(item));
 		},
 		type: 'select',
 	},
@@ -211,6 +232,8 @@ const filterSchema = {
 				type: 'multiselect',
 			}),
 			overrides(baseFilters.priority, {
+				name: 'caseToCaseResult/priority',
+				removeQuoteMark: true,
 				type: 'select',
 			}),
 			overrides(baseFilters.team, {
@@ -235,30 +258,40 @@ const filterSchema = {
 				type: 'text',
 			},
 			overrides(baseFilters.assignee, {name: 'userId'}),
-			{
-				label: i18n.translate('status'),
-				name: 'dueStatus',
+			overrides(baseFilters.dueStatus, {
 				options: [
-					'Blocked',
-					'Failed',
-					'In Progress',
-					'Passed',
-					'Test Fix',
-					'Untested',
+					{
+						label: 'Blocked',
+						value: CaseResultStatuses.BLOCKED,
+					},
+					{
+						label: 'Failed',
+						value: CaseResultStatuses.FAILED,
+					},
+					{
+						label: 'In Progress',
+						value: CaseResultStatuses.IN_PROGRESS,
+					},
+					{
+						label: 'Passed',
+						value: CaseResultStatuses.PASSED,
+					},
+					{
+						label: 'Test Fix',
+						value: CaseResultStatuses.TEST_FIX,
+					},
+					{
+						label: 'Untested',
+						value: CaseResultStatuses.UNTESTED,
+					},
 				],
-				type: 'checkbox',
-			},
-			{
-				label: i18n.translate('issues'),
-				name: 'issues',
+			}),
+			overrides(baseFilters.issues, {
 				operator: 'contains',
-				type: 'textarea',
-			},
-			{
-				label: i18n.translate('errors'),
-				name: 'errors',
-				type: 'textarea',
-			},
+			}),
+			overrides(baseFilters.erros, {
+				operator: 'contains',
+			}),
 			{
 				label: i18n.translate('comments'),
 				name: 'comment',
@@ -287,31 +320,40 @@ const filterSchema = {
 			overrides(baseFilters.assignee, {
 				name: 'userId',
 			}),
-			{
-				label: i18n.translate('status'),
-				name: 'dueStatus',
+			overrides(baseFilters.dueStatus, {
 				options: [
-					'Blocked',
-					'Failed',
-					'In Progress',
-					'Passed',
-					'Test Fix',
-					'Untested',
+					{
+						label: 'Blocked',
+						value: CaseResultStatuses.BLOCKED,
+					},
+					{
+						label: 'Failed',
+						value: CaseResultStatuses.FAILED,
+					},
+					{
+						label: 'In Progress',
+						value: CaseResultStatuses.IN_PROGRESS,
+					},
+					{
+						label: 'Passed',
+						value: CaseResultStatuses.PASSED,
+					},
+					{
+						label: 'Test Fix',
+						value: CaseResultStatuses.TEST_FIX,
+					},
+					{
+						label: 'Untested',
+						value: CaseResultStatuses.UNTESTED,
+					},
 				],
-				type: 'checkbox',
-			},
-			{
-				label: i18n.translate('issues'),
-				name: 'issues',
+			}),
+			overrides(baseFilters.issues, {
 				operator: 'contains',
-				type: 'textarea',
-			},
-			{
-				label: i18n.translate('errors'),
-				name: 'errors',
+			}),
+			overrides(baseFilters.erros, {
 				operator: 'contains',
-				type: 'textarea',
-			},
+			}),
 			{
 				label: i18n.translate('case-result-warning'),
 				name: 'warnings',
@@ -524,6 +566,54 @@ const filterSchema = {
 				operator: 'contains',
 				type: 'text',
 			},
+		] as RendererFields[],
+	},
+	testflow: {
+		fields: [
+			{
+				label: i18n.sub('task-x', 'name'),
+				name: 'name',
+				operator: 'contains',
+				type: 'text',
+			},
+			overrides(baseFilters.project, {
+				label: i18n.translate('project-name'),
+				name: 'buildToTasks/r_projectToBuilds_c_projectId',
+				type: 'multiselect',
+			}),
+			overrides(baseFilters.routine, {
+				label: i18n.translate('routine-name'),
+				name: 'buildToTasks/r_routineToBuilds_c_routineId',
+				resource: '/routines?fields=id,name&sort=name:asc&pageSize=100',
+				type: 'multiselect',
+			}),
+			{
+				label: i18n.translate('build-name'),
+				name: 'buildToTasks/name',
+				operator: 'contains',
+				removeQuoteMark: false,
+				type: 'text',
+			},
+			overrides(baseFilters.dueStatus, {
+				options: [
+					{
+						label: 'Abandoned',
+						value: TaskStatuses.ABANDONED,
+					},
+					{
+						label: 'Complete',
+						value: TaskStatuses.COMPLETE,
+					},
+					{
+						label: 'In Analysis',
+						value: TaskStatuses.IN_ANALYSIS,
+					},
+				],
+			}),
+			overrides(baseFilters.assignee, {
+				operator: 'contains',
+				type: 'select',
+			}),
 		] as RendererFields[],
 	},
 } as const;

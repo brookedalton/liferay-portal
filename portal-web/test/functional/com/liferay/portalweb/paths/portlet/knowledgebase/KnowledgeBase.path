@@ -113,6 +113,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>DESCRIPTIVE_VIEW_ARTICLE_TITLE_SPECIFIC</td>
+	<td>xpath=(//h2/a[contains(.,'${key_kbArticleTitle}')])[${indexNumber}]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>DESCRIPTIVE_VIEW_CHILD_ARTICLE_LINK</td>
 	<td>//dd[contains(.,'${key_kbArticleTitle}')]//a[contains(.,'Child Article')]</td>
 	<td></td>
@@ -317,6 +322,16 @@
 <tr>
 	<td>PAGE_TREE_ITEM_HIGHLIGHT</td>
 	<td>//li[contains(@class,'treeview-item')]//div[contains(@class,'knowledge-base-navigation-item-active')]//div[normalize-space(text())='${key_itemName}']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_TREE_ITEM_HIGHLIGHT_1</td>
+	<td>//a[contains(@class,'link-secondary')]//span/b[text()='${key_itemName}']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_TREE_ITEM_HIGHLIGHT_2</td>
+	<td>xpath=(//a[contains(@class,'link-secondary')]//span/b[text()='${key_itemName}'])[2]</td>
 	<td></td>
 </tr>
 <tr>

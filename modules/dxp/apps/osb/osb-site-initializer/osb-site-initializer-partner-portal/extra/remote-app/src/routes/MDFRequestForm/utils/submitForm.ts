@@ -24,6 +24,7 @@ import {ResourceName} from '../../../common/services/liferay/object/enum/resourc
 import createMDFRequest from '../../../common/services/liferay/object/mdf-requests/createMDFRequest';
 import updateMDFRequest from '../../../common/services/liferay/object/mdf-requests/updateMDFRequest';
 import {Status} from '../../../common/utils/constants/status';
+import getTotalMDFRequest from '../../../common/utils/getTotalMDFRequest';
 import createMDFRequestActivitiesProxyAPI from './createMDFRequestActivitiesProxyAPI';
 import createMDFRequestProxyAPI from './createMDFRequestProxyAPI';
 
@@ -37,6 +38,15 @@ export default async function submitForm(
 
 	if (currentRequestStatus) {
 		values.mdfRequestStatus = currentRequestStatus;
+	}
+
+	const totalMDFRequestAmount = getTotalMDFRequest(values.activities);
+
+	if (
+		totalMDFRequestAmount >= 15000 &&
+		values.mdfRequestStatus !== Status.DRAFT
+	) {
+		values.mdfRequestStatus = Status.MARKETING_DIRECTOR_REVIEW;
 	}
 
 	let dtoMDFRequest: mdfRequestDTO | undefined = undefined;
@@ -120,5 +130,13 @@ export default async function submitForm(
 		}
 	}
 
-	Liferay.Util.navigate(`${siteURL}/${PRMPageRoute.MDF_REQUESTS_LISTING}`);
+	if (values.id) {
+		Liferay.Util.navigate(
+			`${siteURL}/${PRMPageRoute.MDF_REQUESTS_LISTING}?edit-success=true`
+		);
+	}
+
+	Liferay.Util.navigate(
+		`${siteURL}/${PRMPageRoute.MDF_REQUESTS_LISTING}/?new-success=true`
+	);
 }

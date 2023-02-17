@@ -15,10 +15,13 @@
 package com.liferay.portal.search.tuning.rankings.web.internal.results.builder;
 
 import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.permission.ResourceActions;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactory;
@@ -36,7 +39,6 @@ import com.liferay.portal.search.tuning.rankings.web.internal.index.name.Ranking
 import com.liferay.portal.search.tuning.rankings.web.internal.util.RankingResultUtil;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -108,22 +110,12 @@ public class RankingGetHiddenResultsBuilder {
 	}
 
 	protected JSONArray buildDocuments(List<String> ids, Ranking ranking) {
-		Stream<String> stringStream = ids.stream();
-
-		Stream<JSONObject> jsonObjectStream = stringStream.map(
-			id -> _getDocument(
-				ranking.getIndexName(), id, LIFERAY_DOCUMENT_TYPE)
-		).filter(
-			document -> document != null
-		).map(
-			this::translate
-		);
-
-		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
-
-		jsonObjectStream.forEach(jsonArray::put);
-
-		return jsonArray;
+		return JSONUtil.toJSONArray(
+			TransformUtil.transform(
+				ids,
+				id -> _getDocument(
+					ranking.getIndexName(), id, LIFERAY_DOCUMENT_TYPE)),
+			this::translate, _log);
 	}
 
 	protected Query getIdsQuery(List<String> ids) {
@@ -184,6 +176,9 @@ public class RankingGetHiddenResultsBuilder {
 
 		return ListUtil.subList(ids, _from, end);
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		RankingGetHiddenResultsBuilder.class.getName());
 
 	private final DLAppLocalService _dlAppLocalService;
 	private final FastDateFormatFactory _fastDateFormatFactory;

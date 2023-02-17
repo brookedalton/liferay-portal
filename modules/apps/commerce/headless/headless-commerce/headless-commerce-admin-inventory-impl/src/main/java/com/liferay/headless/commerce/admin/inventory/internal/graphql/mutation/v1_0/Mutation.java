@@ -342,7 +342,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response createWarehouseIdWarehouseChannelBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -352,7 +351,7 @@ public class Mutation {
 			this::_populateResourceContext,
 			warehouseChannelResource ->
 				warehouseChannelResource.postWarehouseIdWarehouseChannelBatch(
-					id, callbackURL, object));
+					callbackURL, object));
 	}
 
 	@GraphQLField
@@ -410,7 +409,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response deleteWarehouseItemBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -420,7 +418,7 @@ public class Mutation {
 			this::_populateResourceContext,
 			warehouseItemResource ->
 				warehouseItemResource.deleteWarehouseItemBatch(
-					id, callbackURL, object));
+					callbackURL, object));
 	}
 
 	@GraphQLField
@@ -467,7 +465,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response createWarehouseIdWarehouseItemBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -477,7 +474,7 @@ public class Mutation {
 			this::_populateResourceContext,
 			warehouseItemResource ->
 				warehouseItemResource.postWarehouseIdWarehouseItemBatch(
-					id, callbackURL, object));
+					callbackURL, object));
 	}
 
 	@GraphQLField
@@ -544,7 +541,6 @@ public class Mutation {
 
 	@GraphQLField
 	public Response createWarehouseIdWarehouseOrderTypeBatch(
-			@GraphQLName("id") Long id,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -555,7 +551,7 @@ public class Mutation {
 			warehouseOrderTypeResource ->
 				warehouseOrderTypeResource.
 					postWarehouseIdWarehouseOrderTypeBatch(
-						id, callbackURL, object));
+						callbackURL, object));
 	}
 
 	private <T, R, E1 extends Throwable, E2 extends Throwable> R

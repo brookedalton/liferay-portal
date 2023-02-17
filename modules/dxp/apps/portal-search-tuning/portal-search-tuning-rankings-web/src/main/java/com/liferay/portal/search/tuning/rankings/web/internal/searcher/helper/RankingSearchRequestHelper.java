@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.rankings.web.internal.searcher.helper;
 
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.search.filter.ComplexQueryPart;
 import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
@@ -25,7 +26,6 @@ import com.liferay.portal.search.tuning.rankings.web.internal.index.Ranking;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -39,12 +39,17 @@ public class RankingSearchRequestHelper {
 	public void contribute(
 		SearchRequestBuilder searchRequestBuilder, Ranking ranking) {
 
-		Stream.concat(
-			_getPinnedDocumentIdsQueryParts(ranking),
-			Stream.of(_getHiddenDocumentIdsQueryPart(ranking))
-		).forEach(
-			searchRequestBuilder::addComplexQueryPart
-		);
+		List<ComplexQueryPart> complexQueryParts =
+			_getPinnedDocumentIdsQueryParts(ranking);
+
+		ComplexQueryPart complexQueryPart = _getHiddenDocumentIdsQueryPart(
+			ranking);
+
+		if (complexQueryPart != null) {
+			complexQueryParts.add(complexQueryPart);
+		}
+
+		complexQueryParts.forEach(searchRequestBuilder::addComplexQueryPart);
 	}
 
 	@Reference
@@ -103,18 +108,13 @@ public class RankingSearchRequestHelper {
 		).build();
 	}
 
-	private Stream<ComplexQueryPart> _getPinnedDocumentIdsQueryParts(
+	private List<ComplexQueryPart> _getPinnedDocumentIdsQueryParts(
 		Ranking ranking) {
 
 		List<Ranking.Pin> pins = ranking.getPins();
 
-		Stream<Ranking.Pin> stream = pins.stream();
-
-		return stream.map(
-			pin -> _getIdsQuery(pin, pins.size())
-		).map(
-			this::_getPinIdsQueryPart
-		);
+		return TransformUtil.transform(
+			pins, pin -> _getPinIdsQueryPart(_getIdsQuery(pin, pins.size())));
 	}
 
 }

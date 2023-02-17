@@ -32,6 +32,7 @@ export default function _JournalPortlet({
 	classNameId,
 	contentTitle,
 	defaultLanguageId: initialDefaultLanguageId,
+	displayDate,
 	hasSavePermission,
 	namespace,
 }) {
@@ -79,7 +80,7 @@ export default function _JournalPortlet({
 		const resetInput = (inputName) => {
 			const input = document.getElementById(`${namespace}${inputName}`);
 
-			if (input) {
+			if (input && !displayDate) {
 				input.value = '';
 			}
 		};

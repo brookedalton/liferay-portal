@@ -47,12 +47,12 @@ public interface AccountChannelShippingOptionResource {
 		throws Exception;
 
 	public void deleteAccountChannelShippingOptionBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
 			deleteAccountChannelShippingOptionBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 		throws Exception;
 
 	public AccountChannelShippingOption getAccountChannelShippingOption(Long id)
@@ -117,12 +117,12 @@ public interface AccountChannelShippingOptionResource {
 		throws Exception;
 
 	public void postAccountIdAccountChannelShippingOptionBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
 			postAccountIdAccountChannelShippingOptionBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 		throws Exception;
 
 	public static class Builder {
@@ -286,12 +286,12 @@ public interface AccountChannelShippingOptionResource {
 		}
 
 		public void deleteAccountChannelShippingOptionBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				deleteAccountChannelShippingOptionBatchHttpResponse(
-					id, callbackURL, object);
+					callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -321,7 +321,7 @@ public interface AccountChannelShippingOptionResource {
 
 		public HttpInvoker.HttpResponse
 				deleteAccountChannelShippingOptionBatchHttpResponse(
-					Long id, String callbackURL, Object object)
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -356,8 +356,6 @@ public interface AccountChannelShippingOptionResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-account/v1.0/account-channel-shipping-options/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);
@@ -903,12 +901,12 @@ public interface AccountChannelShippingOptionResource {
 		}
 
 		public void postAccountIdAccountChannelShippingOptionBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				postAccountIdAccountChannelShippingOptionBatchHttpResponse(
-					id, callbackURL, object);
+					callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -938,7 +936,7 @@ public interface AccountChannelShippingOptionResource {
 
 		public HttpInvoker.HttpResponse
 				postAccountIdAccountChannelShippingOptionBatchHttpResponse(
-					Long id, String callbackURL, Object object)
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -973,8 +971,6 @@ public interface AccountChannelShippingOptionResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-account/v1.0/accounts/account-channel-shipping-option/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

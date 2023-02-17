@@ -75,6 +75,11 @@ body .ddm-user-view-content {
 	}
 }
 
+.form-control {
+	@extend %text-ellipsis;
+	white-space: normal;
+}
+
 .portlet-forms .ddm-form-basic-info .ddm-form-name {
 	color: #000;
 	font-weight: 500;

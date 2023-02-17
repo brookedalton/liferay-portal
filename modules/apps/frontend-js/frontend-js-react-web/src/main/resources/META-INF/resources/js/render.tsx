@@ -47,6 +47,10 @@ export default function render(
 	},
 	container: Element
 ) {
+	if (!container) {
+		return;
+	}
+
 	if (!(window.Liferay as any).SPA || (window.Liferay as any).SPA.app) {
 		const {portletId} = renderData;
 
@@ -85,6 +89,18 @@ export default function render(
 				: null;
 
 		container.classList.add('lfr-tooltip-scope');
+
+		if (renderData.hasBodyContent) {
+			const children = container.querySelectorAll(
+				'.tag-body-content > *'
+			);
+
+			if (children.length) {
+				renderData.children = children;
+			}
+
+			delete renderData.hasBodyContent;
+		}
 
 		// eslint-disable-next-line @liferay/portal/no-react-dom-render
 		ReactDOM.render(

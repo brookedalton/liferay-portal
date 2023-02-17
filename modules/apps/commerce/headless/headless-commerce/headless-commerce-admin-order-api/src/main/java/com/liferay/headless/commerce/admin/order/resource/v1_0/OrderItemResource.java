@@ -78,8 +78,7 @@ public interface OrderItemResource {
 
 	public Response deleteOrderItem(Long id) throws Exception;
 
-	public Response deleteOrderItemBatch(
-			Long id, String callbackURL, Object object)
+	public Response deleteOrderItemBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public OrderItem getOrderItem(Long id) throws Exception;
@@ -90,8 +89,7 @@ public interface OrderItemResource {
 	public OrderItem putOrderItem(Long id, OrderItem orderItem)
 		throws Exception;
 
-	public Response putOrderItemBatch(
-			Long id, String callbackURL, Object object)
+	public Response putOrderItemBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public Page<OrderItem> getOrderByExternalReferenceCodeOrderItemsPage(
@@ -109,8 +107,7 @@ public interface OrderItemResource {
 	public OrderItem postOrderIdOrderItem(Long id, OrderItem orderItem)
 		throws Exception;
 
-	public Response postOrderIdOrderItemBatch(
-			Long id, String callbackURL, Object object)
+	public Response postOrderIdOrderItemBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(

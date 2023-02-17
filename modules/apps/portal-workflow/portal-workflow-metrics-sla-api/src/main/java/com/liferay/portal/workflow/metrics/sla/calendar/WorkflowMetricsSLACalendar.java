@@ -24,8 +24,12 @@ import java.util.Locale;
  */
 public interface WorkflowMetricsSLACalendar {
 
+	public static final String DEFAULT_KEY = "default";
+
 	public Duration getDuration(
 		LocalDateTime startLocalDateTime, LocalDateTime endLocalDateTime);
+
+	public String getKey();
 
 	public LocalDateTime getOverdueLocalDateTime(
 		LocalDateTime nowLocalDateTime, Duration remainingDuration);

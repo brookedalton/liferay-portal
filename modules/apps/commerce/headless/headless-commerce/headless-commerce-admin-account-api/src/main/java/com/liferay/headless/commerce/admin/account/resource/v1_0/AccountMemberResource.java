@@ -88,7 +88,7 @@ public interface AccountMemberResource {
 		throws Exception;
 
 	public Response postAccountIdAccountMemberBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public Response deleteAccountIdAccountMember(Long id, Long userId)

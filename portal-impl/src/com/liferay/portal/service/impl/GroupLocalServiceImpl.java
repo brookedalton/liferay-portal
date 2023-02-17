@@ -386,7 +386,30 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			friendlyURL);
 
 		if (staging) {
-			groupKey = groupKey.concat("-staging");
+			int groupKeyMaxLength = ModelHintsUtil.getMaxLength(
+				Group.class.getName(), "groupKey");
+			String stagingGroupKeySuffix = "-staging";
+
+			if (groupKey.length() <=
+					(groupKeyMaxLength - stagingGroupKeySuffix.length())) {
+
+				groupKey = groupKey.concat(stagingGroupKeySuffix);
+			}
+			else {
+				int counter = 1;
+
+				groupKey = _getGroupKey(
+					counter, groupKey, groupKeyMaxLength,
+					stagingGroupKeySuffix);
+
+				while (fetchGroup(user.getCompanyId(), groupKey) != null) {
+					counter++;
+
+					groupKey = _getGroupKey(
+						counter, groupKey, groupKeyMaxLength,
+						stagingGroupKeySuffix);
+				}
+			}
 
 			for (Map.Entry<Locale, String> entry : nameMap.entrySet()) {
 				String name = entry.getValue();
@@ -5259,6 +5282,19 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 		}
 
 		return filteredGroups;
+	}
+
+	private String _getGroupKey(
+		int counter, String groupKey, int groupKeyMaxLength,
+		String stagingGroupKeySuffix) {
+
+		String suffix = counter + stagingGroupKeySuffix;
+
+		groupKey = groupKey.substring(0, groupKeyMaxLength - suffix.length());
+
+		groupKey = groupKey.concat(suffix);
+
+		return groupKey;
 	}
 
 	private Map<Locale, String> _normalizeNameMap(Map<Locale, String> nameMap) {

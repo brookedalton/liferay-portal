@@ -99,12 +99,12 @@ public interface OrderRuleAccountGroupResource {
 		throws Exception;
 
 	public void postOrderRuleIdOrderRuleAccountGroupBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
 			postOrderRuleIdOrderRuleAccountGroupBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 		throws Exception;
 
 	public static class Builder {
@@ -723,12 +723,12 @@ public interface OrderRuleAccountGroupResource {
 		}
 
 		public void postOrderRuleIdOrderRuleAccountGroupBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				postOrderRuleIdOrderRuleAccountGroupBatchHttpResponse(
-					id, callbackURL, object);
+					callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -758,7 +758,7 @@ public interface OrderRuleAccountGroupResource {
 
 		public HttpInvoker.HttpResponse
 				postOrderRuleIdOrderRuleAccountGroupBatchHttpResponse(
-					Long id, String callbackURL, Object object)
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -793,8 +793,6 @@ public interface OrderRuleAccountGroupResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-order/v1.0/order-rules/order-rule-account-groups/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

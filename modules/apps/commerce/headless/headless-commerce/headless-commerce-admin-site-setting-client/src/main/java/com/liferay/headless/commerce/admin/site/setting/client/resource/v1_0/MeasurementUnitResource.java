@@ -124,12 +124,11 @@ public interface MeasurementUnitResource {
 	public HttpInvoker.HttpResponse deleteMeasurementUnitHttpResponse(Long id)
 		throws Exception;
 
-	public void deleteMeasurementUnitBatch(
-			Long id, String callbackURL, Object object)
+	public void deleteMeasurementUnitBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse deleteMeasurementUnitBatchHttpResponse(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public MeasurementUnit getMeasurementUnit(Long id) throws Exception;
@@ -1129,11 +1128,11 @@ public interface MeasurementUnitResource {
 		}
 
 		public void deleteMeasurementUnitBatch(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				deleteMeasurementUnitBatchHttpResponse(id, callbackURL, object);
+				deleteMeasurementUnitBatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -1162,7 +1161,7 @@ public interface MeasurementUnitResource {
 		}
 
 		public HttpInvoker.HttpResponse deleteMeasurementUnitBatchHttpResponse(
-				Long id, String callbackURL, Object object)
+				String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -1197,8 +1196,6 @@ public interface MeasurementUnitResource {
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
 						"/o/headless-commerce-admin-site-setting/v1.0/measurement-units/batch");
-
-			httpInvoker.path("id", id);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

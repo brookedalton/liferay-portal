@@ -78,7 +78,7 @@ public interface OrderResource {
 
 	public Response deleteOrder(Long id) throws Exception;
 
-	public Response deleteOrderBatch(Long id, String callbackURL, Object object)
+	public Response deleteOrderBatch(String callbackURL, Object object)
 		throws Exception;
 
 	public Order getOrder(Long id) throws Exception;

@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.NotificationThreadLocal;
 import com.liferay.portal.kernel.workflow.WorkflowThreadLocal;
+import com.liferay.portal.upgrade.log.UpgradeLogContext;
 import com.liferay.portal.verify.VerifyException;
 import com.liferay.portal.verify.VerifyProcess;
 import com.liferay.portlet.exportimport.staging.StagingAdvicesThreadLocal;
@@ -273,6 +274,8 @@ public class VerifyProcessTrackerOSGiCommands {
 		WorkflowThreadLocal.setEnabled(false);
 
 		try {
+			Bundle bundle = FrameworkUtil.getBundle(verifyProcess.getClass());
+
 			if (release == null) {
 
 				// Verification state must be persisted even though not all
@@ -280,9 +283,6 @@ public class VerifyProcessTrackerOSGiCommands {
 
 				release = _releaseLocalService.createRelease(
 					_counterLocalService.increment());
-
-				Bundle bundle = FrameworkUtil.getBundle(
-					verifyProcess.getClass());
 
 				release.setServletContextName(bundle.getSymbolicName());
 
@@ -293,6 +293,8 @@ public class VerifyProcessTrackerOSGiCommands {
 				"Executing verify process registered for " + verifyProcessName);
 
 			try {
+				UpgradeLogContext.setContext(bundle.getSymbolicName());
+
 				verifyProcess.verify();
 
 				release.setVerified(true);
@@ -303,6 +305,9 @@ public class VerifyProcessTrackerOSGiCommands {
 
 				release.setVerified(false);
 				release.setState(ReleaseConstants.STATE_VERIFY_FAILURE);
+			}
+			finally {
+				UpgradeLogContext.clearContext();
 			}
 
 			_releaseLocalService.updateRelease(release);

@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.rankings.web.internal.index.importer;
 
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -34,11 +35,10 @@ import com.liferay.portal.search.tuning.rankings.web.internal.index.RankingIndex
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexName;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexNameBuilder;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -114,19 +114,15 @@ public class SingleIndexToMultipleIndexImporterImpl
 	}
 
 	private void _createRankingIndices() {
-		List<Company> companies = _companyService.getCompanies();
+		for (Company company : _companyService.getCompanies()) {
+			RankingIndexName rankingIndexName =
+				_rankingIndexNameBuilder.getRankingIndexName(
+					company.getCompanyId());
 
-		Stream<Company> stream = companies.stream();
-
-		stream.map(
-			Company::getCompanyId
-		).map(
-			_rankingIndexNameBuilder::getRankingIndexName
-		).filter(
-			rankingIndexName -> !_rankingIndexReader.isExists(rankingIndexName)
-		).forEach(
-			_rankingIndexCreator::create
-		);
+			if (!_rankingIndexReader.isExists(rankingIndexName)) {
+				_rankingIndexCreator.create(rankingIndexName);
+			}
+		}
 	}
 
 	private List<Document> _getDocuments(RankingIndexName singleIndexName) {
@@ -141,15 +137,8 @@ public class SingleIndexToMultipleIndexImporterImpl
 
 		SearchHits searchHits = searchSearchResponse.getSearchHits();
 
-		List<SearchHit> searchHitsList = searchHits.getSearchHits();
-
-		Stream<SearchHit> documentStream = searchHitsList.stream();
-
-		return documentStream.map(
-			SearchHit::getDocument
-		).collect(
-			Collectors.toList()
-		);
+		return TransformUtil.transform(
+			searchHits.getSearchHits(), SearchHit::getDocument);
 	}
 
 	private String _getRankingIndexName(String indexName) {
@@ -159,10 +148,16 @@ public class SingleIndexToMultipleIndexImporterImpl
 	private Map<String, List<Document>> _groupDocumentByIndex(
 		List<Document> documents) {
 
-		Stream<Document> stream = documents.stream();
+		Map<String, List<Document>> documentsMap = new HashMap<>();
 
-		return stream.collect(
-			Collectors.groupingBy(document -> document.getString("index")));
+		for (Document document : documents) {
+			List<Document> curDocuments = documentsMap.computeIfAbsent(
+				document.getString("index"), key -> new ArrayList<>());
+
+			curDocuments.add(document);
+		}
+
+		return documentsMap;
 	}
 
 	private void _importDocuments() {
@@ -176,20 +171,18 @@ public class SingleIndexToMultipleIndexImporterImpl
 			return;
 		}
 
+		boolean result = true;
+
 		Map<String, List<Document>> documentsMap = _groupDocumentByIndex(
 			documents);
 
-		Set<Map.Entry<String, List<Document>>> entrySet =
-			documentsMap.entrySet();
+		for (Map.Entry<String, List<Document>> entry :
+				documentsMap.entrySet()) {
 
-		Stream<Map.Entry<String, List<Document>>> stream = entrySet.stream();
+			result = result && _addDocuments(entry.getKey(), entry.getValue());
+		}
 
-		if (stream.map(
-				entry -> _addDocuments(entry.getKey(), entry.getValue())
-			).reduce(
-				true, Boolean::logicalAnd
-			)) {
-
+		if (result) {
 			_rankingIndexCreator.delete(SINGLE_INDEX_NAME);
 		}
 	}

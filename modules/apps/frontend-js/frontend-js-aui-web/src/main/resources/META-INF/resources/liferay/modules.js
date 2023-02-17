@@ -89,25 +89,6 @@
 							'timers',
 						],
 					},
-					'liferay-asset-categories-selector': {
-						path: 'asset_categories_selector.js',
-						requires: ['aui-tree', 'liferay-asset-tags-selector'],
-					},
-					'liferay-asset-tags-selector': {
-						path: 'asset_tags_selector.js',
-						requires: [
-							'array-extras',
-							'async-queue',
-							'aui-autocomplete-deprecated',
-							'aui-io-plugin-deprecated',
-							'aui-live-search-deprecated',
-							'aui-modal',
-							'aui-template-deprecated',
-							'aui-textboxlist-deprecated',
-							'datasource-cache',
-							'liferay-service-datasource',
-						],
-					},
 					'liferay-auto-fields': {
 						path: 'auto_fields.js',
 						requires: [
@@ -291,36 +272,6 @@
 							'aui-template-deprecated',
 							'liferay-input-move-boxes',
 							'sortable',
-						],
-					},
-					'liferay-item-selector-dialog': {
-						path: 'item_selector_dialog.js',
-						requires: ['aui-component'],
-					},
-					'liferay-item-selector-repository-entry-browser': {
-						path: 'item_selector_repository_entry_browser.js',
-						requires: [
-							'liferay-item-selector-uploader',
-							'liferay-item-viewer',
-							'liferay-notice',
-							'liferay-portlet-base',
-						],
-					},
-					'liferay-item-selector-uploader': {
-						path: 'item_selector_uploader.js',
-						requires: [
-							'aui-base',
-							'aui-progressbar',
-							'liferay-portlet-base',
-							'uploader',
-						],
-					},
-					'liferay-item-selector-url': {
-						path: 'item_selector_url.js',
-						requires: [
-							'aui-event-input',
-							'liferay-item-viewer',
-							'liferay-portlet-base',
 						],
 					},
 					'liferay-item-viewer': {

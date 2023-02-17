@@ -1098,8 +1098,7 @@ definition {
 				locator1 = "PageEditor#FRAGMENTS_AND_WIDGETS_TAB_FRAGMENT",
 				locator2 = "PageEditor#ANY_FRAGMENT_DROP_TARGET");
 		}
-
-		if (isSet(targetFragmentName) && !(isSet(collectionName))) {
+		else if (isSet(targetFragmentName)) {
 			DragAndDrop.javaScriptDragAndDropToBottom(
 				index = ${index},
 				key_targetFragmentName = ${targetFragmentName},
@@ -1917,9 +1916,16 @@ definition {
 				text = ${selectedName});
 
 			if (isSet(filterCollection)) {
-				PageEditor.gotoEllipsisMenuItemInItemSelector(
-					fieldLabel = "Collection",
-					menuItem = "Prefilter Collection");
+				if (contains(${selectedName}, "Items")) {
+					PageEditor.gotoEllipsisMenuItemInItemSelector(
+						fieldLabel = "Collection",
+						menuItem = "Filter Collection");
+				}
+				else {
+					PageEditor.gotoEllipsisMenuItemInItemSelector(
+						fieldLabel = "Collection",
+						menuItem = "Prefilter Collection");
+				}
 
 				if (isSet(clearFilter)) {
 					Click(
@@ -1943,6 +1949,10 @@ definition {
 							checkboxName = ${itemType},
 							locator1 = "Checkbox#ANY_CHECKBOX");
 					}
+
+					Click(
+						key_fieldLabel = "Item Type",
+						locator1 = "Dropdown#DROPDOWN_TOGGLE_BUTTON_WITH_LABEL");
 				}
 
 				if (isSet(tagNameList)) {
@@ -1979,7 +1989,12 @@ definition {
 						value1 = ${option});
 				}
 
-				Button.clickApply();
+				if (contains(${selectedName}, "Items")) {
+					Button.clickSave();
+				}
+				else {
+					Button.clickApply();
+				}
 			}
 		}
 		else if (!(isSet(deviceType)) || (${deviceType} == "Desktop")) {

@@ -83,7 +83,7 @@ public interface PriceListChannelResource {
 		throws Exception;
 
 	public Response postPriceListIdPriceListChannelBatch(
-			Long id, String callbackURL, Object object)
+			String callbackURL, Object object)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(
