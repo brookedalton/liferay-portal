@@ -3094,6 +3094,9 @@ definition {
 	}
 
 	test ViewClauseContributorsFilterAndSort {
+		property app.server.types = "jboss,weblogic,websphere,wildfly";
+		property portal.acceptance = "brooke";
+
 		Blueprints.openBlueprintsAdmin();
 
 		Blueprints.createBlueprint(title = "Test Blueprint");
