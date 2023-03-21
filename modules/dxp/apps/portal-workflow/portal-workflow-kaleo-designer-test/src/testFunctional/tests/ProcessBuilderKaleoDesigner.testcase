@@ -1,5 +1,4 @@
 @component-name = "portal-workflow-ee"
-@ignore = "true"
 definition {
 
 	property portal.release = "true";
@@ -451,6 +450,7 @@ definition {
 	@description = "Verify that the user can set transition Default"
 	@priority = 4
 	test CanSetDefaultTransition {
+		property portal.acceptance = "runkaleo";
 		property test.name.skip.portal.instance = "ProcessBuilderKaleoDesigner#CanSetDefaultTransition";
 
 		ApplicationsMenu.gotoPortlet(
