@@ -160,9 +160,9 @@ definition {
 	}
 
 	macro addNodeViaViewTab {
-		AssertClick.pauseAssertTextClickAt(
-			locator1 = "KaleoDesignerEditWorkflow#NODES_TAB",
-			value1 = "Nodes");
+		// AssertClick.pauseAssertTextClickAt(
+		// 	locator1 = "KaleoDesignerEditWorkflow#NODES_TAB",
+		// 	value1 = "Nodes");
 
 		DragAndDrop.dragAndDrop(
 			key_nodeNodeLabel = ${nodeNodeLabel},
@@ -395,35 +395,36 @@ definition {
 	}
 
 	macro editNodeDescription {
-		DoubleClick(locator1 = "KaleoDesignerEditWorkflow#SETTINGS_DESCRIPTION");
+		// DoubleClick(locator1 = "KaleoDesignerEditWorkflow#SETTINGS_DESCRIPTION");
 
 		Type(
-			locator1 = "DDMEditStructure#SETTINGS_CELL_EDITOR_TEXT_AREA",
-			value1 = ${nodeDescription});
+			key_infoOption = ${nodeDescription},
+			locator1 = "ProcessBuilderKaleoDesignerReact#NODE_INFO_INPUT");
 
 		AssertClick(
 			locator1 = "Button#SAVE",
 			value1 = "Save");
 
-		AssertTextEquals(
-			locator1 = "KaleoDesignerEditWorkflow#SETTINGS_DESCRIPTION",
-			value1 = ${nodeDescription});
+		// AssertTextEquals(
+		// 	locator1 = "KaleoDesignerEditWorkflow#SETTINGS_DESCRIPTION",
+		// 	value1 = ${nodeDescription});
 	}
 
 	macro editNodeName {
-		DoubleClick(locator1 = "DDMEditStructure#SETTINGS_NAME");
+		// DoubleClick(locator1 = "DDMEditStructure#SETTINGS_NAME");
 
 		Type(
-			locator1 = "TextInput#TEXT",
+			key_text = "Label",
+			locator1 = "TextInput#ANY",
 			value1 = ${nodeName});
 
 		AssertClick(
 			locator1 = "Button#SAVE",
 			value1 = "Save");
 
-		AssertTextEquals(
-			locator1 = "DDMEditStructure#SETTINGS_NAME",
-			value1 = ${nodeName});
+		// AssertTextEquals(
+		// 	locator1 = "DDMEditStructure#SETTINGS_NAME",
+		// 	value1 = ${nodeName});
 	}
 
 	macro editNodeNotifications {

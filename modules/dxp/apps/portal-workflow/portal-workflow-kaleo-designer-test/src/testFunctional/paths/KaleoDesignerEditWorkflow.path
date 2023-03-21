@@ -88,7 +88,7 @@
 </tr>
 <tr>
 	<td>NODE_FIELD</td>
-	<td>//div[contains(@class,'tabs-content')]//li[contains(@class,'builder-field')][div[contains(@class,'field-label')][normalize-space(text())='${key_nodeNodeLabel}']]</td>
+	<td>//div[contains(@class,'sidebar-body')]//span[contains(@class,'node-label') and contains(.,'${key_nodeNodeLabel}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -315,7 +315,7 @@
 
 <tr>
 	<td>VIEW_FORM_NODE_DEFAULT</td>
-	<td>//div[@class='diagram-node-label' and contains(.,'${key_nodeType}')]/../div/div/div</td>
+	<td>//div[@class='node-info' and contains(.,'${key_nodeType}')]</td>
 	<td></td>
 </tr>
 <tr>

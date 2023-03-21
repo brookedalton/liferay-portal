@@ -464,7 +464,7 @@ definition {
 			nodeDescription = "Task Description",
 			nodeName = "Task Name",
 			nodeNodeLabel = "Task",
-			nodeType = "task");
+			nodeType = "Task");
 
 		KaleoDesigner.selectNode(nodeNodeLabel = "StartNode");
 
