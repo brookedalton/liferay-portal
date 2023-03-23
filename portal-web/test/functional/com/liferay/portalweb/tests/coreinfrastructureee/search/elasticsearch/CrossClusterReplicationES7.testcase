@@ -1,6 +1,7 @@
 @component-name = "portal-search-ee"
 definition {
 
+	property ci.retries.disabled = "true";
 	property elasticsearch.ccr.enabled = "true";
 	property elasticsearch.multiple.connections = "true";
 	property minimum.slave.ram = "24";
