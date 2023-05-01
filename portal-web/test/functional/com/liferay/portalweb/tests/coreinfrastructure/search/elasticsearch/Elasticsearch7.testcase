@@ -32,6 +32,7 @@ definition {
 		property search.environment.suite.exclude = "true";
 		property test.assert.warning.exceptions = "true";
 		property test.name.skip.portal.instance = "Elasticsearch7#AssertIndexOnStartup";
+		property portal.acceptance = "test";
 
 		JSONWebcontent.addWebContent(
 			content = "WC WebContent Content",
