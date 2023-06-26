@@ -319,6 +319,7 @@ definition {
 	@description = "This is a use case for LPS-177665."
 	@priority = 4
 	test CanReindexWithConcurrentExecutionMode {
+		property portal.acceptance = "brooke";
 		property custom.properties = "feature.flag.LPS-177664=true";
 		property portal.release = "false";
 		property search.environment.suite.exclude = "true";
