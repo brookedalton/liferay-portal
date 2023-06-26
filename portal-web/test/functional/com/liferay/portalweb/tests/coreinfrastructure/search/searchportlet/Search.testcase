@@ -352,14 +352,6 @@ definition {
 				locator1 = "SearchAdmin#EXECUTE_REINDEX_BUTTON");
 		}
 
-		task ("Assert that indexNameNext is now populated") {
-			var companyId = JSONCompany.getCompanyId();
-
-			SQL.assertTextInMySQLStatementResult(
-				mysqlStatement = "SELECT * FROM lportal.Company WHERE companyId LIKE '%${companyId}%'",
-				text = "liferay-${companyId}");
-		}
-
 		task ("Assert that search still functions during reindex") {
 			Navigator.openWithAppendToBaseURL(urlAppend = "web/guest/search?q=test");
 
@@ -368,6 +360,14 @@ definition {
 			SearchResultPortlet.viewSearchResults(
 				searchAssetTitle = "Test Test",
 				searchAssetType = "User");
+		}
+
+		task ("Assert that indexNameNext is now populated") {
+			var companyId = JSONCompany.getCompanyId();
+
+			SQL.assertTextInMySQLStatementResult(
+				mysqlStatement = "SELECT * FROM lportal.Company WHERE companyId LIKE '%${companyId}%'",
+				text = "liferay-${companyId}");
 		}
 
 		task ("Assert that there are 2 indices while a concurrent reindex is running") {
