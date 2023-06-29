@@ -695,8 +695,6 @@ ${line.separator}CATALINA_OPTS="${CATALINA_OPTS} -Djavax.net.ssl.trustStore=${el
 			<prepare-elasticsearch-analyzers />
 
 			<configure-elasticsearch-properties />
-
-			<configure-portal-remote-elasticsearch-osgi-properties />
 		</sequential>
 	</macrodef>
 
@@ -1363,6 +1361,8 @@ ${line.separator}CATALINA_OPTS="${CATALINA_OPTS} -Djavax.net.ssl.trustStore=${el
 				<set-up-standard-elasticsearch />
 
 				<antcall target="start-elasticsearch-node" unless:true="${skip.server.startup}" />
+
+				<configure-portal-remote-elasticsearch-osgi-properties />
 			</default>
 		</switch>
 
