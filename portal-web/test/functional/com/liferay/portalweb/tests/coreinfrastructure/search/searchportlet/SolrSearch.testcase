@@ -50,7 +50,7 @@ definition {
 			fail("URL should preserve delta, but not contain start.");
 		}
 
-		Click(locator1 = "Pagination#NEXT_LINK");
+		Click(locator1 = "SearchResults#RESULTS_PORTLET_PAGINATION_NEXT");
 
 		AssertElementPresent(locator1 = "Pagination#CURRENT_PAGE_SELECT");
 
@@ -62,7 +62,7 @@ definition {
 			fail("URL should preserve delta and add start.");
 		}
 
-		Click(locator1 = "Pagination#NEXT_LINK");
+		Click(locator1 = "SearchResults#RESULTS_PORTLET_PAGINATION_NEXT");
 
 		AssertElementPresent(locator1 = "Pagination#CURRENT_PAGE_SELECT");
 

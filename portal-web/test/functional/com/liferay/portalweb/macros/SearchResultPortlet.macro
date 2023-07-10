@@ -101,7 +101,7 @@ definition {
 		var searchTerm = ${searchTerm};
 
 		while (IsElementNotPresent(locator1 = "SearchResults#ASSET_ENTRY_TABLE_TITLE_SPECIFIC")) {
-			Click(locator1 = "Pagination#NEXT_LINK");
+			Click(locator1 = "SearchResults#RESULTS_PORTLET_PAGINATION_NEXT");
 		}
 
 		SearchResultPortlet.viewSearchResults(

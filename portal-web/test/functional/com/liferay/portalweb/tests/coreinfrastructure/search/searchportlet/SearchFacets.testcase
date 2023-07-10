@@ -854,7 +854,7 @@ definition {
 
 		SearchFacetPortlet.checkFacet(facetValueName = "Category Name 2");
 
-		Click(locator1 = "Pagination#NEXT_LINK");
+		Click(locator1 = "SearchResults#RESULTS_PORTLET_PAGINATION_NEXT");
 
 		SearchFacetPortlet.checkFacet(facetValueName = "Category Name 1");
 
