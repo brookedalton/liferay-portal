@@ -223,6 +223,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>RESULTS_PORTLET_PAGINATION_NEXT</td>
+	<td>//a[contains(@class, 'page-link')]//*[contains(@class,'right')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>RESULTS_PORTLET_SEARCH_QUERY</td>
 	<td>//div[contains(@class,'search-total-label')]</td>
 	<td></td>
