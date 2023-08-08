@@ -24,6 +24,50 @@ CATALINA_OPTS=&quot;${CATALINA_OPTS} -Djavax.net.ssl.trustStore=${solr.dir}/serv
 					</if>
 				</then>
 			</if>
+			<if>
+				<equals arg1="${app.server.type}" arg2="jboss" />
+				<then>
+					<replace
+						file="${app.server.jboss.bin.dir}/standalone.conf"
+					>
+						<replacetoken><![CDATA[JAVA_OPTS="-Xms1303m -Xmx1303m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m ]]></replacetoken>
+						<replacevalue><![CDATA[JAVA_OPTS="-Djavax.net.ssl.trustStore=${solr.dir}/server/etc/solr-ssl.keystore.jks -Djavax.net.ssl.trustStorePassword=secret]]></replacevalue>
+					</replace>
+				</then>
+			</if>
+			<if>
+				<equals arg1="${app.server.type}" arg2="websphere" />
+				<then>
+					<replace
+						file="${app.server.websphere.instance.dir}/config/cells/liferay-cell/nodes/liferay-node/servers/server1/server.xml"
+					>
+						<replacetoken><![CDATA[genericJvmArguments="]]></replacetoken>
+						<replacevalue expandproperties="true"><![CDATA[genericJvmArguments="-Djavax.net.ssl.trustStore=${solr.dir}/server/etc/solr-ssl.keystore.jks -Djavax.net.ssl.trustStorePassword=secret]]></replacevalue>
+					</replace>
+				</then>
+			</if>
+			<if>
+				<equals arg1="${app.server.type}" arg2="wildfly" />
+				<then>
+					<replace
+						file="${app.server.wildfly.bin.dir}/standalone.conf"
+					>
+						<replacetoken><![CDATA[JAVA_OPTS="-Xms1303m -Xmx1303m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m ]]></replacetoken>
+						<replacevalue><![CDATA[JAVA_OPTS="-Djavax.net.ssl.trustStore=${solr.dir}/server/etc/solr-ssl.keystore.jks -Djavax.net.ssl.trustStorePassword=secret]]></replacevalue>
+					</replace>
+				</then>
+			</if>
+			<if>
+				<equals arg1="${app.server.type}" arg2="weblogic" />
+				<then>
+					<replace
+						file="${app.server.weblogic.instance.dir}/bin/setDomainEnv.sh"
+					>
+						<replacetoken><![CDATA[JAVA_PROPERTIES="${JAVA_PROPERTIES} ${CLUSTER_PROPERTIES}"]]></replacetoken>
+						<replacevalue><![CDATA[JAVA_PROPERTIES="-Djavax.net.ssl.trustStore=${solr.dir}/server/etc/solr-ssl.keystore.jks -Djavax.net.ssl.trustStorePassword=secret  ${JAVA_PROPERTIES} ${CLUSTER_PROPERTIES}"]]></replacevalue>
+					</replace>
+				</then>
+			</if>
 		</sequential>
 	</macrodef>
 
