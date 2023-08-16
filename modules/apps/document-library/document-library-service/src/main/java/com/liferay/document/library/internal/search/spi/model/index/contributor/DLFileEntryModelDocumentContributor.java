@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.RelatedEntryIndexer;
 import com.liferay.portal.kernel.search.RelatedEntryIndexerRegistry;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -38,7 +39,6 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PrefsProps;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.TextExtractor;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.repository.liferayrepository.model.LiferayFileEntry;
 import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
@@ -273,7 +273,7 @@ public class DLFileEntryModelDocumentContributor
 			return null;
 		}
 
-		String text = _textExtractor.extractText(
+		String text = FileUtil.extractText(
 			inputStream, PropsValues.DL_FILE_INDEXING_MAX_SIZE);
 
 		if (Validator.isNotNull(text)) {
@@ -358,9 +358,6 @@ public class DLFileEntryModelDocumentContributor
 
 	@Reference
 	private RelatedEntryIndexerRegistry _relatedEntryIndexerRegistry;
-
-	@Reference
-	private TextExtractor _textExtractor;
 
 	@Reference
 	private TrashHelper _trashHelper;
