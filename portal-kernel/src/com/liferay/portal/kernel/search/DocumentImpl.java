@@ -7,10 +7,12 @@ package com.liferay.portal.kernel.search;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.search.geolocation.GeoLocationPoint;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
+import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
@@ -19,6 +21,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -122,8 +125,11 @@ public class DocumentImpl implements Document {
 	@Deprecated
 	@Override
 	public void addFile(String name, byte[] bytes, String fileExt) {
-		throw new UnsupportedOperationException();
+		InputStream inputStream = new UnsyncByteArrayInputStream(bytes);
+
+		addFile(name, inputStream, fileExt);
 	}
+
 
 	/**
 	 * @deprecated As of Cavanaugh (7.4.x), with no direct replacement
@@ -133,7 +139,9 @@ public class DocumentImpl implements Document {
 	public void addFile(String name, File file, String fileExt)
 		throws IOException {
 
-		throw new UnsupportedOperationException();
+		InputStream inputStream = new FileInputStream(file);
+
+		addFile(name, inputStream, fileExt);
 	}
 
 	/**
@@ -142,7 +150,7 @@ public class DocumentImpl implements Document {
 	@Deprecated
 	@Override
 	public void addFile(String name, InputStream inputStream, String fileExt) {
-		throw new UnsupportedOperationException();
+		addText(name, FileUtil.extractText(inputStream));
 	}
 
 	/**
@@ -154,7 +162,7 @@ public class DocumentImpl implements Document {
 		String name, InputStream inputStream, String fileExt,
 		int maxStringLength) {
 
-		throw new UnsupportedOperationException();
+		addText(name, FileUtil.extractText(inputStream, maxStringLength));
 	}
 
 	@Override
