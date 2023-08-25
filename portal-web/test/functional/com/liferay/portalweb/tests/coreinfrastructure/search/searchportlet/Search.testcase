@@ -2284,6 +2284,25 @@ definition {
 		AssertHTMLSourceTextPresent(value1 = ${escapedScript});
 	}
 
+	@description = "This is a use case for LPS-185640."
+	@priority = 3
+	test SetDeepPaginationKeepAlive {
+		property custom.properties = "feature.flag.LPS-172416=true";
+		property osgi.module.configuration.file.names = "com.liferay.portal.search.elasticsearch7.configuration.DeepPaginationConfiguration.config";
+		property osgi.module.configurations = "enableDeepPagination=B\"true\":pointInTimeKeepAliveSeconds=\"1000\"";
+		property test.liferay.virtual.instance = "false";
+
+		SearchPortlets.searchEmbedded(searchTerm = "Test");
+
+		AssertElementNotPresent(
+			locator1 = "Message#EMPTY_INFO",
+			value1 = "No results were found that matched the keywords");
+
+		AssertConsoleTextNotPresent(value1 = "ElasticsearchStatusException");
+
+		AssertConsoleTextNotPresent(value1 = "fractional time values are not supported");
+	}
+
 	@description = "This is a use case for LPS-152937."
 	test SortAccentedWords {
 		var digit = 1;
