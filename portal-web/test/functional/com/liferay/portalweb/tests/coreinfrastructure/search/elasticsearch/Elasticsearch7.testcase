@@ -440,6 +440,25 @@ definition {
 			locator1 = "SearchResults#ASSET_ENTRY_TABLE_TITLE");
 	}
 
+	@description = "This is a use case for LPS-171359."
+	@priority = 3
+	test NoRetryAttemptedWithRemoteElasticsearch {
+		property remote.elasticsearch.enabled = "true";
+		property test.liferay.virtual.instance = "false";
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		AntCommands.runCommand("build-test-elasticsearch7.xml", "stop-elasticsearch");
+
+		WebContent.addArticleCP(
+			webContentContent = "WC Content",
+			webContentTitle = "Apple");
+
+		AssertConsoleTextNotPresent(value1 = "retrying after 60 seconds");
+
+		AssertConsoleTextPresent(value1 = "Connection refused");
+	}
+
 	@priority = 5
 	test OSGiConfigSmokeTest {
 		property embedded.elasticsearch.only = "true";
