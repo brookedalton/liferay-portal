@@ -249,7 +249,7 @@
 			<finder-column name="classPK" />
 		</finder>
 	</entity>
-	<entity local-service="true" name="Country" remote-service="true" uuid="true">
+	<entity change-tracking-enabled="true" local-service="true" name="Country" remote-service="true" uuid="true">
 
 		<!-- PK fields -->
 
