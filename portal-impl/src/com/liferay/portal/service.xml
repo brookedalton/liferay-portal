@@ -1874,7 +1874,7 @@
 			<finder-column name="layoutSetId" />
 		</finder>
 	</entity>
-	<entity local-service="true" name="Region" remote-service="true" uuid="true">
+	<entity change-tracking-enabled="true" local-service="true" name="Region" remote-service="true" uuid="true">
 
 		<!-- PK fields -->
 
