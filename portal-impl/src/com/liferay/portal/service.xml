@@ -1891,11 +1891,11 @@
 		<!-- Other fields -->
 
 		<column name="countryId" type="long" />
-		<column name="active" type="boolean" />
-		<column name="name" type="String" />
-		<column name="position" type="double" />
-		<column name="regionCode" type="String" />
-		<column name="lastPublishDate" type="Date" />
+		<column change-tracking-resolution-type="merge" name="active" type="boolean" />
+		<column change-tracking-resolution-type="merge" name="name" type="String" />
+		<column change-tracking-resolution-type="merge" name="position" type="double" />
+		<column change-tracking-resolution-type="merge" name="regionCode" type="String" />
+		<column change-tracking-resolution-type="merge" name="lastPublishDate" type="Date" />
 
 		<!-- Localized entity -->
 
