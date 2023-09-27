@@ -3,15 +3,23 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.change.tracking.web.internal.spi.display;
+package com.liferay.address.web.internal.change.tracking.spi.display;
 
+import com.liferay.address.web.internal.constants.AddressPortletKeys;
 import com.liferay.change.tracking.spi.display.BaseCTDisplayRenderer;
 import com.liferay.change.tracking.spi.display.CTDisplayRenderer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Region;
+import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
+import com.liferay.portal.kernel.util.Portal;
 
 import java.util.Locale;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -21,6 +29,33 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(service = CTDisplayRenderer.class)
 public class RegionCTDisplayRenderer extends BaseCTDisplayRenderer<Region> {
+
+	@Override
+	public String getEditURL(
+			HttpServletRequest httpServletRequest, Region region)
+		throws PortalException {
+
+		PortletURL portletURL = PortletURLBuilder.create(
+			_portal.getControlPanelPortletURL(
+				httpServletRequest, null,
+				AddressPortletKeys.COUNTRIES_MANAGEMENT_ADMIN, 0, 0,
+				PortletRequest.RENDER_PHASE)
+		).setMVCRenderCommandName(
+			"/address/edit_region"
+		).buildPortletURL();
+
+		String currentURL = _portal.getCurrentURL(httpServletRequest);
+
+		portletURL.setParameter("redirect", currentURL);
+		portletURL.setParameter("backURL", currentURL);
+
+		portletURL.setParameter(
+			"regionId", String.valueOf(region.getRegionId()));
+		portletURL.setParameter(
+			"countryId", String.valueOf(region.getCountryId()));
+
+		return portletURL.toString();
+	}
 
 	@Override
 	public Class<Region> getModelClass() {
@@ -46,11 +81,7 @@ public class RegionCTDisplayRenderer extends BaseCTDisplayRenderer<Region> {
 		Region region = displayBuilder.getModel();
 
 		displayBuilder.display(
-			"name", region.getName()
-		).display(
-			"region-id", region.getRegionId()
-		).display(
-			"country-id", region.getCountryId()
+			"key", region.getName()
 		).display(
 			"position", region.getPosition()
 		).display(
@@ -62,5 +93,8 @@ public class RegionCTDisplayRenderer extends BaseCTDisplayRenderer<Region> {
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private Portal _portal;
 
 }
