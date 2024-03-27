@@ -941,6 +941,7 @@ definition {
 
 	@priority = 4
 	test ContentPageChangesCanBeAutomaticallyResolved {
+		property portal.acceptance = "brooke";
 		HeadlessSite.addSite(siteName = "Site Name");
 
 		JSONLayout.addPublicLayout(
