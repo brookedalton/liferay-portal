@@ -1008,7 +1008,11 @@ definition {
 			gotoPublicationsAdmin = "true",
 			publicationName = "Publication Name 2");
 
-		PublicationsNavigator.gotoPublish(publicationName = "Publication Name 1");
+		PublicationsNavigator.openPublicationsAdmin();
+
+		PublicationsNavigator.gotoReviewChanges(publicationName = "Publication Name 1");
+
+		Publications.publishPublication(publicationName = "Publication Name 1");
 
 		AssertElementNotPresent(locator1 = "Publications#NEEDS_MANUAL_RESOLUTION_TABLE");
 
