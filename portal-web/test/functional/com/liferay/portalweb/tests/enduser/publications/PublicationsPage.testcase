@@ -1007,7 +1007,7 @@ definition {
 			gotoPublicationsAdmin = "true",
 			publicationName = "Publication Name 2");
 
-		PublicationsNavigator.gotoPublish(
+		Publications.publishPublication(
 			gotoPublicationsAdmin = "true",
 			publicationName = "Publication Name 1");
 
