@@ -1010,9 +1010,11 @@ definition {
 
 		PublicationsNavigator.openPublicationsAdmin();
 
-		PublicationsNavigator.gotoReviewChanges(publicationName = "Publication Name 1");
+		PublicationsNavigator.gotoReviewChanges(
+			gotoPublicationsAdmin = "true",
+			publicationName = "Publication Name 1");
 
-		Publications.publishPublication(publicationName = "Publication Name 1");
+		Click(locator1 = "Publications#PUBLISH_NAV_BAR");
 
 		AssertElementNotPresent(locator1 = "Publications#NEEDS_MANUAL_RESOLUTION_TABLE");
 
