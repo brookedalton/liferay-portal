@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {Locator, Page} from '@playwright/test';
+import {Locator, Page, expect} from '@playwright/test';
 
 import {PORTLET_URLS} from '../../utils/portletUrls';
 import {ApplicationsMenuPage} from '../product-navigation-applications-menu/ApplicationsMenuPage';
@@ -74,6 +74,12 @@ export class ChangeTrackingPage {
 			.waitFor();
 	}
 
+	async reviewChange(title: string) {
+		await this.page.getByRole('link', {name: title}).first().click();
+
+		await this.page.locator('h2').filter({hasText: title}).waitFor();
+	}
+
 	async selectTab(tabLabel: string) {
 		const tabLink = this.tabsContainer.locator('a', {
 			hasText: tabLabel,
@@ -82,5 +88,24 @@ export class ChangeTrackingPage {
 		await tabLink.click();
 
 		await tabLink.and(this.page.locator('.active')).waitFor();
+	}
+
+	async viewDisplayTab(tabLabel: string, {isHidden} = {isHidden: false}) {
+		const tab = this.page.locator('nav.navbar');
+
+		if (isHidden) {
+			await expect(
+				tab.locator('a', {
+					hasText: tabLabel,
+				})
+			).toBeHidden();
+		}
+		else {
+			await expect(
+				tab.locator('a', {
+					hasText: tabLabel,
+				})
+			).toBeVisible();
+		}
 	}
 }
