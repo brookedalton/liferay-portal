@@ -10,6 +10,8 @@ import {changeTrackingPagesTest} from '../../fixtures/changeTrackingPagesTest';
 import {featureFlagsTest} from '../../fixtures/featureFlagsTest';
 import {loginTest} from '../../fixtures/loginTest';
 import {workflowPagesTest} from '../../fixtures/workflowPagesTest';
+import getRandomString from '../../utils/getRandomString';
+import {waitForSuccessAlert} from '../../utils/waitForSuccessAlert';
 import {journalPagesTest} from '../journal-web/fixtures/journalPagesTest';
 
 export const test = mergeTests(
@@ -36,32 +38,47 @@ test('LPD-19748 Add workflow info to the View Change screen', async ({
 
 	await changeTrackingPage.enablePublications();
 
+	const publicationName = getRandomString();
+
 	const ctCollection =
 		await apiHelpers.headlessChangeTracking.createCTCollection(
-			'Publication Name'
+			publicationName
 		);
 
 	await apiHelpers.headlessChangeTracking.checkoutCTCollection(
 		ctCollection.id
 	);
 
+	const journalName = getRandomString();
+
 	await journalEditArticlePage.goto();
-	await journalEditArticlePage.submitArticleForWorkflow(
-		'Basic Web Content Article'
-	);
+	await journalEditArticlePage.submitArticleForWorkflow(journalName);
 
-	await changeTrackingPage.goToReviewChanges('Publication Name');
+	await changeTrackingPage.goToReviewChanges(publicationName);
 
-	await changeTrackingPage.reviewChange('Basic Web Content Article');
+	await changeTrackingPage.reviewChange(journalName);
 
 	await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
 
 	await changeTrackingPage.viewDisplayTab('Workflow');
+
+	await apiHelpers.headlessChangeTracking.deleteCTCollection(ctCollection.id);
+
+	await changeTrackingPage.disablePublications();
+
+	await workflowPage.goto();
+
+	await workflowPage.changeWorkflow('Web Content Article', 'No Workflow', {
+		disable: true,
+	});
 });
 
 test('LPD-19748 Workflow data is displayed in tab', async ({
+	apiHelpers,
 	changeTrackingPage,
+	journalEditArticlePage,
 	page,
+	workflowPage,
 }) => {
 	const displayData = [
 		'Status',
@@ -71,33 +88,88 @@ test('LPD-19748 Workflow data is displayed in tab', async ({
 		'Due Date',
 	];
 
-	await changeTrackingPage.goToReviewChanges('Publication Name');
+	await workflowPage.goto();
 
-	await changeTrackingPage.reviewChange('Basic Web Content Article');
+	await workflowPage.changeWorkflow('Web Content Article', 'Single Approver');
+
+	await changeTrackingPage.enablePublications();
+
+	const publicationName = getRandomString();
+
+	const ctCollection =
+		await apiHelpers.headlessChangeTracking.createCTCollection(
+			publicationName
+		);
+
+	await apiHelpers.headlessChangeTracking.checkoutCTCollection(
+		ctCollection.id
+	);
+
+	const journalName = getRandomString();
+
+	await journalEditArticlePage.goto();
+	await journalEditArticlePage.submitArticleForWorkflow(journalName);
+
+	await changeTrackingPage.goToReviewChanges(publicationName);
+
+	await changeTrackingPage.reviewChange(journalName);
 
 	await changeTrackingPage.selectTab('Workflow');
 
 	for (const data of displayData) {
 		await page.getByText(data, {exact: true}).isVisible();
 	}
-});
 
-test('LPD-19748 Workflow status is displayed but not tab when workflow is not enabled', async ({
-	changeTrackingPage,
-	page,
-	workflowPage,
-}) => {
+	await apiHelpers.headlessChangeTracking.deleteCTCollection(ctCollection.id);
+
+	await changeTrackingPage.disablePublications();
+
 	await workflowPage.goto();
 
 	await workflowPage.changeWorkflow('Web Content Article', 'No Workflow', {
 		disable: true,
 	});
+});
 
-	await changeTrackingPage.goToReviewChanges('Publication Name');
+test('LPD-19748 Workflow status is displayed but not tab when workflow is not enabled', async ({
+	apiHelpers,
+	changeTrackingPage,
+	journalEditArticlePage,
+	page,
+}) => {
+	await changeTrackingPage.enablePublications();
 
-	await changeTrackingPage.reviewChange('Basic Web Content Article');
+	const publicationName = getRandomString();
 
-	await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
+	const ctCollection =
+		await apiHelpers.headlessChangeTracking.createCTCollection(
+			publicationName
+		);
+
+	await apiHelpers.headlessChangeTracking.checkoutCTCollection(
+		ctCollection.id
+	);
+
+	const journalName = getRandomString();
+
+	await journalEditArticlePage.goto();
+	await journalEditArticlePage.fillTitle(journalName);
+	await page.getByRole('button', {exact: true, name: 'Publish'}).click();
+
+	await waitForSuccessAlert(
+		page,
+		`Success:${journalName} was created successfully.`
+	);
+
+	await changeTrackingPage.goToReviewChanges(publicationName);
+
+	await changeTrackingPage.reviewChange(journalName);
+
+	await expect(page.getByText(`Workflow status: Approved`)).toBeVisible();
 
 	await changeTrackingPage.viewDisplayTab('Workflow', {isHidden: true});
+
+	await apiHelpers.headlessChangeTracking.deleteCTCollection(ctCollection.id);
+
+	await changeTrackingPage.disablePublications();
 });
