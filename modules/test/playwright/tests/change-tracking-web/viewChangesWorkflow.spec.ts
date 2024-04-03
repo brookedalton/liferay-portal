@@ -24,83 +24,43 @@ export const test = mergeTests(
 	loginTest()
 );
 
-test('LPD-19748 Add workflow info to the View Change screen', async ({
-	apiHelpers,
-	changeTrackingPage,
-	journalEditArticlePage,
-	page,
-	workflowPage,
-}) => {
-	await workflowPage.goto();
+let ctCollection;
+let journalName;
+let publicationName;
 
-	await workflowPage.changeWorkflow('Web Content Article', 'Single Approver');
-
-	await changeTrackingPage.enablePublications();
-
-	const publicationName = getRandomString();
-
-	const ctCollection =
-		await apiHelpers.headlessChangeTracking.createCTCollection(
-			publicationName
-		);
-
-	await apiHelpers.headlessChangeTracking.checkoutCTCollection(
-		ctCollection.id
-	);
-
-	const journalName = getRandomString();
-
-	await journalEditArticlePage.goto();
-	await journalEditArticlePage.submitArticleForWorkflow(journalName);
-
-	await changeTrackingPage.goToReviewChanges(publicationName);
-
-	await changeTrackingPage.reviewChange(journalName);
-
-	await test.step('Check for workflow status and tab', async () => {
-		await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
-
-		await changeTrackingPage.viewDisplayTab('Workflow');
-	});
-
-	await test.step('Assert workflow data is displayed in tab', async () => {
-		const displayData = [
-			'Status',
-			'Assigned to',
-			'Task Name',
-			'Create Date',
-			'Due Date',
-		];
-
-		await changeTrackingPage.selectTab('Workflow');
-
-		for (const data of displayData) {
-			await page.getByText(data, {exact: true}).isVisible();
-		}
-	});
-
-	await test.step('Workflow status is displayed when workflow is disabled', async () => {
+test.beforeEach(
+	async ({
+		apiHelpers,
+		changeTrackingPage,
+		journalEditArticlePage,
+		workflowPage,
+	}) => {
 		await workflowPage.goto();
 
 		await workflowPage.changeWorkflow(
 			'Web Content Article',
-			'No Workflow',
-			{
-				disable: true,
-			}
+			'Single Approver'
 		);
 
-		await changeTrackingPage.goToReviewChanges(publicationName);
+		await changeTrackingPage.enablePublications();
 
-		await changeTrackingPage.reviewChange(journalName);
+		publicationName = getRandomString();
 
-		await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
-	});
+		ctCollection =
+			await apiHelpers.headlessChangeTracking.createCTCollection(
+				publicationName
+			);
 
-	await test.step('Workflow tab is not displayed when workflow is disabled', async () => {
-		await changeTrackingPage.viewDisplayTab('Workflow', {isHidden: true});
-	});
+		await apiHelpers.headlessChangeTracking.checkoutCTCollection(ctCollection.id);
 
+		journalName = getRandomString();
+
+		await journalEditArticlePage.goto();
+		await journalEditArticlePage.submitArticleForWorkflow(journalName);
+	}
+);
+
+test.afterEach(async ({apiHelpers, changeTrackingPage, workflowPage}) => {
 	await apiHelpers.headlessChangeTracking.deleteCTCollection(ctCollection.id);
 
 	await changeTrackingPage.disablePublications();
@@ -110,4 +70,59 @@ test('LPD-19748 Add workflow info to the View Change screen', async ({
 	await workflowPage.changeWorkflow('Web Content Article', 'No Workflow', {
 		disable: true,
 	});
+});
+
+test('LPD-19748 Add workflow info to the View Change screen', async ({
+	changeTrackingPage,
+	page,
+}) => {
+	await changeTrackingPage.goToReviewChanges(publicationName);
+
+	await changeTrackingPage.reviewChange(journalName);
+
+	await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
+
+	await changeTrackingPage.viewDisplayTab('Workflow');
+});
+
+test('LPD-19748 Workflow data is displayed in tab', async ({
+	changeTrackingPage,
+	page,
+}) => {
+	const displayData = [
+		'Status',
+		'Assigned to',
+		'Task Name',
+		'Create Date',
+		'Due Date',
+	];
+
+	await changeTrackingPage.goToReviewChanges(publicationName);
+
+	await changeTrackingPage.reviewChange(journalName);
+
+	await changeTrackingPage.selectTab('Workflow');
+
+	for (const data of displayData) {
+		await page.getByText(data, {exact: true}).isVisible();
+	}
+});
+
+test('LPD-19748 Only workflow status is displayed when workflow is disabled', async ({
+	changeTrackingPage,
+	page,
+	workflowPage,
+}) => {
+	await workflowPage.goto();
+
+	await workflowPage.changeWorkflow('Web Content Article', 'No Workflow', {
+		disable: true,
+	});
+
+	await changeTrackingPage.goToReviewChanges(publicationName);
+
+	await changeTrackingPage.reviewChange(journalName);
+
+	await expect(page.getByText(`Workflow status: Pending`)).toBeVisible();
+	await changeTrackingPage.viewDisplayTab('Workflow', {isHidden: true});
 });
