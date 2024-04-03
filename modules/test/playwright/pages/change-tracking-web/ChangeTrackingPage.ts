@@ -64,7 +64,7 @@ export class ChangeTrackingPage {
 			.first()
 			.waitFor();
 
-		await this.page.getByRole('link', {name: title}).click();
+		await this.page.getByRole('link', {exact: true, name: title}).click();
 
 		await this.page
 			.locator(
