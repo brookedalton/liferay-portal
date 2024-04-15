@@ -16,6 +16,7 @@ import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 
 import java.io.InputStream;
 
@@ -99,15 +100,16 @@ public class CTStore implements Store {
 		String versionLabel) {
 
 		if (CTCollectionThreadLocal.isProductionMode()) {
-			_store.deleteFile(companyId, repositoryId, fileName, versionLabel);
+			_store.deleteFile(
+				companyId, repositoryId, fileName, versionLabel);
 		}
 		else {
 			_ensureCTSContentIsLoaded(
 				companyId, repositoryId, fileName, versionLabel);
-		}
 
-		_ctsContentLocalService.deleteCTSContent(
-			companyId, repositoryId, fileName, versionLabel, _storeType);
+			_ctsContentLocalService.deleteCTSContent(
+				companyId, repositoryId, fileName, versionLabel, _storeType);
+		}
 	}
 
 	@Override
