@@ -14,17 +14,23 @@ import com.liferay.calendar.test.util.CalendarTestUtil;
 import com.liferay.calendar.test.util.CalendarUpgradeTestUtil;
 import com.liferay.calendar.test.util.UpgradeDatabaseTestHelper;
 import com.liferay.calendar.util.JCalendarUtil;
+import com.liferay.change.tracking.test.util.BaseCTUpgradeProcessTestCase;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.change.tracking.CTService;
+import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
+import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 
 import org.junit.After;
@@ -39,12 +45,14 @@ import org.junit.runner.RunWith;
  * @author István András Dézsi
  */
 @RunWith(Arquillian.class)
-public class UpgradeCalendarBookingTest {
+public class UpgradeCalendarBookingTest extends BaseCTUpgradeProcessTestCase {
 
 	@ClassRule
 	@Rule
-	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
-		new LiferayIntegrationTestRule();
+	public static final AggregateTestRule aggregateTestRule =
+		new AggregateTestRule(
+			new LiferayIntegrationTestRule(),
+			PermissionCheckerMethodTestRule.INSTANCE);
 
 	@Before
 	public void setUp() throws Exception {
@@ -59,6 +67,7 @@ public class UpgradeCalendarBookingTest {
 			"com.liferay.calendar.internal.upgrade.v4_2_1." +
 				"CalendarBookingUpgradeProcess");
 		_user = UserTestUtil.addUser();
+		_serviceContext = createServiceContext();
 	}
 
 	@After
@@ -105,6 +114,25 @@ public class UpgradeCalendarBookingTest {
 		assertSameTime(expectedEndTimeJCalendar, actualEndTimeJCalendar);
 	}
 
+	@Override
+	protected CTModel<?> addCTModel() throws Exception {
+		setUserTimeZoneId("Europe/London");
+
+		java.util.Calendar expectedStartTimeJCalendar =
+			CalendarFactoryUtil.getCalendar(
+				2022, java.util.Calendar.JANUARY, 0, 23, 30);
+
+		java.util.Calendar expectedEndTimeJCalendar =
+			CalendarFactoryUtil.getCalendar(
+				2022, java.util.Calendar.JANUARY, 1, 0, 30);
+
+		// need to delete after test run
+
+		return CalendarBookingTestUtil.addAllDayCalendarBooking(
+			_user, _calendar, expectedStartTimeJCalendar.getTimeInMillis(),
+			expectedEndTimeJCalendar.getTimeInMillis(), _serviceContext);
+	}
+
 	protected void assertSameTime(
 		java.util.Calendar expectedJCalendar,
 		java.util.Calendar actualJCalendar) {
@@ -128,10 +156,38 @@ public class UpgradeCalendarBookingTest {
 		return serviceContext;
 	}
 
+	@Override
+	protected CTService<?> getCTService() {
+		return _calendarBookingLocalService;
+	}
+
+	@Override
+	protected void runUpgrade() throws Exception {
+		_upgradeProcess.upgrade();
+	}
+
 	protected void setUserTimeZoneId(String timeZoneId) {
 		_user.setTimeZoneId(timeZoneId);
 
 		_userLocalService.updateUser(_user);
+	}
+
+	@Override
+	protected CTModel<?> updateCTModel(CTModel<?> ctModel) throws Exception {
+		CalendarBooking calendarBooking = (CalendarBooking)ctModel;
+
+		return _calendarBookingLocalService.updateCalendarBooking(
+			calendarBooking.getUserId(), calendarBooking.getCalendarBookingId(),
+			calendarBooking.getCalendarId(), calendarBooking.getTitleMap(),
+			calendarBooking.getDescriptionMap(), calendarBooking.getLocation(),
+			calendarBooking.getStartTime() + (Time.MINUTE * 30),
+			calendarBooking.getEndTime() +
+				((Time.HOUR * 23) + (Time.MINUTE * 29)),
+			calendarBooking.isAllDay(), calendarBooking.getRecurrence(),
+			calendarBooking.getFirstReminder(),
+			calendarBooking.getFirstReminderType(),
+			calendarBooking.getSecondReminder(),
+			calendarBooking.getSecondReminderType(), _serviceContext);
 	}
 
 	private Calendar _calendar;
@@ -140,6 +196,7 @@ public class UpgradeCalendarBookingTest {
 	private CalendarBookingLocalService _calendarBookingLocalService;
 
 	private Group _group;
+	private ServiceContext _serviceContext;
 	private UpgradeDatabaseTestHelper _upgradeDatabaseTestHelper;
 	private UpgradeProcess _upgradeProcess;
 
