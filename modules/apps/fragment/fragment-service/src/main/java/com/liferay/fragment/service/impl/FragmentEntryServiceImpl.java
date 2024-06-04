@@ -24,6 +24,7 @@ import com.liferay.petra.sql.dsl.spi.expression.Scalar;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.dao.orm.custom.sql.CustomSQL;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.orm.WildcardMode;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
@@ -207,9 +208,18 @@ public class FragmentEntryServiceImpl extends FragmentEntryServiceBaseImpl {
 				continue;
 			}
 
-			fragmentCompositionsAndFragmentEntries.add(
+			FragmentEntry fragmentEntry =
 				fragmentEntryLocalService.fetchFragmentEntry(
-					GetterUtil.getLong(array[1])));
+					GetterUtil.getLong(array[1]));
+
+			if (!CTCollectionThreadLocal.isProductionMode()) {
+				fragmentCompositionsAndFragmentEntries.add(fragmentEntry);
+			}
+			else {
+				if (fragmentEntry != null) {
+					fragmentCompositionsAndFragmentEntries.add(fragmentEntry);
+				}
+			}
 		}
 
 		return fragmentCompositionsAndFragmentEntries;
