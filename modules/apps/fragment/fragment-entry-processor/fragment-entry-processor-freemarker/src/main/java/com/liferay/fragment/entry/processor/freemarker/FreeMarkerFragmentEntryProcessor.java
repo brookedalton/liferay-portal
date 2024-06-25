@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.template.StringTemplateResource;
 import com.liferay.portal.kernel.template.Template;
 import com.liferay.portal.kernel.template.TemplateConstants;
@@ -78,7 +79,7 @@ public class FreeMarkerFragmentEntryProcessor
 			freeMarkerFragmentEntryProcessorConfiguration =
 				_configurationProvider.getCompanyConfiguration(
 					FreeMarkerFragmentEntryProcessorConfiguration.class,
-					fragmentEntryLink.getCompanyId());
+					CompanyThreadLocal.getCompanyId());
 
 		if (!freeMarkerFragmentEntryProcessorConfiguration.enable() &&
 			Validator.isNull(fragmentEntryLink.getRendererKey()) &&
