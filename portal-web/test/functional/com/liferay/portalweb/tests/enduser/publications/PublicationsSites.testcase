@@ -108,4 +108,40 @@ definition {
 		AssertTextNotPresent(value1 = "The requested resource could not be found.");
 	}
 
+	@priority = 4
+	test PublishSiteCreatedInPublicationWithDBPartition {
+		property database.partition.enabled = "true";
+
+		JSONPublications.addPublication(publicationName = "Publication Name");
+
+		JSONPublications.selectPublication(publicationName = "Publication Name");
+
+		HeadlessSite.addSite(siteName = "Site Name");
+
+		JSONLayout.addPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Site Page");
+
+		Site.openSitesAdmin();
+
+		Site.viewCP(siteName = "Site Name");
+
+		PublicationsNavigator.gotoReviewChanges();
+
+		PublicationsChanges.viewChanges(
+			changeCategory = "Site",
+			changeSite = "",
+			changeTitle = "Site Name",
+			changeType = "Added",
+			changeUser = "Test Test");
+
+		Publications.publishPublication(publicationName = "Publication Name");
+
+		Navigator.openSitePage(
+			pageName = "Site Page",
+			siteName = "Site Name");
+
+		AssertTextNotPresent(value1 = "The requested resource could not be found.");
+	}
+
 }
