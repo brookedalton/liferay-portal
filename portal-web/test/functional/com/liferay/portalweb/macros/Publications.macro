@@ -649,20 +649,27 @@ definition {
 		var key_publicationName = ${sandboxedPublicationName};
 
 		var originalSandboxMinuteTime = RegexUtil.replace(${sandboxedPublicationName}, "\d{2}$", 1);
+		echo("originalSandboxMinuteTime: ${originalSandboxMinuteTime}");
 
-		if (IsTextNotEqual(locator1 = "Publications#PUBLICATIONS_INDICATOR_TITLE", value1 = ${sandboxedPublicationName}) {
+		if (IsTextNotEqual(locator1 = "Publications#PUBLICATIONS_INDICATOR_TITLE", value1 = ${sandboxedPublicationName})) {
 			var nameAndHour = RegexUtil.replace(${sandboxedPublicationName}, "([aA-zZ])\w+ - (\d{1,2}\/\d{1,2}\/\d{1,2}) \d", 1);
 			echo("nameAndHour: ${nameAndHour}");
 
 			var sandboxMinuteTime = RegexUtil.replace(${sandboxedPublicationName}, "\d{2}$", 1);
 			echo("sandboxMinuteTime: ${sandboxMinuteTime}");
 
-			if (originalSandboxMinuteTime > sandboxMinuteTime){
-				var sandboxMinuteTime = ${sandboxMinuteTime} + 1; 
-			} else if (originalSandboxMinuteTime < sandboxMinuteTime){
-				var sandboxMinuteTime = ${sandboxMinuteTime} - 1; 
+			var isLessThan = MathUtil.isLessThan(${originalSandboxMinuteTime}, ${sandboxMinuteTime});
+			var isMoreThan = MathUtil.isGreaterThan(${originalSandboxMinuteTime}, ${sandboxMinuteTime});
+
+			if ((${isLessThan} == "true")){
+				var sandboxMinuteTime = ${sandboxMinuteTime} + 1;
+				echo("sandboxMinuteTime: ${sandboxMinuteTime}");
+			} else if ((${isMoreThan} == "true")) {
+				var sandboxMinuteTime = ${sandboxMinuteTime} - 1;
+				echo("sandboxMinuteTime: ${sandboxMinuteTime}");
 			} else {
 				var sandboxMinuteTime = ${sandboxMinuteTime};
+				echo("sandboxMinuteTime: ${sandboxMinuteTime}");
 			}
 
 			var key_publicationName = "${nameAndHour}:${sandboxTime}";
