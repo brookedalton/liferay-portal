@@ -91,6 +91,8 @@ definition {
 	@description = "All users with access to publications (view and access in control panel) will be sandboxed."
 	@priority = 4
 	test UserWithAccessToPublicationsPermissionsCanbeSandboxed {
+		property portal.acceptance = "brooke";
+
 		JSONUser.addUser(
 			userEmailAddress = "userea@liferay.com",
 			userFirstName = "userfn",

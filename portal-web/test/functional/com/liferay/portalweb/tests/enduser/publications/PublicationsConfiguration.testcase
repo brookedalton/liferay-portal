@@ -136,6 +136,7 @@ definition {
 	@priority = 5
 	test EnableDisablePublicationsAndSandboxViaInstanceSettings {
 		property custom.properties = "jsonws.web.service.paths.excludes=";
+		property portal.acceptance = "brooke";
 
 		JSONUser.addUser(
 			userEmailAddress = "userea@liferay.com",
