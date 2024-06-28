@@ -281,7 +281,7 @@ definition {
 
 	@summary = "Default summary"
 	macro generateSandboxedPublicationName(userScreenName = null) {
-		var sandboxTime = DateUtil.getFormattedCurrentDate("h:mm", "UTC");
+		var sandboxTime = DateUtil.getFormattedCurrentDate("h:mm a", "UTC");
 		var sandboxDate = DateUtil.getFormattedCurrentDate("M/d/yy", "UTC");
 
 		var sandboxedPublicationName = "${userScreenName} - ${sandboxDate} ${sandboxTime}";
@@ -647,6 +647,26 @@ definition {
 	@summary = "Default summary"
 	macro viewSandboxedPublication(sandboxedUser = null, sandboxedPublicationName = null) {
 		var key_publicationName = ${sandboxedPublicationName};
+
+		var originalSandboxMinuteTime = RegexUtil.replace(${sandboxedPublicationName}, "\d{2}$", 1);
+
+		if (IsTextNotEqual(locator1 = "Publications#PUBLICATIONS_INDICATOR_TITLE", value1 = ${sandboxedPublicationName}) {
+			var nameAndHour = RegexUtil.replace(${sandboxedPublicationName}, "([aA-zZ])\w+ - (\d{1,2}\/\d{1,2}\/\d{1,2}) \d", 1);
+			echo("nameAndHour: ${nameAndHour}");
+
+			var sandboxMinuteTime = RegexUtil.replace(${sandboxedPublicationName}, "\d{2}$", 1);
+			echo("sandboxMinuteTime: ${sandboxMinuteTime}");
+
+			if (originalSandboxMinuteTime > sandboxMinuteTime){
+				var sandboxMinuteTime = ${sandboxMinuteTime} + 1; 
+			} else if (originalSandboxMinuteTime < sandboxMinuteTime){
+				var sandboxMinuteTime = ${sandboxMinuteTime} - 1; 
+			} else {
+				var sandboxMinuteTime = ${sandboxMinuteTime};
+			}
+
+			var key_publicationName = "${nameAndHour}:${sandboxTime}";
+		}
 
 		if (${sandboxedUser} == "true") {
 			AssertTextEquals.assertPartialText(
