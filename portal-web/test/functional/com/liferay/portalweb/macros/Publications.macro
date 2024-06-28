@@ -648,16 +648,16 @@ definition {
 	macro viewSandboxedPublication(sandboxedUser = null, sandboxedPublicationName = null) {
 		var key_publicationName = ${sandboxedPublicationName};
 
-		var originalSandboxMinuteTime = RegexUtil.replace(${sandboxedPublicationName}, "\d{2}$", 1);
-		echo("originalSandboxMinuteTime: ${originalSandboxMinuteTime}");
+		var originalSandboxMinuteTime = RegexUtil.replace(${key_publicationName}, "\d{2}$", 1);
+		echo("originalSandboxMinuteTime: ${key_publicationName}");
 
-		if (IsTextNotEqual(locator1 = "Publications#PUBLICATIONS_INDICATOR_TITLE", value1 = ${sandboxedPublicationName})) {
-			var nameAndHour = RegexUtil.replace(${sandboxedPublicationName}, "([aA-zZ])\w+ - (\d{1,2}\/\d{1,2}\/\d{1,2}) \d", 1);
-			echo("nameAndHour: ${nameAndHour}");
+		var nameAndHour = RegexUtil.replace(${key_publicationName}, "([aA-zZ])\w+ - (\d{1,2}\/\d{1,2}\/\d{1,2}) \d", 1);
+		echo("nameAndHour: ${nameAndHour}");
 
-			var sandboxMinuteTime = RegexUtil.replace(${sandboxedPublicationName}, "\d{2}$", 1);
-			echo("sandboxMinuteTime: ${sandboxMinuteTime}");
+		var sandboxMinuteTime = RegexUtil.replace(${key_publicationName}, "\d{2}$", 1);
+		echo("sandboxMinuteTime: ${sandboxMinuteTime}");
 
+		if (IsTextNotEqual(locator1 = "Publications#PUBLICATIONS_INDICATOR_TITLE", value1 = ${key_publicationName})) {
 			var isLessThan = MathUtil.isLessThan(${originalSandboxMinuteTime}, ${sandboxMinuteTime});
 			var isMoreThan = MathUtil.isGreaterThan(${originalSandboxMinuteTime}, ${sandboxMinuteTime});
 
