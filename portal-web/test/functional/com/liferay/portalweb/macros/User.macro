@@ -2068,6 +2068,10 @@ definition {
 
 		User.answerPasswordReminder();
 
+		if (IsElementPresent(locator1 = "Button#I_AGREE")) {
+        	SignIn.agreeToTermsOfUse();
+        }
+
 		if (IsElementNotPresent(locator1 = "UserBar#USER_AVATAR_IMAGE")) {
 			takeScreenshot();
 
