@@ -59,6 +59,8 @@ import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.change.tracking.CTColumnResolutionType;
+import com.liferay.portal.kernel.dao.db.DBManagerUtil;
+import com.liferay.portal.kernel.dao.db.DBType;
 import com.liferay.portal.kernel.dao.jdbc.CurrentConnection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -1482,6 +1484,15 @@ public class CTCollectionLocalServiceImpl
 
 		Connection connection = _currentConnection.getConnection(
 			ctPersistence.getDataSource());
+
+		if (DBManagerUtil.getDBType() == DBType.HYPERSONIC) {
+			try {
+				connection.setAutoCommit(true);
+			}
+			catch (SQLException sqlException) {
+				throw new RuntimeException(sqlException);
+			}
+		}
 
 		try (PreparedStatement preparedStatement = connection.prepareStatement(
 				sb.toString())) {
