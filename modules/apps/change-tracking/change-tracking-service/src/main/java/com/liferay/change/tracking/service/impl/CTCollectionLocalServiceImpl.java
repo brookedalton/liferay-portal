@@ -1502,6 +1502,16 @@ public class CTCollectionLocalServiceImpl
 		catch (Exception exception) {
 			throw new SystemException(exception);
 		}
+		finally {
+			if (DBManagerUtil.getDBType() == DBType.HYPERSONIC) {
+				try {
+					connection.setAutoCommit(false);
+				}
+				catch (SQLException sqlException) {
+					throw new RuntimeException(sqlException);
+				}
+			}
+		}
 
 		for (String mappingTableName : ctPersistence.getMappingTableNames()) {
 			sb.setStringAt(mappingTableName, 1);
@@ -1513,6 +1523,16 @@ public class CTCollectionLocalServiceImpl
 			}
 			catch (Exception exception) {
 				throw new SystemException(exception);
+			}
+			finally {
+				if (DBManagerUtil.getDBType() == DBType.HYPERSONIC) {
+					try {
+						connection.setAutoCommit(false);
+					}
+					catch (SQLException sqlException) {
+						throw new RuntimeException(sqlException);
+					}
+				}
 			}
 		}
 	}
