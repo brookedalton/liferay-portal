@@ -286,6 +286,10 @@ const PublicationTimeline = ({
 			.then(async (jsonResponse) => {
 				const tempTimelineItems = jsonResponse.items;
 
+				if (!tempTimelineItems?.length) {
+					return;
+				}
+
 				for (let i = 0; i < tempTimelineItems.length; i++) {
 					await fetch(
 						`/o/change-tracking-rest/v1.0/ct-collections/${tempTimelineItems[i].id}/ct-entries/by-model-class-name-id/${timelineClassNameId}/by-model-class-pk/${timelineClassPK}`,
@@ -307,7 +311,15 @@ const PublicationTimeline = ({
 						});
 				}
 
-				setTimelineItems(tempTimelineItems);
+				const allTempTimelineItems = Array.from(
+					new Set(tempTimelineItems.map((item) => item.id))
+				);
+
+				const filteredTimelineItems = allTempTimelineItems.map((id) =>
+					tempTimelineItems.find((item) => item.id === id)
+				);
+
+				setTimelineItems(filteredTimelineItems);
 				setLoading(false);
 			});
 	}, [timelineClassNameId, timelineClassPK, timelineItems, timelineItemsURL]);
