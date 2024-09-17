@@ -125,3 +125,35 @@ test('LPD-22759 Allow users to view the entire history of an entity in a popup m
 		}
 	}
 });
+
+test('LPD-36097 Timeline modal works with different web content versions', async ({
+	journalPage,
+	page,
+}) => {
+	await journalPage.goto();
+	await page.getByRole('heading', {name: 'Web Content'}).isVisible();
+	await journalPage.goToJournalArticleAction('Edit', articleTitle);
+
+	const textBox = page
+		.getByRole('textbox', {name: 'Content'})
+		.frameLocator('iframe[title="editor"]')
+		.getByRole('textbox');
+	await textBox.waitFor();
+	await textBox.fill(getRandomString());
+	await page.getByRole('button', {name: 'Publish'}).click();
+	await waitForSuccessAlert(
+		page,
+		`Success:${articleTitle} was updated successfully.`
+	);
+
+	await page.getByRole('heading', {name: 'Web Content'}).isVisible();
+	await journalPage.goToJournalArticleAction('Edit', articleTitle);
+	await page.getByRole('tab', {name: 'Properties'}).waitFor();
+
+	await page.locator('.change-tracking-timeline-button').click();
+	const timelineModal = page.locator('.publication-timeline');
+
+	await timelineModal.getByText('Modified').first().isVisible();
+
+	await timelineModal.getByLabel('View More').isVisible();
+});
