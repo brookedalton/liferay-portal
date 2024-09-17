@@ -21,6 +21,9 @@ import com.liferay.change.tracking.web.internal.configuration.CTConfiguration;
 import com.liferay.change.tracking.web.internal.configuration.helper.CTSettingsConfigurationHelper;
 import com.liferay.change.tracking.web.internal.constants.CTWebKeys;
 import com.liferay.change.tracking.web.internal.security.permission.resource.CTPermission;
+import com.liferay.journal.constants.JournalArticleConstants;
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
@@ -620,6 +623,18 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 		long classPK = GetterUtil.getLong(
 			httpServletRequest.getAttribute(CTTimelineKeys.CLASS_PK));
 
+		if (Objects.equals(className, JournalArticle.class.getName())) {
+			JournalArticle journalArticle =
+				_journalArticleLocalService.getJournalArticle(classPK);
+
+			JournalArticle firstArticle =
+				_journalArticleLocalService.fetchArticle(
+					journalArticle.getGroupId(), journalArticle.getArticleId(),
+					JournalArticleConstants.VERSION_DEFAULT);
+
+			classPK = firstArticle.getPrimaryKey();
+		}
+
 		if ((className == null) || (classPK == 0)) {
 			Layout layout = themeDisplay.getLayout();
 
@@ -763,6 +778,9 @@ public class ChangeTrackingIndicatorDynamicInclude extends BaseDynamicInclude {
 	private CTSettingsConfigurationHelper _ctSettingsConfigurationHelper;
 
 	private volatile CTConfiguration _defaultCTConfiguration;
+
+	@Reference
+	private JournalArticleLocalService _journalArticleLocalService;
 
 	@Reference
 	private JSONFactory _jsonFactory;
