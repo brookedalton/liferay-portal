@@ -9,6 +9,7 @@ import {ApiHelpers} from '../../helpers/ApiHelpers';
 import getRandomString from '../../utils/getRandomString';
 import {userData} from '../../utils/performLogin';
 import {PORTLET_URLS} from '../../utils/portletUrls';
+import getBasicWebContentStructureId from '../../utils/structured-content/getBasicWebContentStructureId';
 import {waitForAlert} from '../../utils/waitForAlert';
 import {InstanceSettingsPage} from '../configuration-admin-web/InstanceSettingsPage';
 
@@ -29,6 +30,23 @@ export class ChangeTrackingPage {
 			name: 'Review Changes',
 		});
 		this.tabsContainer = page.locator('nav.navbar');
+	}
+
+	async addBasicWebContent(site: Site, title?: string) {
+		const apiHelpers = new ApiHelpers(this.page);
+
+		const basicWebContentStructureId =
+			await getBasicWebContentStructureId(apiHelpers);
+
+		if (!title) {
+			title = getRandomString();
+		}
+
+		await apiHelpers.jsonWebServicesJournal.addWebContent({
+			ddmStructureId: basicWebContentStructureId,
+			groupId: site.id,
+			titleMap: {en_US: title},
+		});
 	}
 
 	async addComment(comment?: string) {

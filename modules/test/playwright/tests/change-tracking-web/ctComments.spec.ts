@@ -8,16 +8,14 @@ import {expect, mergeTests} from '@playwright/test';
 import {apiHelpersTest} from '../../fixtures/apiHelpersTest';
 import {changeTrackingPagesTest} from '../../fixtures/changeTrackingPagesTest';
 import {dataApiHelpersTest} from '../../fixtures/dataApiHelpersTest';
-import getRandomString from '../../utils/getRandomString';
+import {isolatedSiteTest} from '../../fixtures/isolatedSiteTest';
 import performLogin, {performLogout} from '../../utils/performLogin';
-import {waitForAlert} from '../../utils/waitForAlert';
-import {journalPagesTest} from '../journal-web/fixtures/journalPagesTest';
 
 export const test = mergeTests(
 	apiHelpersTest,
 	dataApiHelpersTest,
-	journalPagesTest,
-	changeTrackingPagesTest
+	changeTrackingPagesTest,
+	isolatedSiteTest
 );
 
 let user;
@@ -56,17 +54,10 @@ test.beforeEach(async ({apiHelpers, ctCollection}) => {
 test('LPD-17130 Only comment owners are allowed to perform actions on the comment', async ({
 	changeTrackingPage,
 	ctCollection,
-	journalEditArticlePage,
 	page,
+	site,
 }) => {
-	const journalName = getRandomString();
-	await journalEditArticlePage.goto();
-	await journalEditArticlePage.fillTitle(journalName);
-	await page.getByRole('button', {name: 'Publish'}).click();
-	await waitForAlert(
-		page,
-		`Success:${journalName} was created successfully.`
-	);
+	await changeTrackingPage.addBasicWebContent(site);
 
 	await changeTrackingPage.goToReviewChanges(ctCollection.name);
 

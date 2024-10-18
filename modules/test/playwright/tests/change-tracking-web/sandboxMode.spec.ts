@@ -9,9 +9,7 @@ import {apiHelpersTest} from '../../fixtures/apiHelpersTest';
 import {changeTrackingPagesTest} from '../../fixtures/changeTrackingPagesTest';
 import {featureFlagsTest} from '../../fixtures/featureFlagsTest';
 import {isolatedSiteTest} from '../../fixtures/isolatedSiteTest';
-import getRandomString from '../../utils/getRandomString';
 import performLogin, {performLogout} from '../../utils/performLogin';
-import getBasicWebContentStructureId from '../../utils/structured-content/getBasicWebContentStructureId';
 
 export const test = mergeTests(
 	featureFlagsTest({
@@ -83,16 +81,7 @@ test.skip('LPD-39341 Sandbox mode allows users to work on production without per
 }) => {
 	await changeTrackingPage.workOnPublication(ctCollection);
 
-	const basicWebContentStructureId =
-		await getBasicWebContentStructureId(apiHelpers);
-
-	const title = getRandomString();
-
-	await apiHelpers.jsonWebServicesJournal.addWebContent({
-		ddmStructureId: basicWebContentStructureId,
-		groupId: site.id,
-		titleMap: {en_US: title},
-	});
+	await changeTrackingPage.addBasicWebContent(site);
 
 	const user = await changeTrackingPage.addUserWithPublicationsUserRole();
 

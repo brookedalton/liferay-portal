@@ -9,7 +9,6 @@ import {apiHelpersTest} from '../../fixtures/apiHelpersTest';
 import {changeTrackingPagesTest} from '../../fixtures/changeTrackingPagesTest';
 import {isolatedSiteTest} from '../../fixtures/isolatedSiteTest';
 import getRandomString from '../../utils/getRandomString';
-import getBasicWebContentStructureId from '../../utils/structured-content/getBasicWebContentStructureId';
 import {waitForAlert} from '../../utils/waitForAlert';
 import {blogsPagesTest} from '../blogs-web/fixtures/blogsPagesTest';
 import {journalPagesTest} from '../journal-web/fixtures/journalPagesTest';
@@ -101,7 +100,6 @@ test('Publish Parallel Publications', async ({
 	apiHelpers,
 	changeTrackingPage,
 	ctCollection,
-	journalEditArticlePage,
 	journalPage,
 	page,
 	site,
@@ -126,29 +124,9 @@ test('Publish Parallel Publications', async ({
 
 	await expect(noWebContentWasFoundText).toBeVisible();
 
-	const newButton = page.getByRole('button', {name: 'New'});
-
-	await newButton.click();
-
-	const basicWebContentMenuItem = page.getByRole('menuitem', {
-		name: 'Basic Web Content',
-	});
-
-	await basicWebContentMenuItem.click();
-
-	const propertiesTab = page.getByRole('tab', {name: 'Properties'});
-
-	await propertiesTab.waitFor();
-
 	const title1 = getRandomString();
 
-	await journalEditArticlePage.fillTitle(title1);
-
-	const publishButton = page.getByRole('button', {name: 'Publish'});
-
-	await publishButton.click();
-
-	await waitForAlert(page, `Success:${title1} was created successfully.`);
+	await changeTrackingPage.addBasicWebContent(site, title1);
 
 	const ctCollection2 =
 		await apiHelpers.headlessChangeTracking.createCTCollection(
@@ -163,19 +141,9 @@ test('Publish Parallel Publications', async ({
 
 	await expect(noWebContentWasFoundText).toBeVisible();
 
-	await newButton.click();
-
-	await basicWebContentMenuItem.click();
-
-	await propertiesTab.waitFor();
-
 	const title2 = getRandomString();
 
-	await journalEditArticlePage.fillTitle(title2);
-
-	await publishButton.click();
-
-	await waitForAlert(page, `Success:${title2} was created successfully.`);
+	await changeTrackingPage.addBasicWebContent(site, title2);
 
 	await apiHelpers.headlessChangeTracking.publishCTCollection(
 		ctCollection.id
@@ -201,16 +169,7 @@ test('LPD-33274 Disable Publish button after first click', async ({
 	page,
 	site,
 }) => {
-	const basicWebContentStructureId =
-		await getBasicWebContentStructureId(apiHelpers);
-
-	const title = getRandomString();
-
-	await apiHelpers.jsonWebServicesJournal.addWebContent({
-		ddmStructureId: basicWebContentStructureId,
-		groupId: site.id,
-		titleMap: {en_US: title},
-	});
+	await changeTrackingPage.addBasicWebContent(site);
 
 	await changeTrackingPage.goToReviewChanges(ctCollection.name);
 

@@ -12,13 +12,11 @@ import {productMenuPageTest} from '../../fixtures/productMenuPageTest';
 import getRandomString from '../../utils/getRandomString';
 import performLogin, {performLogout} from '../../utils/performLogin';
 import {waitForAlert} from '../../utils/waitForAlert';
-import {journalPagesTest} from '../journal-web/fixtures/journalPagesTest';
 
 export const test = mergeTests(
 	apiHelpersTest,
 	changeTrackingPagesTest,
 	isolatedSiteTest,
-	journalPagesTest,
 	productMenuPageTest
 );
 
@@ -26,7 +24,6 @@ test('LPD-30098 Invite user as admin', async ({
 	apiHelpers,
 	changeTrackingPage,
 	ctCollection,
-	journalEditArticlePage,
 	page,
 	site,
 }) => {
@@ -40,15 +37,9 @@ test('LPD-30098 Invite user as admin', async ({
 		user1
 	);
 
-	await journalEditArticlePage.goto({siteUrl: site.friendlyUrlPath});
-
 	const title = getRandomString();
 
-	await journalEditArticlePage.fillTitle(title);
-
-	await page.getByRole('button', {name: 'Publish'}).click();
-
-	await waitForAlert(page, `Success:${title} was created successfully.`);
+	await changeTrackingPage.addBasicWebContent(site, title);
 
 	await performLogout(page);
 
