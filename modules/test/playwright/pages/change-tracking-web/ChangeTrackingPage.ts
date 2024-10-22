@@ -339,10 +339,16 @@ export class ChangeTrackingPage {
 
 		const checkBox = this.page.getByLabel('Sandbox Enabled');
 
+		const publicationsEnabled = this.page.getByTestId('enabled').locator('label');
+
 		if (check) {
 			await checkBox.setChecked(true);
 
-			await expect(publicationsEnabled).toBeChecked();
+			if (!(await publicationsEnabled.isChecked())) {
+				await publicationsEnabled.setChecked(true);
+
+				await expect(publicationsEnabled).toBeChecked();
+			}
 
 			await this.instanceSettingsPage.saveButton.click();
 
@@ -354,7 +360,11 @@ export class ChangeTrackingPage {
 		else {
 			await checkBox.setChecked(false);
 
-			await expect(publicationsEnabled).toBeChecked();
+			if (!(await publicationsEnabled.isChecked())) {
+				await publicationsEnabled.setChecked(true);
+
+				await expect(publicationsEnabled).toBeChecked();
+			}
 
 			await this.instanceSettingsPage.saveButton.click();
 
