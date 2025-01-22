@@ -229,10 +229,15 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 			String pageElementJSON, int position, boolean preserveItemIds)
 		throws Exception {
 
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
 		Consumer<LayoutStructure> consumer = processedLayoutStructure -> {
 			try {
 				_updateLayoutPageTemplateStructure(
 					layout, processedLayoutStructure);
+
+				_updateLayouts(layout.getPlid(), serviceContext.getUserId());
 			}
 			catch (Exception exception) {
 				if (_log.isWarnEnabled()) {
