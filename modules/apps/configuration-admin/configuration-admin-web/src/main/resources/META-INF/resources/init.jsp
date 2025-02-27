@@ -18,7 +18,9 @@ taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
 taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
-<%@ page import="com.liferay.configuration.admin.category.ConfigurationCategory" %><%@
+<%@ page import="com.liferay.change.tracking.exception.CTCollectionStatusException" %><%@
+page import="com.liferay.change.tracking.exception.CTPublishConflictException" %><%@
+page import="com.liferay.configuration.admin.category.ConfigurationCategory" %><%@
 page import="com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys" %><%@
 page import="com.liferay.configuration.admin.display.ConfigurationFormRenderer" %><%@
 page import="com.liferay.configuration.admin.display.ConfigurationScreen" %><%@
@@ -43,10 +45,12 @@ page import="com.liferay.frontend.taglib.servlet.taglib.util.EmptyResultMessageK
 page import="com.liferay.petra.string.StringPool" %><%@
 page import="com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition" %><%@
 page import="com.liferay.portal.configuration.persistence.listener.ConfigurationModelListenerException" %><%@
+page import="com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal" %><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
 page import="com.liferay.portal.kernel.patcher.PatcherValues" %><%@
 page import="com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder" %><%@
 page import="com.liferay.portal.kernel.resource.bundle.ResourceBundleLoader" %><%@
+page import="com.liferay.portal.kernel.servlet.SessionErrors" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.PortalUtil" %><%@

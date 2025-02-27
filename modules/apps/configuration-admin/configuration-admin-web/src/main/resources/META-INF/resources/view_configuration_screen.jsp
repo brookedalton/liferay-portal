@@ -44,6 +44,24 @@ renderResponse.setTitle(categoryDisplayName);
 			breadcrumbEntries="<%= BreadcrumbEntriesUtil.getBreadcrumbEntries(request, false, false, false, false, true) %>"
 		/>
 	</clay:col>
+
+	<clay:col
+		size="12"
+	>
+		<c:if test="<%= SessionErrors.contains(renderRequest, CTCollectionStatusException.class) %>">
+			<clay:alert
+				displayType="danger"
+				message="unsupported-application-title"
+			/>
+		</c:if>
+
+		<c:if test="<%= SessionErrors.contains(renderRequest, CTPublishConflictException.class) %>">
+			<clay:alert
+				displayType="warning"
+				message="production-only-message"
+			/>
+		</c:if>
+	</clay:col>
 </clay:container-fluid>
 
 <clay:container-fluid>
