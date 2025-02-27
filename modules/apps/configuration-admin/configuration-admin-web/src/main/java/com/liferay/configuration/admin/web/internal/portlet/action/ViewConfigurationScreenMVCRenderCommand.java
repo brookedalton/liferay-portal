@@ -5,6 +5,8 @@
 
 package com.liferay.configuration.admin.web.internal.portlet.action;
 
+import com.liferay.change.tracking.exception.CTCollectionStatusException;
+import com.liferay.change.tracking.exception.CTPublishConflictException;
 import com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys;
 import com.liferay.configuration.admin.display.ConfigurationScreen;
 import com.liferay.configuration.admin.web.internal.constants.ConfigurationAdminWebKeys;
@@ -14,7 +16,9 @@ import com.liferay.configuration.admin.web.internal.display.context.Configuratio
 import com.liferay.configuration.admin.web.internal.display.context.ConfigurationScopeDisplayContextFactory;
 import com.liferay.configuration.admin.web.internal.util.ConfigurationEntryRetriever;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
+import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -64,6 +68,32 @@ public class ViewConfigurationScreenMVCRenderCommand
 					"The ", configurationScreen.getScope(), " configuration \"",
 					configurationScreen.getName(themeDisplay.getLocale()),
 					"\" is not accessible"));
+		}
+
+		String unsupportedCTConfigurationScreens = StringBundler.concat(
+			"site-configuration-asset-auto-tagger,site-configuration-details,",
+			"site-configuration-language,site-configuration-mentions,",
+			"site-configuration-sharing,site-configuration-site-url");
+
+		if (!CTCollectionThreadLocal.isProductionMode() &&
+			unsupportedCTConfigurationScreens.contains(
+				configurationScreenKey)) {
+
+			SessionErrors.add(renderRequest, CTCollectionStatusException.class);
+		}
+
+		String productionCTConfigurationScreens = StringBundler.concat(
+			"ai-creator-openai-group-configuration,",
+			"default-permissions-group-configuration,",
+			"dl-file-entry-configuration-group,",
+			"dl-size-limit-configuration-group,",
+			"site-configuration-locked-layouts,",
+			"site-configuration-menu-access");
+
+		if (!CTCollectionThreadLocal.isProductionMode() &&
+			productionCTConfigurationScreens.contains(configurationScreenKey)) {
+
+			SessionErrors.add(renderRequest, CTPublishConflictException.class);
 		}
 
 		ConfigurationScopeDisplayContext configurationScopeDisplayContext =
