@@ -16,6 +16,7 @@ page import="com.liferay.site.cms.site.initializer.internal.constants.CMSSiteIni
 page import="com.liferay.site.cms.site.initializer.internal.display.context.AllSectionDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.ContentsSectionDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.FilesSectionDisplayContext" %><%@
+page import="com.liferay.site.cms.site.initializer.internal.display.context.TagsSectionDisplayContext" %><%@
 page import="com.liferay.site.cms.site.initializer.internal.display.context.StructuresSectionDisplayContext" %>
 
 <liferay-theme:defineObjects />
