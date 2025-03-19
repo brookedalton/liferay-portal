@@ -4,8 +4,11 @@
  */
 
 import ClayButton from '@clayui/button';
+import ClayForm, {ClayCheckbox, ClayInput} from '@clayui/form';
+import ClayMultiSelect from '@clayui/multi-select';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClayModal from '@clayui/modal';
+import Label from '@clayui/label';
 import {useFormik} from 'formik';
 import React, {useEffect, useState} from 'react';
 
@@ -24,6 +27,13 @@ export default function CreationTagModalContent({
 		{id: string; name: string}[]
 	>([]);
 	const [loading, setLoading] = useState(false);
+	const [checkbox, setCheckbox] = useState(true);
+	const [items, setItems] = useState([
+    		{
+    			label: 'all spaces',
+    			value: '0',
+    		},
+    	]);
 
 	useEffect(() => {
 		if (!assetLibraryId) {
@@ -39,10 +49,8 @@ export default function CreationTagModalContent({
 	const {errors, handleChange, handleSubmit, setFieldValue, touched, values} =
 		useFormik({
 			initialValues: {
-				assetLibraryId:
-					assetLibraryId || assetLibraries.length === 1
-						? assetLibraries[0].id
-						: '',
+				assetLibraryIds: assetLibraryId ?
+					[assetLibraryId] : [],
 				tagName: '',
 			},
 			onSubmit: (values) => {
@@ -51,12 +59,16 @@ export default function CreationTagModalContent({
 			validate: (values) =>
 				validate(
 					{
-						assetLibraryId: [required],
+						assetLibraryIds: [required],
 						tagName: [required],
 					},
 					values
 				),
 		});
+
+	const handleMultiSelectChange = (selectedItems: string[]) => {
+		setFieldValue('assetLibraryIds', selectedItems);
+    };
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -84,34 +96,65 @@ export default function CreationTagModalContent({
 							value={values.tagName}
 						/>
 
-						{assetLibraries.length > 1 && (
-							<FieldPicker
-								errorMessage={
-									touched.assetLibraryId
-										? errors.assetLibraryId
-										: undefined
-								}
-								helpMessage={Liferay.Language.get(
-									'choose-the-space-for-the-new-tag'
+					<label htmlFor="multiSelect" id="multi-select-label">
+						{Liferay.Language.get('space')}
+					</label>
+
+					{assetLibraries.length > 1 && checkbox && (
+						<ClayMultiSelect
+							aria-labelledby="multi-select-label"
+							id="multiSelect"
+							items={items}
+							disabled={true}
+							onChange={handleChange}
+							onItemsChange={setItems}
+							value={values.assetLibraryId}
+						/>
+					)}
+
+					{assetLibraries.length > 1 && !checkbox && (
+                    	<ClayMultiSelect
+                    		aria-labelledby="multi-select-label"
+                    		loadingState={3}
+                    		id="multiSelect"
+                    		sourceItems={assetLibraries.map(({id, name}) => ({
+                    			label: name,
+                    			value: id,
+                    		}))}
+                    		onChange={handleChange}
+                    		onItemsChange={handleMultiSelectChange}
+                    		value={values.assetLibraryId}
+                    	>
+							{(item) => (
+								<ClayMultiSelect.Item
+									key={item.value}
+									textValue={item.label}
+								>
+									<div className="autofit-row autofit-row-center">
+										<div className="autofit-col mr-3">
+											<ClayCheckbox/>
+										</div>
+										<div className="autofit-col">
+											<strong>{item.label}</strong>
+										</div>
+									</div>
+								</ClayMultiSelect.Item>
 								)}
-								items={assetLibraries.map(({id, name}) => ({
-									label: name,
-									value: id,
-								}))}
-								label={Liferay.Language.get('space')}
-								name="tagName"
-								onSelectionChange={(value: string) => {
-									setFieldValue('assetLibraryId', value);
-								}}
-								placeholder={Liferay.Language.get(
-									'select-a-space'
-								)}
-								required
-								selectedKey={values.assetLibraryId}
-							/>
+							</ClayMultiSelect>
 						)}
-					</>
-				)}
+
+							<ClayCheckbox
+								checked={checkbox}
+								label={Liferay.Language.get(
+									'make-this-tag-available-in-all-spaces'
+								)}
+								onChange={() =>
+									setCheckbox(!checkbox)
+								}
+								style={{marginTop: '10px'}}
+							/>
+						</>
+					)}
 			</ClayModal.Body>
 
 			<ClayModal.Footer
@@ -123,6 +166,13 @@ export default function CreationTagModalContent({
 							type="button"
 						>
 							{Liferay.Language.get('cancel')}
+						</ClayButton>
+
+						<ClayButton
+							displayType="secondary"
+							type="button"
+						>
+							{Liferay.Language.get('save-and-add-another')}
 						</ClayButton>
 
 						<ClayButton displayType="primary" type="submit">

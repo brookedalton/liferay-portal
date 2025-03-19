@@ -11,7 +11,7 @@
 TagsSectionDisplayContext tagsSectionDisplayContext = (TagsSectionDisplayContext)request.getAttribute(TagsSectionDisplayContext.class.getName());
 %>
 
-<div class="cms-section custom-empty-state">
+<div class="cms-section">
 	<frontend-data-set:headless-display
 		apiURL="<%= tagsSectionDisplayContext.getAPIURL() %>"
 		bulkActionDropdownItems="<%= tagsSectionDisplayContext.getBulkActionDropdownItems() %>"

@@ -33,7 +33,7 @@ public class TagsSectionDisplayContext extends BaseSectionDisplayContext {
 						dropdownItem.putData("action", "createTag");
 						dropdownItem.setIcon("tag");
 						dropdownItem.setLabel(
-							_language.get(httpServletRequest, "tag"));
+							_language.get(httpServletRequest, "new"));
 					});
 			}
 		};
@@ -53,9 +53,9 @@ public class TagsSectionDisplayContext extends BaseSectionDisplayContext {
 		return HashMapBuilder.<String, Object>put(
 			"description",
 			LanguageUtil.get(
-				httpServletRequest, "click-new-to-create-your-tag")
+				httpServletRequest, "click-new-to-create-your-first-tag")
 		).put(
-			"image", "/states/cms_empty_state_files.svg"
+			"image", "/states/cms_empty_state.svg"
 		).put(
 			"title", LanguageUtil.get(httpServletRequest, "no-tags-yet")
 		).build();

@@ -14,6 +14,6 @@ export default function createTagAction(data: {assetLibraryId?: string}) {
 				...data,
 				closeModal,
 			}),
-		size: 'sm',
+		size: 'md',
 	});
 }
