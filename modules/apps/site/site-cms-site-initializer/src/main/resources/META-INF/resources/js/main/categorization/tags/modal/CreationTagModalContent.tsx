@@ -4,6 +4,7 @@
  */
 
 import ClayButton from '@clayui/button';
+import ClayIcon from '@clayui/icon';
 import ClayForm, {ClayCheckbox, ClayInput} from '@clayui/form';
 import ClayMultiSelect from '@clayui/multi-select';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
@@ -35,13 +36,12 @@ export default function CreationTagModalContent({
 
 			getAssetsLibrariesByCompany().then((result: any) => {
 				setAssetsLibraries(result);
-				setAllSpaces(
-					result.map(({id, name}) => ({
-						label: name,
-						value: id,
-					}))
-				);
-				setCheckbox(result.length <= 1);
+				setAllSpaces([
+					{
+						label: 'All Spaces',
+						value: result.map(({id}) => id),
+					},
+				]);
 				setLoading(false);
 			});
 		}
@@ -57,14 +57,17 @@ export default function CreationTagModalContent({
 			onSubmit: (values) => {
 				alert(JSON.stringify(values, null, 4));
 			},
-			validate: (values) =>
-				validate(
-					{
-						assetLibraryIds: [required],
-						tagName: [required],
-					},
-					values
-				),
+			validate: (values) => {
+				if (!checkbox) {
+					validate(
+						{
+							assetLibraryIds: [required],
+							tagName: [required],
+						},
+						values
+					);
+				}
+			},
 		});
 
 	const handleMultiSelectChange = (selectedItems: string[]) => {
@@ -79,7 +82,7 @@ export default function CreationTagModalContent({
 		if (checkbox) {
 			setFieldValue(
 				'assetLibraryIds',
-				allSpaces.map((space) => space.value)
+				allSpaces.flatMap((space) => space.value)
 			);
 		}
 	}, [checkbox, allSpaces, setFieldValue]);
@@ -112,22 +115,22 @@ export default function CreationTagModalContent({
 
 					<label htmlFor="multiSelect" id="multi-select-label">
 						{Liferay.Language.get('space')}
+						<span className="reference-mark ml-1">
+							<ClayIcon symbol="asterisk" />
+						</span>
 					</label>
 
 					{assetLibraries.length > 1 && checkbox && (
 						<ClayMultiSelect
-							aria-labelledby="multi-select-label"
 							id="multiSelect"
 							items={allSpaces}
 							disabled={true}
-							onChange={handleChange}
 							value={values.assetLibraryId}
 						/>
 					)}
 
 					{assetLibraries.length > 1 && !checkbox && (
                     	<ClayMultiSelect
-                    		aria-labelledby="multi-select-label"
                     		loadingState={3}
                     		id="multiSelect"
                     		disabled={checkbox}
@@ -157,6 +160,7 @@ export default function CreationTagModalContent({
 							</ClayMultiSelect>
 						)}
 
+						<div className="mt-2">
 							<ClayCheckbox
 								checked={checkbox}
 								label={Liferay.Language.get(
@@ -165,8 +169,8 @@ export default function CreationTagModalContent({
 								onChange={() =>
 									setCheckbox(!checkbox)
 								}
-								style={{marginTop: '10px'}}
 							/>
+							</div>
 						</>
 					)}
 			</ClayModal.Body>
