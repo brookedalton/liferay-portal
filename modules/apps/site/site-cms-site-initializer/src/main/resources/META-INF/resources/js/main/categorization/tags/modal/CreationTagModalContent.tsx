@@ -28,12 +28,6 @@ export default function CreationTagModalContent({
 	>([]);
 	const [loading, setLoading] = useState(false);
 	const [checkbox, setCheckbox] = useState(true);
-	const [items, setItems] = useState([
-    		{
-    			label: 'all spaces',
-    			value: '0',
-    		},
-    	]);
 
 	useEffect(() => {
 		if (!assetLibraryId) {
@@ -41,6 +35,13 @@ export default function CreationTagModalContent({
 
 			getAssetsLibrariesByCompany().then((result: any) => {
 				setAssetsLibraries(result);
+				setAllSpaces(
+					result.map(({id, name}) => ({
+						label: name,
+						value: id,
+					}))
+				);
+				setCheckbox(result.length <= 1);
 				setLoading(false);
 			});
 		}
@@ -69,6 +70,19 @@ export default function CreationTagModalContent({
 	const handleMultiSelectChange = (selectedItems: string[]) => {
 		setFieldValue('assetLibraryIds', selectedItems);
     };
+
+	const [allSpaces, setAllSpaces] = useState<
+		{label: string; value: string}[]
+	>([]);
+
+	useEffect(() => {
+		if (checkbox) {
+			setFieldValue(
+				'assetLibraryIds',
+				allSpaces.map((space) => space.value)
+			);
+		}
+	}, [checkbox, allSpaces, setFieldValue]);
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -104,10 +118,9 @@ export default function CreationTagModalContent({
 						<ClayMultiSelect
 							aria-labelledby="multi-select-label"
 							id="multiSelect"
-							items={items}
+							items={allSpaces}
 							disabled={true}
 							onChange={handleChange}
-							onItemsChange={setItems}
 							value={values.assetLibraryId}
 						/>
 					)}
@@ -117,6 +130,7 @@ export default function CreationTagModalContent({
                     		aria-labelledby="multi-select-label"
                     		loadingState={3}
                     		id="multiSelect"
+                    		disabled={checkbox}
                     		sourceItems={assetLibraries.map(({id, name}) => ({
                     			label: name,
                     			value: id,
