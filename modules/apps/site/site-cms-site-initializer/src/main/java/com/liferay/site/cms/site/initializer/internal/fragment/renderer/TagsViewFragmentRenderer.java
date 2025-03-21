@@ -67,7 +67,7 @@ public class TagsViewFragmentRenderer extends BaseSectionFragmentRenderer {
 				TagsViewDisplayContext.class.getName(),
 				new TagsViewDisplayContext(
 					_cmsSiteInitializerConfiguration, httpServletRequest,
-					themeDisplay));
+					_language, themeDisplay));
 
 			requestDispatcher.include(httpServletRequest, httpServletResponse);
 		}
