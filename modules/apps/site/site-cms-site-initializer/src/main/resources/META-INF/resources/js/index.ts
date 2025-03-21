@@ -6,6 +6,7 @@
 export {default as ContentsFDSPropsTransformer} from './main/FDSPropsTransformer/ContentsFDSPropsTransformer';
 export {default as FilesFDSPropsTransformer} from './main/FDSPropsTransformer/FilesFDSPropsTransformer';
 export {default as StructuresFDSPropsTransformer} from './main/FDSPropsTransformer/StructuresFDSPropsTransformer';
+export {default as TagsFDSPropsTransformer} from './main/categorization/tags/FDSPropsTransformer/TagsFDSPropsTransformer';
 export {default as TagsView} from './main/categorization/tags/TagsView';
 export {default as VocabulariesView} from './main/categorization/vocabulary/VocabulariesView';
 export {default as SpacesSticker} from './main/components/SpaceSticker';

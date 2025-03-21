@@ -15,45 +15,12 @@ export default function TagsView({
 	tagsURL: string;
 	vocabularyURL: string;
 }) {
-	const creationMenu = {
-		primaryItems: [
-			{
-				label: Liferay.Language.get('new'),
-			},
-		],
-	};
-
-	const views = [
-		{
-			contentRenderer: 'table',
-			default: true,
-			label: Liferay.Language.get('table'),
-			name: 'table',
-			thumbnail: 'table',
-		},
-	];
-
-	const emptyState = {
-		description: Liferay.Language.get('click-new-to-create-your-first-tag'),
-		image: '/states/cms_empty_state.svg',
-		title: Liferay.Language.get('no-tags-yet'),
-	};
-
 	return (
 		<div className="categorization-section">
 			<CategorizationToolbar
 				activeTab="tags"
 				tagsURL={tagsURL}
 				vocabularyURL={vocabularyURL}
-			/>
-
-			<FrontendDataSet
-				creationMenu={creationMenu}
-				emptyState={emptyState}
-				id="TagsView"
-				showManagementBar={false}
-				showSearch={false}
-				views={views}
 			/>
 		</div>
 	);
