@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+import {openConfirmModal, openToast} from 'frontend-js-components-web';
+
 import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import ClayForm, {ClayCheckbox, ClayInput} from '@clayui/form';
@@ -55,7 +57,36 @@ export default function CreationTagModalContent({
 				tagName: '',
 			},
 			onSubmit: (values) => {
-				alert(JSON.stringify(values, null, 4));
+				fetch(url, {
+					method: 'POST',
+				})
+					.then((response) => response.json())
+					.then(({message, success}) => {
+						if (success) {
+							openToast({
+								message,
+								title: Liferay.Language.get('success'),
+								type: 'success',
+							});
+
+							navigate(redirect);
+						}
+						else {
+							setErrorMessage(message);
+							scrollToTop();
+						}
+					})
+					.catch(() => {
+						console.log(values.tagName)
+						console.log(response)
+						openToast({
+							message: Liferay.Language.get(
+								'an-unexpected-error-occurred'
+							),
+							title: Liferay.Language.get('error'),
+							type: 'danger',
+						});
+					});
 			},
 			validate: (values) => {
 				if (!checkbox) {
