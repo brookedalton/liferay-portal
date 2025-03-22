@@ -15,11 +15,12 @@ TagsViewDisplayContext tagsViewDisplayContext = (TagsViewDisplayContext)request.
 	<div id="<%= CMSSiteInitializerFDSNames.CATEGORIZATION_SECTION %>">
 		<react:component
 			module="{TagsView} from site-cms-site-initializer"
+			data="<%= tagsViewDisplayContext.getReactData() %>"
 		/>
 	</div>
 
 	<frontend-data-set:headless-display
-		apiURL="<%= tagsViewDisplayContext.getAPIURL() %>"
+		apiURL=""
 		bulkActionDropdownItems="<%= tagsViewDisplayContext.getBulkActionDropdownItems() %>"
 		creationMenu="<%= tagsViewDisplayContext.getCreationMenu() %>"
 		emptyState="<%= tagsViewDisplayContext.getEmptyState() %>"

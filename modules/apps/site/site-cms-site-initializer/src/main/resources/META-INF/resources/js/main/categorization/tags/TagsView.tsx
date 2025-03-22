@@ -4,7 +4,7 @@
  */
 
 import {FrontendDataSet} from '@liferay/frontend-data-set-web';
-import React from 'react';
+import React, {useState} from 'react';
 
 import CategorizationToolbar from '../CategorizationToolbar';
 
@@ -15,10 +15,12 @@ export default function TagsView({
 	tagsURL: string;
 	vocabularyURL: string;
 }) {
+	const [activeTab, setActiveTab] = useState('tags');
+
 	return (
 		<div className="categorization-section">
 			<CategorizationToolbar
-				activeTab="tags"
+				activeTab={activeTab}
 				tagsURL={tagsURL}
 				vocabularyURL={vocabularyURL}
 			/>

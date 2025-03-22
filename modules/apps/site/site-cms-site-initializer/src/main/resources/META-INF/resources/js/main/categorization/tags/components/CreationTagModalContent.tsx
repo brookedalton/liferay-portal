@@ -24,16 +24,17 @@ export default function CreationTagModalContent({
 	closeModal,
 }: {
 	assetLibraryId?: string;
+
 	closeModal: () => void;
 }) {
+	const [allSpaces, setAllSpaces] = useState<
+		{label: string; value: number[]}[]
+	>([]);
 	const [assetLibraries, setAssetsLibraries] = useState<
 		{id: string; name: string}[]
 	>([]);
 	const [loading, setLoading] = useState(false);
 	const [checkbox, setCheckbox] = useState(true);
-	const [allSpaces, setAllSpaces] = useState<
-		{label: string; value: string}[]
-	>([]);
 
 	useEffect(() => {
 		if (!assetLibraryId) {
@@ -44,7 +45,7 @@ export default function CreationTagModalContent({
 				setAllSpaces([
 					{
 						label: 'All Spaces',
-						value: result.map(({id}) => id),
+						value: result.map(({id}) => Number(id)),
 					},
 				]);
 				setLoading(false);
@@ -55,28 +56,45 @@ export default function CreationTagModalContent({
 	const {errors, handleChange, handleSubmit, setFieldValue, touched, values} =
 		useFormik({
 			initialValues: {
-				assetLibraryIds: assetLibraryId ? [assetLibraryId] : [],
+				assetLibraryIds: assetLibraryId ? [Number(assetLibraryId)] : [],
 				tagName: '',
 			},
 			onSubmit: (values) => {
-				alert(JSON.stringify(values, null, 4));
-				fetch(url, {
-					method: 'POST',
-				})
-					.then((response) => response.json())
-					.then(({message, success}) => {
-						if (success) {
+				const url = '/o/headless-admin-taxonomy/v1.0/sites/' +
+					Liferay.ThemeDisplay.getScopeGroupId() +
+					'/keywords';
+
+				const body = {
+					assetLibraryIds: values.assetLibraryIds,
+					name: values.tagName,
+				};
+
+				fetch(url,
+					{
+						body: JSON.stringify(body),
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						method: 'POST',
+					}
+				)
+					.then((response) => {
+						if (response.ok) {
 							openToast({
-								message,
+								message: Liferay.Language.get(
+									'your-request-completed-successfully'
+								),
 								title: Liferay.Language.get('success'),
 								type: 'success',
 							});
-
-							navigate(redirect);
-						}
-						else {
-							setErrorMessage(message);
-							scrollToTop();
+						} else {
+							openToast({
+								message: Liferay.Language.get(
+									'an-unexpected-error-occurred'
+								),
+								title: Liferay.Language.get('error'),
+								type: 'danger',
+							});
 						}
 					})
 					.catch(() => {
@@ -103,7 +121,10 @@ export default function CreationTagModalContent({
 		});
 
 	const handleMultiSelectChange = (selectedItems: string[]) => {
-		setFieldValue('assetLibraryIds', selectedItems);
+		setFieldValue(
+			'assetLibraryIds',
+			selectedItems.map((id) => Number(id))
+		);
 	};
 
 	useEffect(() => {
@@ -152,7 +173,6 @@ export default function CreationTagModalContent({
 								disabled={true}
 								id="multiSelect"
 								items={allSpaces}
-								value={values.assetLibraryId}
 							/>
 						)}
 
@@ -169,7 +189,6 @@ export default function CreationTagModalContent({
 										value: id,
 									})
 								)}
-								value={values.assetLibraryId}
 							>
 								{(item) => (
 									<ClayMultiSelect.Item
@@ -217,11 +236,17 @@ export default function CreationTagModalContent({
 							{Liferay.Language.get('cancel')}
 						</ClayButton>
 
-						<ClayButton displayType="secondary" type="button">
+						<ClayButton displayType="secondary"
+							onClick={() => {resetForm();}}
+							type="submit"
+						>
 							{Liferay.Language.get('save-and-add-another')}
 						</ClayButton>
 
-						<ClayButton displayType="primary" type="submit">
+						<ClayButton displayType="primary"
+							onClick={closeModal}
+							type="submit"
+						>
 							{Liferay.Language.get('save')}
 						</ClayButton>
 					</ClayButton.Group>

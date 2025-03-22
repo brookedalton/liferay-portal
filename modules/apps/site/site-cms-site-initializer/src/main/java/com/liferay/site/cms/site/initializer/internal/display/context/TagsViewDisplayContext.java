@@ -42,7 +42,7 @@ public class TagsViewDisplayContext {
 	public String getAPIURL() {
 		return StringBundler.concat(
 			"/o/headless-admin-taxonomy/v1.0/sites/",
-			_themeDisplay.getScopeGroupId(), "taxonomy-vocabularies");
+			_themeDisplay.getScopeGroupId(), "/keywords");
 	}
 
 	public List<DropdownItem> getBulkActionDropdownItems() {
@@ -58,9 +58,8 @@ public class TagsViewDisplayContext {
 				addPrimaryDropdownItem(
 					dropdownItem -> {
 						dropdownItem.putData("action", "createTag");
-						dropdownItem.setIcon("tag");
 						dropdownItem.setLabel(
-							_language.get(_httpServletRequest, "tag"));
+							_language.get(_httpServletRequest, "new"));
 					});
 			}
 		};
