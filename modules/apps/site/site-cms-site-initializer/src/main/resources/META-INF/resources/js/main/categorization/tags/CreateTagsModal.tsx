@@ -20,7 +20,7 @@ import SpaceService from '../services/SpaceService';
 
 type Space = {
 	label: string;
-	value: string;
+	value: string[];
 };
 
 export default function CreationTagModalContent({
