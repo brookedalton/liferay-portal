@@ -179,6 +179,8 @@ test('Cannot Enable Publications When Staging Is Enabled', async ({
 	page,
 	site,
 }) => {
+	await apiHelpers.headlessChangeTracking.checkoutCTCollection(0);
+
 	await changeTrackingPage.enablePublications(false);
 
 	await page.goto('/');

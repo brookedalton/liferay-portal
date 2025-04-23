@@ -195,6 +195,21 @@ export class ChangeTrackingPage {
 	async enablePublications(check: boolean) {
 		await this.goToPublicationsViaApplicationMenu();
 
+		if (
+			await this.page
+				.getByTestId('headerTitle')
+				.filter({hasText: 'Publications'})
+				.isVisible()
+		) {
+			await this.page.getByLabel('Options').click();
+
+			await this.page.getByRole('menuitem', {name: 'Settings'}).click();
+
+			await expect(
+				this.page.getByText('Enable Publications')
+			).toBeVisible();
+		}
+
 		const checkBox = this.page.getByRole('checkbox', {
 			name: 'Enable Publications',
 		});
@@ -234,7 +249,13 @@ export class ChangeTrackingPage {
 
 		await this.page.getByRole('menuitem', {name: 'Publications'}).click();
 
-		await expect(this.page.getByText('Enable Publications')).toBeVisible();
+		const enablePublications = this.page.getByText('Enable Publications');
+
+		const publicationsHeader = this.page
+			.getByTestId('headerTitle')
+			.filter({hasText: 'Publications'});
+
+		await expect(enablePublications.or(publicationsHeader)).toBeVisible();
 	}
 
 	async goToPublicationHistory() {
