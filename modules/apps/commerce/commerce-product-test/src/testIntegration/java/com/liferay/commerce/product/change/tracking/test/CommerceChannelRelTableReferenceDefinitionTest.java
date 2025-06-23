@@ -5,24 +5,19 @@
 
 package com.liferay.commerce.product.change.tracking.test;
 
-import com.liferay.account.constants.AccountConstants;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.change.tracking.test.util.BaseTableReferenceDefinitionTestCase;
+import com.liferay.commerce.currency.model.CommerceCurrency;
+import com.liferay.commerce.currency.test.util.CommerceCurrencyTestUtil;
 import com.liferay.commerce.inventory.model.CommerceInventoryWarehouse;
-import com.liferay.commerce.product.constants.CommerceChannelConstants;
 import com.liferay.commerce.product.model.CommerceChannel;
-import com.liferay.commerce.product.model.CommerceChannelRel;
-import com.liferay.commerce.product.service.CommerceChannelLocalService;
+import com.liferay.commerce.product.service.CommerceChannelRelLocalService;
 import com.liferay.commerce.test.util.CommerceInventoryTestUtil;
 import com.liferay.commerce.test.util.CommerceTestUtil;
-import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.kernel.test.util.GroupTestUtil;
-import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
+import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -51,39 +46,34 @@ public class CommerceChannelRelTableReferenceDefinitionTest
 	public void setUp() throws Exception {
 		super.setUp();
 
-		_group = GroupTestUtil.addGroup();
+		CommerceCurrency commerceCurrency =
+			CommerceCurrencyTestUtil.addCommerceCurrency(
+				TestPropsValues.getCompanyId());
 
-		_commerceChannel = _commerceChannelLocalService.addCommerceChannel(
-			StringPool.BLANK, AccountConstants.ACCOUNT_ENTRY_ID_DEFAULT,
-			_group.getGroupId(), RandomTestUtil.randomString(),
-			CommerceChannelConstants.CHANNEL_TYPE_SITE, null,
-			RandomTestUtil.randomString(),
-			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
+		_commerceChannel = CommerceTestUtil.addCommerceChannel(
+			group.getGroupId(), commerceCurrency.getCode());
+
 		_inactiveCommerceInventoryWarehouse =
 			CommerceInventoryTestUtil.addCommerceInventoryWarehouse(
 				false,
-				ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
+				ServiceContextTestUtil.getServiceContext(group.getGroupId()));
 	}
 
 	@Override
 	protected CTModel<?> addCTModel() throws Exception {
-		_commerceChannelRel = CommerceTestUtil.addCommerceChannelRel(
-			_group.getGroupId(), _commerceChannel.getCommerceChannelId(),
+		return _commerceChannelRelLocalService.addCommerceChannelRel(
+			CommerceInventoryWarehouse.class.getName(),
 			_inactiveCommerceInventoryWarehouse.
-				getCommerceInventoryWarehouseId());
-
-		return _commerceChannelRel;
+				getCommerceInventoryWarehouseId(),
+			_commerceChannel.getCommerceChannelId(),
+			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
 	}
 
 	private CommerceChannel _commerceChannel;
 
 	@Inject
-	private CommerceChannelLocalService _commerceChannelLocalService;
+	private CommerceChannelRelLocalService _commerceChannelRelLocalService;
 
-	@DeleteAfterTestRun
-	private CommerceChannelRel _commerceChannelRel;
-
-	private Group _group;
 	private CommerceInventoryWarehouse _inactiveCommerceInventoryWarehouse;
 
 }
