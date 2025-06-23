@@ -613,8 +613,9 @@ public class CommerceChannelLocalServiceImpl
 		typeSettingsUnicodeProperties.put(
 			"siteGroupId", String.valueOf(siteGroupId));
 
-		_groupLocalService.updateGroup(
-			group.getGroupId(), typeSettingsUnicodeProperties.toString());
+		group.setTypeSettingsProperties(typeSettingsUnicodeProperties);
+
+		_groupLocalService.updateGroup(group);
 	}
 
 	private void _validateAccountEntry(
