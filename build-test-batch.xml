@@ -7554,7 +7554,19 @@ information. Make sure to commit in all format-javadoc results.
 		<run-modules-integration-test database.type="postgresql" database.version="15.5" />
 	</target>
 
-	<target name="modules-integration-postgresql163">
+	<target name="modules-integration-postgresql163-1">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-2">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-3">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-4">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-5">
 		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
 	</target>
 
