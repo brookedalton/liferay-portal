@@ -9,6 +9,7 @@ import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
 import com.liferay.document.library.kernel.exception.NoSuchFileVersionException;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.video.internal.constants.DLVideoPortletKeys;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -101,12 +102,19 @@ public class DLVideoEmbedFilter extends BasePortalFilter {
 				}
 			}
 
-			String embedVideoURL = StringBundler.concat(
-				_getEmbedVideoURL(httpServletRequest),
-				"&previewCTCollectionId=",
-				CTCollectionThreadLocal.getCTCollectionId());
+			long previewCTCollectionId = ParamUtil.getLong(
+				httpServletRequest, "previewCTCollectionId");
 
-			httpServletResponse.sendRedirect(embedVideoURL);
+			try (SafeCloseable safeCloseable =
+					CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+						previewCTCollectionId)) {
+
+				String embedVideoURL = StringBundler.concat(
+					_getEmbedVideoURL(httpServletRequest),
+					"&previewCTCollectionId=", previewCTCollectionId);
+
+				httpServletResponse.sendRedirect(embedVideoURL);
+			}
 		}
 		else {
 			filterChain.doFilter(httpServletRequest, httpServletResponse);
