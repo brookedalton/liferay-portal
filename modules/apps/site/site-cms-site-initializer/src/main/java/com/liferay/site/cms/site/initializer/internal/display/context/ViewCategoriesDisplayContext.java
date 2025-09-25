@@ -231,12 +231,17 @@ public class ViewCategoriesDisplayContext {
 		FDSActionDropdownItem fdsActionDropdownItemGroup3 =
 			new FDSActionDropdownItem(null, null, null, null, null, null, null);
 
+		FDSActionDropdownItem fdsActionDropdownItem = new FDSActionDropdownItem(
+			null, "trash", "delete",
+			_language.get(_httpServletRequest, "delete"), null, "delete", null);
+
+		fdsActionDropdownItem.put("className", "text-danger");
+
 		fdsActionDropdownItemGroup3.setDropdownItems(
-			ListUtil.fromArray(
-				new FDSActionDropdownItem(
-					null, "trash", "delete",
-					_language.get(_httpServletRequest, "delete"), null,
-					"delete", null)));
+			ListUtil.fromArray(fdsActionDropdownItem));
+
+		fdsActionDropdownItemGroup3.setSeparator(true);
+		fdsActionDropdownItemGroup3.put("type", "group");
 
 		return ListUtil.fromArray(
 			fdsActionDropdownItemGroup1, fdsActionDropdownItemGroup2,
