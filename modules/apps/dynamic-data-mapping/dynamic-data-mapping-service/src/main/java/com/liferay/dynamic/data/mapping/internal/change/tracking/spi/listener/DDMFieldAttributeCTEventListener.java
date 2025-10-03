@@ -10,16 +10,20 @@ import com.liferay.change.tracking.service.CTEntryLocalService;
 import com.liferay.change.tracking.spi.listener.CTEventListener;
 import com.liferay.dynamic.data.mapping.model.DDMFieldAttribute;
 import com.liferay.dynamic.data.mapping.service.persistence.DDMFieldAttributeUtil;
+import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionConfig;
-import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
+import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.Portal;
 
 import java.util.List;
 import java.util.Map;
 
+import com.liferay.portal.spring.transaction.TransactionAttributeAdapter;
+import com.liferay.portal.spring.transaction.TransactionAttributeBuilder;
+import com.liferay.portal.spring.transaction.TransactionExecutor;
 import net.htmlparser.jericho.Attributes;
 import net.htmlparser.jericho.OutputDocument;
 import net.htmlparser.jericho.Source;
@@ -85,13 +89,18 @@ public class DDMFieldAttributeCTEventListener implements CTEventListener {
 			ddmFieldAttribute.setAttributeValue(outputDocument.toString());
 
 			try {
-				TransactionInvokerUtil.invoke(
-					_transactionConfig,
-					() -> {
-						DDMFieldAttributeUtil.update(ddmFieldAttribute);
-
-						return null;
-					});
+				_portalTransactionExecutor.execute(
+					new TransactionAttributeAdapter(
+						TransactionAttributeBuilder.build(
+							true, _transactionConfig.getIsolation(),
+							_transactionConfig.getPropagation(),
+							_transactionConfig.isReadOnly(),
+							_transactionConfig.getTimeout(),
+							_transactionConfig.getRollbackForClasses(),
+							_transactionConfig.getRollbackForClassNames(),
+							_transactionConfig.getNoRollbackForClasses(),
+							_transactionConfig.getNoRollbackForClassNames())),
+					() -> DDMFieldAttributeUtil.update(ddmFieldAttribute));
 			}
 			catch (Throwable throwable) {
 				if (_log.isWarnEnabled()) {
@@ -100,6 +109,10 @@ public class DDMFieldAttributeCTEventListener implements CTEventListener {
 			}
 		}
 	}
+
+	private static final TransactionExecutor _portalTransactionExecutor =
+		(TransactionExecutor)PortalBeanLocatorUtil.locate(
+			"transactionExecutor");
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DDMFieldAttributeCTEventListener.class);
