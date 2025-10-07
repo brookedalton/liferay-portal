@@ -378,6 +378,14 @@ public class DDMFieldLocalServiceWrapper
 	}
 
 	@Override
+	public void updateDDMFieldAttribute(
+		com.liferay.dynamic.data.mapping.model.DDMFieldAttribute
+			ddmFieldAttribute) {
+
+		_ddmFieldLocalService.updateDDMFieldAttribute(ddmFieldAttribute);
+	}
+
+	@Override
 	public void updateDDMFormValues(
 			long structureId, long storageId,
 			com.liferay.dynamic.data.mapping.storage.DDMFormValues

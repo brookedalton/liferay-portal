@@ -294,6 +294,8 @@ public interface DDMFieldLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public DDMField updateDDMField(DDMField ddmField);
 
+	public void updateDDMFieldAttribute(DDMFieldAttribute ddmFieldAttribute);
+
 	public void updateDDMFormValues(
 			long structureId, long storageId, DDMFormValues ddmFormValues)
 		throws PortalException;
