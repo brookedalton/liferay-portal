@@ -11,8 +11,6 @@ import com.liferay.change.tracking.spi.listener.CTEventListener;
 import com.liferay.dynamic.data.mapping.model.DDMField;
 import com.liferay.dynamic.data.mapping.model.DDMFieldAttribute;
 import com.liferay.dynamic.data.mapping.service.DDMFieldLocalService;
-import com.liferay.dynamic.data.mapping.service.persistence.DDMFieldAttributePersistence;
-import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.util.Portal;
 
 import java.util.ArrayList;
@@ -85,25 +83,15 @@ public class DDMFieldAttributeCTEventListener implements CTEventListener {
 				map.put("src", src.substring(0, index));
 			}
 
-			TransactionCommitCallbackUtil.registerCallback(
-				() -> {
-					ddmFieldAttribute.setAttributeValue(
-						outputDocument.toString());
+			ddmFieldAttribute.setAttributeValue(
+				outputDocument.toString());
 
-					_ddmFieldAttributePersistence.update(ddmFieldAttribute);
-
-					_ddmFieldAttributePersistence.clearCache();
-
-					return null;
-				});
+			_ddmFieldLocalService.updateDDMFieldAttribute(ddmFieldAttribute);
 		}
 	}
 
 	@Reference
 	private CTEntryLocalService _ctEntryLocalService;
-
-	@Reference
-	private DDMFieldAttributePersistence _ddmFieldAttributePersistence;
 
 	@Reference
 	private DDMFieldLocalService _ddmFieldLocalService;
