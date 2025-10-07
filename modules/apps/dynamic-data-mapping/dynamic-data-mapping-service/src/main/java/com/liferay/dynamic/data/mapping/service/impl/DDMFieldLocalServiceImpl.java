@@ -293,6 +293,11 @@ public class DDMFieldLocalServiceImpl extends DDMFieldLocalServiceBaseImpl {
 	}
 
 	@Override
+	public void updateDDMFieldAttribute(DDMFieldAttribute ddmFieldAttribute) {
+		_ddmFieldAttributePersistence.update(ddmFieldAttribute);
+	}
+
+	@Override
 	public void updateDDMFormValues(
 			long structureId, long storageId, DDMFormValues ddmFormValues)
 		throws PortalException {
