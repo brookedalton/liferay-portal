@@ -335,6 +335,13 @@ public class DDMFieldLocalServiceUtil {
 		return getService().updateDDMField(ddmField);
 	}
 
+	public static void updateDDMFieldAttribute(
+		com.liferay.dynamic.data.mapping.model.DDMFieldAttribute
+			ddmFieldAttribute) {
+
+		getService().updateDDMFieldAttribute(ddmFieldAttribute);
+	}
+
 	public static void updateDDMFormValues(
 			long structureId, long storageId,
 			com.liferay.dynamic.data.mapping.storage.DDMFormValues
