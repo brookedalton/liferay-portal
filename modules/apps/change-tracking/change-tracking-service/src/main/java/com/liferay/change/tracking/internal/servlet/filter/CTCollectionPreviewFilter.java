@@ -85,6 +85,11 @@ public class CTCollectionPreviewFilter extends BasePortalFilter {
 				return;
 			}
 
+			if (ctCollection.getStatus() ==
+				 WorkflowConstants.STATUS_APPROVED) {
+				previewCTCollectionId = CTConstants.CT_COLLECTION_ID_PRODUCTION;
+			}
+
 			if ((ctCollection.getStatus() !=
 					WorkflowConstants.STATUS_APPROVED) &&
 				(ctCollection.getStatus() != WorkflowConstants.STATUS_DRAFT) &&
