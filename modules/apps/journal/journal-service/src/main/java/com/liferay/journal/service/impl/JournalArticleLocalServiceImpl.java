@@ -21,6 +21,7 @@ import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.asset.link.constants.AssetLinkConstants;
 import com.liferay.asset.link.model.AssetLink;
 import com.liferay.asset.link.service.AssetLinkLocalService;
+import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.diff.DiffHtml;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
@@ -5952,8 +5953,19 @@ public class JournalArticleLocalServiceImpl
 				}
 			}
 
+			String queryString = StringPool.BLANK;
+
+			if (fileEntry.getCtCollectionId() !=
+				CTConstants.CT_COLLECTION_ID_PRODUCTION &&
+				fileEntry.getMimeType().contains("video")) {
+
+				queryString = StringBundler.concat(
+					"&previewCTCollectionId=", fileEntry.getCtCollectionId(),
+					StringPool.BLANK);
+			}
+
 			String previewURL = _dlURLHelper.getPreviewURL(
-				fileEntry, fileEntry.getFileVersion(), null, StringPool.BLANK,
+				fileEntry, fileEntry.getFileVersion(), null, queryString,
 				false, true);
 
 			return _toJSON(

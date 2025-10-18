@@ -34,8 +34,10 @@ import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.URLCodec;
@@ -214,14 +216,6 @@ public class DLURLHelperImpl implements DLURLHelper {
 
 		String previewURLPrefix = _getPreviewURLPrefix(
 			themeDisplay, absoluteURL);
-
-		if (fileVersion.getCtCollectionId() !=
-				CTConstants.CT_COLLECTION_ID_PRODUCTION) {
-
-			queryString = StringBundler.concat(
-				"&previewCTCollectionId=", fileVersion.getCtCollectionId(),
-				queryString);
-		}
 
 		String previewURL = _getFriendlyURL(
 			fileEntry, previewURLPrefix, queryString, appendVersion);
