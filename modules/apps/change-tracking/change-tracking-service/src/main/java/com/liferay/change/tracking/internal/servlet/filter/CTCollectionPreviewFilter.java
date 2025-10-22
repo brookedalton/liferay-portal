@@ -10,10 +10,10 @@ import com.liferay.change.tracking.exception.NoSuchCollectionException;
 import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.portal.kernel.change.tracking.CTCollectionPreviewThreadLocal;
+import com.liferay.portal.kernel.encryptor.EncryptorUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
-import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -112,9 +113,16 @@ public class CTCollectionPreviewFilter extends BasePortalFilter {
 				User user = _portal.getUser(httpServletRequest);
 
 				if (user == null) {
-					long userId = ParamUtil.getLong(httpServletRequest, "userId");
+					String userId = ParamUtil.getString(
+						httpServletRequest, "userId");
 
-					user = _userLocalService.getUser(userId);
+					user = _userLocalService.getUser(
+						GetterUtil.getLong(
+							EncryptorUtil.decrypt(
+								_portal.getCompany(
+									httpServletRequest
+								).getKeyObj(),
+								userId)));
 				}
 
 				permissionChecker = permissionCheckerFactory.create(user);
