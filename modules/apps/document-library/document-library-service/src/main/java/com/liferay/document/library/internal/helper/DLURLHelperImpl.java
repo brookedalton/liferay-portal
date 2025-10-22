@@ -212,16 +212,21 @@ public class DLURLHelperImpl implements DLURLHelper {
 		FileEntry fileEntry, FileVersion fileVersion, ThemeDisplay themeDisplay,
 		String queryString, boolean appendVersion, boolean absoluteURL) {
 
-		String previewURLPrefix = _getPreviewURLPrefix(
-			themeDisplay, absoluteURL);
-
 		if (fileVersion.getCtCollectionId() !=
 				CTConstants.CT_COLLECTION_ID_PRODUCTION) {
 
 			queryString = StringBundler.concat(
 				"&previewCTCollectionId=", fileVersion.getCtCollectionId(),
 				queryString);
+
+			if (fileVersion.getMimeType().contains("video")) {
+				queryString = StringBundler.concat("&userId=",
+					themeDisplay.getUserId(), queryString);
+			}
 		}
+
+		String previewURLPrefix = _getPreviewURLPrefix(
+			themeDisplay, absoluteURL);
 
 		String previewURL = _getFriendlyURL(
 			fileEntry, previewURLPrefix, queryString, appendVersion);

@@ -11,12 +11,15 @@ import com.liferay.change.tracking.model.CTCollection;
 import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.portal.kernel.change.tracking.CTCollectionPreviewThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -106,8 +109,15 @@ public class CTCollectionPreviewFilter extends BasePortalFilter {
 				PermissionThreadLocal.getPermissionChecker();
 
 			if (permissionChecker == null) {
-				permissionChecker = permissionCheckerFactory.create(
-					_portal.getUser(httpServletRequest));
+				User user = _portal.getUser(httpServletRequest);
+
+				if (user == null) {
+					long userId = ParamUtil.getLong(httpServletRequest, "userId");
+
+					user = _userLocalService.getUser(userId);
+				}
+
+				permissionChecker = permissionCheckerFactory.create(user);
 			}
 
 			if (!_modelResourcePermission.contains(
@@ -146,5 +156,8 @@ public class CTCollectionPreviewFilter extends BasePortalFilter {
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
