@@ -129,6 +129,10 @@ public class DLVideoEmbedFilter extends BasePortalFilter {
 						_getEmbedVideoURL(httpServletRequest),
 						"previewCTCollectionId", previewCTCollectionId);
 
+					embedVideoURL = HttpComponentsUtil.addParameter(
+						embedVideoURL, "userId",
+						ParamUtil.getLong(httpServletRequest, "userId"));
+
 					httpServletResponse.sendRedirect(embedVideoURL);
 				}
 			}
