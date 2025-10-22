@@ -22,6 +22,7 @@ import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.encryptor.EncryptorUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.PortletProvider;
@@ -219,9 +220,23 @@ public class DLURLHelperImpl implements DLURLHelper {
 				"&previewCTCollectionId=", fileVersion.getCtCollectionId(),
 				queryString);
 
-			if (fileVersion.getMimeType().contains("video")) {
-				queryString = StringBundler.concat("&userId=",
-					themeDisplay.getUserId(), queryString);
+			if (fileVersion.getMimeType(
+				).contains(
+					"video"
+				)) {
+
+				try {
+					queryString = StringBundler.concat(
+						"&userId=",
+						EncryptorUtil.encrypt(
+							themeDisplay.getCompany(
+							).getKeyObj(),
+							String.valueOf(themeDisplay.getUserId())),
+						queryString);
+				}
+				catch (Exception exception) {
+					throw new RuntimeException(exception);
+				}
 			}
 		}
 
