@@ -112,9 +112,19 @@ public class DLVideoEmbedCTCollectionFilter extends BasePortalFilter {
 					}
 				}
 
+				long fileVersionId = GetterUtil.getLong(
+					_getFileVersionId(httpServletRequest));
+
+				FileVersion fileVersion = _dlAppLocalService.getFileVersion(
+					fileVersionId);
+
+				if (user == null) {
+					PrincipalThreadLocal.setName(fileVersion.getUserId());
+				}
+
 				String embedVideoURL = HttpComponentsUtil.addParameter(
 					_getEmbedVideoURL(httpServletRequest),
-					"previewCTCollectionId", previewCTCollectionId);
+					"previewCTCollectionId", fileVersion.getCtCollectionId());
 
 				httpServletResponse.sendRedirect(embedVideoURL);
 			}
