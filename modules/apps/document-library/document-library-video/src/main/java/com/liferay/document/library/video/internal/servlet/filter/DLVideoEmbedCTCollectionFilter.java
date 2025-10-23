@@ -1,19 +1,21 @@
 /**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package com.liferay.document.library.video.internal.servlet.filter;
 
-import com.liferay.change.tracking.service.CTCollectionLocalService;
+import com.liferay.change.tracking.constants.CTConstants;
 import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
 import com.liferay.document.library.kernel.exception.NoSuchFileVersionException;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.video.internal.constants.DLVideoPortletKeys;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.events.EventsProcessorUtil;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.events.ActionException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -58,17 +60,18 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * @author Alejandro Tardín
+ * @author Brooke Dalton
  */
 @Component(
 	property = {
-		"before-filter=Auto Login Filter", "dispatcher=FORWARD",
+		"before-filter=CTCollection Preview Filter", "dispatcher=FORWARD",
 		"dispatcher=REQUEST", "servlet-context-name=",
-		"servlet-filter-name=DL Video Embed Filter", "url-pattern=/documents/*"
+		"servlet-filter-name=DL Video Embed CTCollection Filter",
+		"url-pattern=/documents/*"
 	},
 	service = Filter.class
 )
-public class DLVideoEmbedFilter extends BasePortalFilter {
+public class DLVideoEmbedCTCollectionFilter extends BasePortalFilter {
 
 	@Override
 	protected void processFilter(
@@ -88,24 +91,36 @@ public class DLVideoEmbedFilter extends BasePortalFilter {
 		long previewCTCollectionId = ParamUtil.getLong(
 			httpServletRequest, "previewCTCollectionId");
 
-		if (videoEmbed && (previewCTCollectionId == 0)) {
-			try {
-				EventsProcessorUtil.process(
-					PropsKeys.SERVLET_SERVICE_EVENTS_PRE,
-					PropsValues.SERVLET_SERVICE_EVENTS_PRE, httpServletRequest,
-					httpServletResponse);
-			}
-			catch (ActionException actionException) {
-				if (_log.isDebugEnabled()) {
-					_log.debug(actionException);
-				}
-			}
-
-			httpServletResponse.sendRedirect(
-				_getEmbedVideoURL(httpServletRequest));
-		}
-		else {
+		if (previewCTCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
 			filterChain.doFilter(httpServletRequest, httpServletResponse);
+		}
+
+		try (SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					previewCTCollectionId)) {
+
+			if (videoEmbed) {
+				try {
+					EventsProcessorUtil.process(
+						PropsKeys.SERVLET_SERVICE_EVENTS_PRE,
+						PropsValues.SERVLET_SERVICE_EVENTS_PRE,
+						httpServletRequest, httpServletResponse);
+				}
+				catch (ActionException actionException) {
+					if (_log.isDebugEnabled()) {
+						_log.debug(actionException);
+					}
+				}
+
+				String embedVideoURL = HttpComponentsUtil.addParameter(
+					_getEmbedVideoURL(httpServletRequest),
+					"previewCTCollectionId", previewCTCollectionId);
+
+				httpServletResponse.sendRedirect(embedVideoURL);
+			}
+			else {
+				filterChain.doFilter(httpServletRequest, httpServletResponse);
+			}
 		}
 	}
 
@@ -155,8 +170,7 @@ public class DLVideoEmbedFilter extends BasePortalFilter {
 		if (pathParts.size() == 5) {
 			String uuid = pathParts.get(4);
 
-			return _dlAppLocalService.getFileEntryByUuidAndGroupId(
-				uuid, groupId);
+			_dlAppLocalService.getFileEntryByUuidAndGroupId(uuid, groupId);
 		}
 
 		long folderId = GetterUtil.getLong(pathParts.get(2));
@@ -270,13 +284,10 @@ public class DLVideoEmbedFilter extends BasePortalFilter {
 		FriendlyURLResolverConstants.URL_SEPARATOR_Y_FILE_ENTRY;
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		DLVideoEmbedFilter.class);
+		DLVideoEmbedCTCollectionFilter.class);
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
-
-	@Reference
-	private CTCollectionLocalService _ctCollectionLocalService;
 
 	@Reference
 	private DLAppLocalService _dlAppLocalService;
