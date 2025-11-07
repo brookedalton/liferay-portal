@@ -271,17 +271,21 @@ export class ChangeTrackingPage {
 	}
 
 	async gotoPublicationsPermissions() {
-		await this.goto();
-
-		await this.page.getByLabel('Options').click();
-
-		await this.page.getByRole('menuitem', {name: 'Settings'}).click();
+		await this.gotoPublicationsSettings();
 
 		await expect(
 			this.page.getByRole('heading', {name: 'Permissions'})
 		).toBeVisible();
 
 		await this.page.getByRole('button', {name: 'Edit Permissions'}).click();
+	}
+
+	async gotoPublicationsSettings() {
+		await this.goto();
+
+		await this.page.getByLabel('Options').click();
+
+		await this.page.getByRole('menuitem', {name: 'Settings'}).click();
 	}
 
 	async goToReviewChanges(title: string, languageCode?: string) {
@@ -440,12 +444,37 @@ export class ChangeTrackingPage {
 		await this.page.getByRole('button', {name: 'Publish'}).click();
 	}
 
+	async toggleUnapprovedChangesConfiguration(check: boolean) {
+		await this.gotoPublicationsSettings();
+
+		await expect(this.page.getByText('Enable Publications')).toBeVisible();
+
+		const checkBox = this.page.getByRole('checkbox', {
+			name: 'enable-unapproved-changes',
+		});
+
+		const publicationsEnabled = this.page.getByRole('checkbox', {
+			name: 'Enable Publications',
+		});
+
+		if (check) {
+			await checkBox.setChecked(true);
+
+			await expect(publicationsEnabled).toBeChecked();
+
+			await expect(checkBox).toBeChecked();
+		}
+		else {
+			await checkBox.setChecked(false);
+
+			await expect(publicationsEnabled).toBeChecked();
+
+			await expect(checkBox).not.toBeChecked();
+		}
+	}
+
 	async toggleSandboxConfiguration(check: boolean) {
-		await this.goto();
-
-		await this.page.getByLabel('Options').click();
-
-		await this.page.getByRole('menuitem', {name: 'Settings'}).click();
+		await this.gotoPublicationsSettings();
 
 		await expect(this.page.getByText('Enable Publications')).toBeVisible();
 

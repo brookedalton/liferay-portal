@@ -66,3 +66,50 @@ test(
 		);
 	}
 );
+
+test(
+	'Can configure unapproved changes to be publishable',
+	{tag: '@LPS-173968'},
+	async ({
+		changeTrackingPage,
+		ctCollection,
+		journalEditArticlePage,
+		page,
+		workflowPage,
+	}) => {
+		await workflowPage.goto();
+
+		await workflowPage.changeWorkflow(
+			'Web Content Article',
+			'Single Approver'
+		);
+
+		await changeTrackingPage.workOnPublication(ctCollection);
+
+		await journalEditArticlePage.goto();
+
+		await journalEditArticlePage.submitArticleForWorkflow(
+			getRandomString()
+		);
+
+		await changeTrackingPage.toggleUnapprovedChangesConfiguration(true);
+
+		await changeTrackingPage.goToReviewChanges(ctCollection.body.name);
+
+		await page.getByRole('link', {name: 'Publish'}).click();
+
+		await expect(
+			page.getByText('This publication contains unapproved changes.')
+		).toBeVisible();
+
+		await page.getByRole('button', {name: 'Publish'}).click();
+
+		await changeTrackingPage.goToPublicationHistory();
+
+		await expect(
+			page.getByRole('link', {name: ctCollection.body.name})
+		).toBeVisible();
+
+		await changeTrackingPage.toggleUnapprovedChangesConfiguration(false);
+	}
+);
