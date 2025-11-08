@@ -10,6 +10,7 @@ import getRandomString from '../../utils/getRandomString';
 import {userData} from '../../utils/performLogin';
 import {PORTLET_URLS} from '../../utils/portletUrls';
 import {waitForAlert} from '../../utils/waitForAlert';
+import {clickAndExpectToBeVisible} from '../../utils/clickAndExpectToBeVisible';
 import {InstanceSettingsPage} from '../configuration-admin-web/InstanceSettingsPage';
 
 type CTCollection = {body: any; response?: Response};
@@ -231,6 +232,56 @@ export class ChangeTrackingPage {
 			await expect(
 				this.page.getByText('Allow Unapproved Changes')
 			).not.toBeVisible();
+		}
+	}
+
+	async goToMoveChanges(targetPublicationName: string) {
+   	 	const firstDropdown = this.page
+			.locator('.publications-changes-content .lexicon-icon-ellipsis-v');
+
+		await firstDropdown.waitFor();
+		await firstDropdown.click();
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: this.page.getByRole('menuitem', {name: 'Move Changes'}),
+			trigger: firstDropdown,
+		});
+
+		await expect(
+			this.page.getByRole('heading', {name: 'Moved Changes'})
+		).toBeVisible();
+
+		const publicationSelector = this.page.getByLabel('Publication');
+
+		await expect(publicationSelector).toBeVisible();
+
+		await this.page.getByLabel('Publication').click();
+
+		const publicationsOptions = await this.page.locator(
+			'#_com_liferay_change_tracking_web_portlet_PublicationsPortlet_toPublication > option'
+		);
+
+		await expect(publicationsOptions).toHaveText([
+			'None',
+			targetPublicationName,
+		]);
+
+		await this.page.getByLabel('Publication').selectOption(targetPublicationName);
+	}
+
+	async moveChanges({moveFailed}: {moveFailed?: boolean}) {
+		await this.page.getByRole('button', {name: 'Move'}).click();
+
+		if (moveFailed) {
+			await expect(
+				this.page.getByText('Error:One or more changes conflict with existing changes in the destination publication.')
+			).toBeVisible();
+		} else {
+			await waitForAlert(
+				this.page,
+				`Success:Your request completed successfully.`
+			);
 		}
 	}
 
