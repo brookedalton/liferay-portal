@@ -376,12 +376,12 @@ test('LPD-52950 Assert publications user cannot see publications they do not hav
 		ctCollection.body.id
 	);
 
-	await apiHelpers.headlessDelivery.postDocument(
+	const document = await apiHelpers.headlessDelivery.postDocument(
 		site.id,
 		createReadStream(path.join(__dirname, '/dependencies/attachment.txt'))
 	);
 
-	await apiHelpers.headlessChangeTracking.createCTCollection(
+	const ctCollection2 = await apiHelpers.headlessChangeTracking.createCTCollection(
 		getRandomString()
 	);
 
@@ -410,40 +410,20 @@ test('LPD-52950 Assert publications user cannot see publications they do not hav
 
 	await changeTrackingPage.goToReviewChanges(ctCollection.body.name);
 
-	const firstDropdown = page
-		.locator('.cell-item-actions .dropdown svg.lexicon-icon-ellipsis-v')
-		.first();
-	await firstDropdown.waitFor();
-	await firstDropdown.click();
+    await changeTrackingPage.viewChanges({
+        click: true,
+        title: document.title,
+        type: 'Document',
+    });
 
-	await clickAndExpectToBeVisible({
-		autoClick: true,
-		target: page.getByRole('menuitem', {name: 'Move Changes'}),
-		trigger: firstDropdown,
-	});
-
-	await expect(
-		page.getByRole('heading', {name: 'Moved Changes'})
-	).toBeVisible();
-
-	const publicationSelector = page.locator(
-		'#_com_liferay_change_tracking_web_portlet_PublicationsPortlet_toPublication'
-	);
-
-	await expect(publicationSelector).toBeVisible();
-
-	const publicationsOptions = await page.locator(
-		'#_com_liferay_change_tracking_web_portlet_PublicationsPortlet_toPublication > option'
-	);
-
-	await expect(publicationsOptions).toHaveText([
-		'None',
-		ctCollection3.body.name,
-	]);
+	await changeTrackingPage.goToMoveChanges(ctCollection3.body.name);
 
 	await performLogout(page);
 
 	await performLoginViaApi({page, screenName: 'test'});
+
+	await apiHelpers.headlessChangeTracking.deleteCTCollection(ctCollection2.body.id);
+	await apiHelpers.headlessChangeTracking.deleteCTCollection(ctCollection3.body.id);
 });
 
 test('LPD-61747 Discarding changes in a Publication containing a deletion change throws NPE', async ({
