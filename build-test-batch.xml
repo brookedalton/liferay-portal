@@ -8901,7 +8901,79 @@ information. Make sure to commit in all format-javadoc results.
 		<run-modules-integration-test database.type="postgresql" database.version="15.5" />
 	</target>
 
-	<target name="modules-integration-postgresql163">
+	<target name="modules-integration-postgresql163-1">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-2">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-3">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-4">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-5">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-6">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-7">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-8">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-9">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-10">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-11">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-12">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-13">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-14">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-15">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-16">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-17">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-18">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-19">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-20">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+	<target name="modules-integration-postgresql163-21">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+		<target name="modules-integration-postgresql163-22">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+		<target name="modules-integration-postgresql163-23">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+		<target name="modules-integration-postgresql163-24">
+		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
+	</target>
+		<target name="modules-integration-postgresql163-25">
 		<run-modules-integration-test database.type="postgresql" database.version="16.3" />
 	</target>
 
