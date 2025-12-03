@@ -182,8 +182,8 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testJoinCount() throws Exception {
-		_assertTransform("join_count_in.sql", 0, 20);
-		_assertTransform("join_count_in.sql", 1, 20);
+		_assertTransformPerformance("join_count_in.sql", 0, 20);
+		_assertTransformPerformance("join_count_in.sql", 1, 20);
 
 		_assertQuery(
 			"join_count_in.sql", "join_count_out.sql", 0,
@@ -258,8 +258,8 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testJoinSelect() throws Exception {
-		_assertTransform("join_select_in.sql", 0, 20);
-		_assertTransform("join_select_in.sql", 1, 20);
+		_assertTransformPerformance("join_select_in.sql", 0, 20);
+		_assertTransformPerformance("join_select_in.sql", 1, 20);
 
 		_assertQuery(
 			"join_select_in.sql", "join_select_out.sql", 0,
@@ -367,8 +367,8 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testLeftJoin() throws Exception {
-		_assertTransform("left_join_in.sql", 0, 20);
-		_assertTransform("left_join_in.sql", 1, 20);
+		_assertTransformPerformance("left_join_in.sql", 0, 20);
+		_assertTransformPerformance("left_join_in.sql", 1, 20);
 
 		_assertQuery(
 			"left_join_in.sql", "left_join_out.sql", 0,
@@ -414,8 +414,8 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testSelfJoin() throws Exception {
-		_assertTransform("self_join_in.sql", 0, 20);
-		_assertTransform("self_join_in.sql", 1, 20);
+		_assertTransformPerformance("self_join_in.sql", 0, 20);
+		_assertTransformPerformance("self_join_in.sql", 1, 20);
 
 		_assertQuery(
 			"self_join_in.sql", "self_join_out.sql", 0,
@@ -468,8 +468,8 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testSimpleCount() throws Exception {
-		_assertTransform("simple_count_in.sql", 0, 20);
-		_assertTransform("simple_count_in.sql", 1, 20);
+		_assertTransformPerformance("simple_count_in.sql", 0, 20);
+		_assertTransformPerformance("simple_count_in.sql", 1, 20);
 
 		_assertQuery(
 			"simple_count_in.sql", "simple_count_out.sql", 0,
@@ -529,8 +529,8 @@ public class CTSQLTransformerTest {
 	public void testSimpleSelect() throws Exception {
 		long groupId = 3;
 
-		_assertTransform("simple_select_in.sql", 0, 20);
-		_assertTransform("simple_select_in.sql", 1, 20);
+		_assertTransformPerformance("simple_select_in.sql", 0, 20);
+		_assertTransformPerformance("simple_select_in.sql", 1, 20);
 
 		_assertQuery(
 			"simple_select_in.sql", "simple_select_out.sql", 0,
@@ -717,8 +717,8 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testSubqueryCount() throws Exception {
-		_assertTransform("subquery_count_in.sql", 0, 20);
-		_assertTransform("subquery_count_in.sql", 1, 20);
+		_assertTransformPerformance("subquery_count_in.sql", 0, 20);
+		_assertTransformPerformance("subquery_count_in.sql", 1, 20);
 
 		_assertQuery(
 			"subquery_count_in.sql", "subquery_count_out.sql", 0,
@@ -793,8 +793,8 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testSubquerySelect() throws Exception {
-		_assertTransform("subquery_select_in.sql", 0, 20);
-		_assertTransform("subquery_select_in.sql", 1, 20);
+		_assertTransformPerformance("subquery_select_in.sql", 0, 20);
+		_assertTransformPerformance("subquery_select_in.sql", 1, 20);
 
 		_assertQuery(
 			"subquery_select_in.sql", "subquery_select_out.sql", 0,
@@ -902,8 +902,8 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testUnionCount() throws Exception {
-		_assertTransform("union_select_count_in.sql", 0, 20);
-		_assertTransform("union_select_count_in.sql", 1, 20);
+		_assertTransformPerformance("union_select_count_in.sql", 0, 20);
+		_assertTransformPerformance("union_select_count_in.sql", 1, 20);
 
 		_assertQuery(
 			"union_select_count_in.sql", "union_select_count_out.sql", 0,
@@ -967,10 +967,10 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testUpdateAndDelete() throws Exception {
-		_assertTransform("delete_in.sql", 0, 20);
-		_assertTransform("delete_in.sql", 1, 20);
-		_assertTransform("update_in.sql", 0, 20);
-		_assertTransform("update_in.sql", 1, 20);
+		_assertTransformPerformance("delete_in.sql", 0, 20);
+		_assertTransformPerformance("delete_in.sql", 1, 20);
+		_assertTransformPerformance("update_in.sql", 0, 20);
+		_assertTransformPerformance("update_in.sql", 1, 20);
 
 		long ctCollectionId7 = _createCTEntries(
 			7, MainTable.class, null, null, null);
@@ -1166,7 +1166,7 @@ public class CTSQLTransformerTest {
 		}
 	}
 
-	private void _assertTransform(
+	private void _assertTransformPerformance(
 		String inputSQLFileName, long ctCollectionId, int maxTime)
 		throws Exception {
 
