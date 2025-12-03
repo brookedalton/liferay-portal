@@ -1,0 +1,12 @@
+SELECT
+ mainPerformanceTable.mainPerformanceTableId, mainPerformanceTable.companyId, mainPerformanceTable.groupId, mainPerformanceTable.name, mainPerformanceTable.ctCollectionId
+FROM
+ MainPerformanceTable mainPerformanceTable
+INNER JOIN
+ ReferencePerformanceTable referencePerformanceTable
+ON
+ referencePerformanceTable.mainPerformanceTableId = mainPerformanceTable.mainPerformanceTableId
+WHERE
+ referencePerformanceTable.name = ?
+ORDER BY
+ mainPerformanceTable.mainPerformanceTableId ASC

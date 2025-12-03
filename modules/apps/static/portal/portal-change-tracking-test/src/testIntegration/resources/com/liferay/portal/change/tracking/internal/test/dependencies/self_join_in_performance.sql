@@ -1,0 +1,10 @@
+SELECT
+ MainPerformanceTable.mainTableId, MainPerformanceTable.ctCollectionId
+FROM
+ MainPerformanceTable
+LEFT JOIN
+ MainPerformanceTable tempMainPerformanceTable
+ON
+ MainPerformanceTable.mainPerformanceTableId < tempMainPerformanceTable.mainPerformanceTableId
+WHERE
+ tempMainPerformanceTable.mainPerformanceTableId IS NULL

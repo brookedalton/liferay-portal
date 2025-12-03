@@ -1,0 +1,13 @@
+SELECT
+ MainPerformanceTable.mainPerformanceTableId
+FROM
+ MainPerformanceTable
+LEFT JOIN
+ ReferencePerformanceTable
+ON
+ ReferencePerformanceTable.mainPerformanceTableId = MainPerformanceTable.mainPerformanceTableId
+WHERE
+ ReferencePerformanceTable.mainPerformanceTableId IS NULL
+ORDER BY
+ MainPerformanceTable.mainPerformanceTableId
+ASC
