@@ -41,78 +41,78 @@ public class CTSQLTransformerPerformanceTest {
 	public static void setUpClass() throws Exception {
 		CTModelRegistry.registerCTModel(
 			new CTModelRegistration(
-				MainTable.class, "MainTable", "mainTableId"));
+				MainPerformanceTable.class, "MainPerformanceTable", "mainPerformanceTableId"));
 		CTModelRegistry.registerCTModel(
 			new CTModelRegistration(
-				ReferenceTable.class, "ReferenceTable", "referenceTableId"));
+				ReferencePerformanceTable.class, "ReferencePerformanceTable", "referencePerformanceTableId"));
 	}
 
 	@AfterClass
 	public static void tearDownClass() throws Exception {
-		CTModelRegistry.unregisterCTModel("MainTable");
-		CTModelRegistry.unregisterCTModel("ReferenceTable");
+		CTModelRegistry.unregisterCTModel("MainPerformanceTable");
+		CTModelRegistry.unregisterCTModel("ReferencePerformanceTable");
 	}
 
 	@Test
 	public void testJoinCount() throws Exception {
-		_assertTransform("join_count_in.sql", 0, 20);
-		_assertTransform("join_count_in.sql", 1, 20);
+		_assertTransform("join_count_in_performance.sql", 0, 20);
+		_assertTransform("join_count_in_performance.sql", 1, 20);
 	}
 
 	@Test
 	public void testJoinSelect() throws Exception {
-		_assertTransform("join_select_in.sql", 0, 20);
-		_assertTransform("join_select_in.sql", 1, 20);
+		_assertTransform("join_select_in_performance.sql", 0, 20);
+		_assertTransform("join_select_in_performance.sql", 1, 20);
 	}
 
 	@Test
 	public void testLeftJoin() throws Exception {
-		_assertTransform("left_join_in.sql", 0, 20);
-		_assertTransform("left_join_in.sql", 1, 20);
+		_assertTransform("left_join_in_performance.sql", 0, 20);
+		_assertTransform("left_join_in_performance.sql", 1, 20);
 	}
 
 	@Test
 	public void testSelfJoin() throws Exception {
-		_assertTransform("self_join_in.sql", 0, 20);
-		_assertTransform("self_join_in.sql", 1, 20);
+		_assertTransform("self_join_in_performance.sql", 0, 20);
+		_assertTransform("self_join_in_performance.sql", 1, 20);
 	}
 
 	@Test
 	public void testSimpleCount() throws Exception {
-		_assertTransform("simple_count_in.sql", 0, 20);
-		_assertTransform("simple_count_in.sql", 1, 20);
+		_assertTransform("simple_count_in_performance.sql", 0, 20);
+		_assertTransform("simple_count_in_performance.sql", 1, 20);
 	}
 
 	@Test
 	public void testSimpleSelect() throws Exception {
-		_assertTransform("simple_select_in.sql", 0, 20);
-		_assertTransform("simple_select_in.sql", 1, 20);
+		_assertTransform("simple_select_in_performance.sql", 0, 20);
+		_assertTransform("simple_select_in_performance.sql", 1, 20);
 	}
 
 	@Test
 	public void testSubqueryCount() throws Exception {
-		_assertTransform("subquery_count_in.sql", 0, 20);
-		_assertTransform("subquery_count_in.sql", 1, 20);
+		_assertTransform("subquery_count_in_performance.sql", 0, 20);
+		_assertTransform("subquery_count_in_performance.sql", 1, 20);
 	}
 
 	@Test
 	public void testSubquerySelect() throws Exception {
-		_assertTransform("subquery_select_in.sql", 0, 20);
-		_assertTransform("subquery_select_in.sql", 1, 20);
+		_assertTransform("subquery_select_in_performance.sql", 0, 20);
+		_assertTransform("subquery_select_in_performance.sql", 1, 20);
 	}
 
 	@Test
 	public void testUnionCount() throws Exception {
-		_assertTransform("union_select_count_in.sql", 0, 20);
-		_assertTransform("union_select_count_in.sql", 1, 20);
+		_assertTransform("union_select_count_in_performance.sql", 0, 20);
+		_assertTransform("union_select_count_in_performance.sql", 1, 20);
 	}
 
 	@Test
 	public void testUpdateAndDelete() throws Exception {
-		_assertTransform("delete_in.sql", 0, 20);
-		_assertTransform("delete_in.sql", 1, 20);
-		_assertTransform("update_in.sql", 0, 20);
-		_assertTransform("update_in.sql", 1, 20);
+		_assertTransform("delete_in_performance.sql", 0, 20);
+		_assertTransform("delete_in_performance.sql", 1, 20);
+		_assertTransform("update_in_performance.sql", 0, 20);
+		_assertTransform("update_in_performance.sql", 1, 20);
 	}
 
 	private void _assertTransform(
@@ -139,10 +139,10 @@ public class CTSQLTransformerPerformanceTest {
 	@Inject
 	private CTSQLTransformer _ctSQLTransformer;
 
-	private static class MainTable {
+	private static class MainPerformanceTable {
 	}
 
-	private static class ReferenceTable {
+	private static class ReferencePerformanceTable {
 	}
 
 }
