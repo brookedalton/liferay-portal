@@ -1171,7 +1171,7 @@ public class CTSQLTransformerTest {
 		throws Exception {
 
 		String inputSQL = StreamUtil.toString(
-			CTSQLTransformerPerformanceTest.class.getResourceAsStream(
+			CTSQLTransformerTest.class.getResourceAsStream(
 				"dependencies/" + inputSQLFileName));
 
 		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
