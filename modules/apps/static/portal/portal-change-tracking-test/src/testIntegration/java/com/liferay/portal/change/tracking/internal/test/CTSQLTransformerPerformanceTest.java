@@ -41,10 +41,12 @@ public class CTSQLTransformerPerformanceTest {
 	public static void setUpClass() throws Exception {
 		CTModelRegistry.registerCTModel(
 			new CTModelRegistration(
-				MainPerformanceTable.class, "MainPerformanceTable", "mainPerformanceTableId"));
+				MainPerformanceTable.class, "MainPerformanceTable",
+				"mainPerformanceTableId"));
 		CTModelRegistry.registerCTModel(
 			new CTModelRegistration(
-				ReferencePerformanceTable.class, "ReferencePerformanceTable", "referencePerformanceTableId"));
+				ReferencePerformanceTable.class, "ReferencePerformanceTable",
+				"referencePerformanceTableId"));
 	}
 
 	@AfterClass
