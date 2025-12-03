@@ -19,6 +19,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.change.tracking.registry.CTModelRegistration;
 import com.liferay.portal.change.tracking.registry.CTModelRegistry;
 import com.liferay.portal.change.tracking.sql.CTSQLTransformer;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
@@ -26,6 +27,7 @@ import com.liferay.portal.kernel.model.change.tracking.CTModel;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.test.performance.PerformanceTimer;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -180,6 +182,9 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testJoinCount() throws Exception {
+		_assertTransform("join_count_in.sql", 0, 20);
+		_assertTransform("join_count_in.sql", 1, 20);
+
 		_assertQuery(
 			"join_count_in.sql", "join_count_out.sql", 0,
 			ps -> ps.setString(1, "rt1 v1"),
@@ -253,6 +258,9 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testJoinSelect() throws Exception {
+		_assertTransform("join_select_in.sql", 0, 20);
+		_assertTransform("join_select_in.sql", 1, 20);
+
 		_assertQuery(
 			"join_select_in.sql", "join_select_out.sql", 0,
 			ps -> ps.setString(1, "rt1 v1"),
@@ -359,6 +367,9 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testLeftJoin() throws Exception {
+		_assertTransform("left_join_in.sql", 0, 20);
+		_assertTransform("left_join_in.sql", 1, 20);
+
 		_assertQuery(
 			"left_join_in.sql", "left_join_out.sql", 0,
 			ps -> {
@@ -403,6 +414,9 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testSelfJoin() throws Exception {
+		_assertTransform("self_join_in.sql", 0, 20);
+		_assertTransform("self_join_in.sql", 1, 20);
+
 		_assertQuery(
 			"self_join_in.sql", "self_join_out.sql", 0,
 			ps -> {
@@ -454,6 +468,9 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testSimpleCount() throws Exception {
+		_assertTransform("simple_count_in.sql", 0, 20);
+		_assertTransform("simple_count_in.sql", 1, 20);
+
 		_assertQuery(
 			"simple_count_in.sql", "simple_count_out.sql", 0,
 			ps -> {
@@ -511,6 +528,9 @@ public class CTSQLTransformerTest {
 	@Test
 	public void testSimpleSelect() throws Exception {
 		long groupId = 3;
+
+		_assertTransform("simple_select_in.sql", 0, 20);
+		_assertTransform("simple_select_in.sql", 1, 20);
 
 		_assertQuery(
 			"simple_select_in.sql", "simple_select_out.sql", 0,
@@ -697,6 +717,9 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testSubqueryCount() throws Exception {
+		_assertTransform("subquery_count_in.sql", 0, 20);
+		_assertTransform("subquery_count_in.sql", 1, 20);
+
 		_assertQuery(
 			"subquery_count_in.sql", "subquery_count_out.sql", 0,
 			ps -> ps.setString(1, "rt1 v1"),
@@ -770,6 +793,9 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testSubquerySelect() throws Exception {
+		_assertTransform("subquery_select_in.sql", 0, 20);
+		_assertTransform("subquery_select_in.sql", 1, 20);
+
 		_assertQuery(
 			"subquery_select_in.sql", "subquery_select_out.sql", 0,
 			ps -> ps.setString(1, "rt1 v1"),
@@ -876,6 +902,9 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testUnionCount() throws Exception {
+		_assertTransform("union_select_count_in.sql", 0, 20);
+		_assertTransform("union_select_count_in.sql", 1, 20);
+
 		_assertQuery(
 			"union_select_count_in.sql", "union_select_count_out.sql", 0,
 			ps -> {
@@ -938,6 +967,11 @@ public class CTSQLTransformerTest {
 
 	@Test
 	public void testUpdateAndDelete() throws Exception {
+		_assertTransform("delete_in.sql", 0, 20);
+		_assertTransform("delete_in.sql", 1, 20);
+		_assertTransform("update_in.sql", 0, 20);
+		_assertTransform("update_in.sql", 1, 20);
+
 		long ctCollectionId7 = _createCTEntries(
 			7, MainTable.class, null, null, null);
 
@@ -1129,6 +1163,27 @@ public class CTSQLTransformerTest {
 			ResultSet resultSet = preparedStatement.executeQuery()) {
 
 			unsafeConsumer.accept(resultSet);
+		}
+	}
+
+	private void _assertTransform(
+		String inputSQLFileName, long ctCollectionId, int maxTime)
+		throws Exception {
+
+		String inputSQL = StreamUtil.toString(
+			CTSQLTransformerPerformanceTest.class.getResourceAsStream(
+				"dependencies/" + inputSQLFileName));
+
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+			"com.liferay.portal.change.tracking.internal." +
+			"CTSQLTransformerImpl",
+			LoggerTestUtil.WARN);
+			 PerformanceTimer performanceTimer = new PerformanceTimer(maxTime);
+			 SafeCloseable safeCloseable =
+				 CTCollectionThreadLocal.setCTCollectionIdWithSafeCloseable(
+					 ctCollectionId)) {
+
+			_ctSQLTransformer.transform(inputSQL);
 		}
 	}
 
