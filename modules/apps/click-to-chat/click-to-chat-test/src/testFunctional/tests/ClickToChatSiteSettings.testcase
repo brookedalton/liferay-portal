@@ -38,14 +38,14 @@ definition {
 
 		task ("Given the user set 'Always Inherit' configuration") {
 			ClickToChatUtils.fillGoalsChat(
-				chatProviderId = "Zendesk Web Widget Classic",
+				chatProviderId = "LivePerson",
 				siteSettingsStrategy = "Always Inherit");
 
-			var passwordZendesk = ClickToChatUtils.getPassword(chatProviderChoosen = "zendesk");
+			var passwordLiveperson = ClickToChatUtils.getPassword(chatProviderChoosen = "liveperson");
 		}
 
-		task ("And can see the Zendesk Web Widget Classic icon") {
-			AssertElementPresent(locator1 = "Providers#CHAT_ZENDESK");
+		task ("And can see the LivePerson icon") {
+			AssertElementPresent(locator1 = "Providers#CHAT_LIVEPERSON");
 		}
 
 		task ("When the user navigate to Click to Chat") {
@@ -54,8 +54,8 @@ definition {
 
 		task ("Then the user can see that the data is present after choosing the strategy 'Always Inherit' in Instance Settings") {
 			ClickToChatUtils.viewTheFieldsPresent(
-				chatProviderId = ${passwordZendesk},
-				chatProviderOption = "Zendesk Web Widget Classic",
+				chatProviderId = ${passwordLiveperson},
+				chatProviderOption = "LivePerson",
 				siteSettingsStrategy = "Always Inherit");
 		}
 	}
@@ -75,20 +75,20 @@ definition {
 			ClickToChatUtils.navigateToComponent(nameComponent = "Click to Chat");
 		}
 
-		task ("And set Zendesk Web Widget Classic configuration and Key configuration") {
-			ClickToChatUtils.fillGoalsChat(chatProviderId = "Zendesk Web Widget Classic");
+		task ("And set LivePerson configuration") {
+			ClickToChatUtils.fillGoalsChat(chatProviderId = "LivePerson");
 
-			var passwordZendesk = ClickToChatUtils.getPassword(chatProviderChoosen = "zendesk");
+			var passwordLiveperson = ClickToChatUtils.getPassword(chatProviderChoosen = "liveperson");
 		}
 
-		task ("And can see the Zendesk Web Widget Classic icon") {
-			AssertElementPresent(locator1 = "Providers#CHAT_ZENDESK");
+		task ("And can see the LivePerson icon") {
+			AssertElementPresent(locator1 = "Providers#CHAT_LIVEPERSON");
 		}
 
 		task ("Then the user can see that the data is present after choosing the strategy 'Always Override' in Instance Settings") {
 			ClickToChatUtils.viewTheFieldsPresent(
-				chatProviderId = ${passwordZendesk},
-				chatProviderOption = "Zendesk Web Widget Classic",
+				chatProviderId = ${passwordLiveperson},
+				chatProviderOption = "LivePerson",
 				siteSettingsStrategy = "Always Override");
 		}
 	}
@@ -100,14 +100,14 @@ definition {
 
 		task ("Given the user set 'Inherit or Override' configuration") {
 			ClickToChatUtils.fillGoalsChat(
-				chatProviderId = "Zendesk Web Widget Classic",
+				chatProviderId = "LivePerson",
 				siteSettingsStrategy = "Inherit or Override");
 
-			var passwordZendesk = ClickToChatUtils.getPassword(chatProviderChoosen = "zendesk");
+			var passwordLiveperson = ClickToChatUtils.getPassword(chatProviderChoosen = "liveperson");
 		}
 
-		task ("And can see the Zendesk Web Widget Classic icon") {
-			AssertElementPresent(locator1 = "Providers#CHAT_ZENDESK");
+		task ("And can see the LivePerson icon") {
+			AssertElementPresent(locator1 = "Providers#CHAT_LIVEPERSON");
 		}
 
 		task ("When the user navigate to Click to Chat") {
@@ -116,8 +116,8 @@ definition {
 
 		task ("Then the user can see that the data is present after choosing the strategy 'Inherit or Override' in Instance Settings") {
 			ClickToChatUtils.viewTheFieldsPresent(
-				chatProviderId = ${passwordZendesk},
-				chatProviderOption = "Zendesk Web Widget Classic",
+				chatProviderId = ${passwordLiveperson},
+				chatProviderOption = "LivePerson",
 				siteSettingsStrategy = "Inherit or Override");
 		}
 	}
