@@ -32,6 +32,11 @@ test.beforeEach(async ({clickToChatInstanceSettingsPage}) => {
 	await clickToChatInstanceSettingsPage.enableClickToChat();
 });
 
+test.use({
+	ignoreHTTPSErrors: true,
+	launchOptions: {args: ['--disable-web-security']},
+});
+
 const providers = [
 	{
 		iconKey: 'chatwootIcon',
