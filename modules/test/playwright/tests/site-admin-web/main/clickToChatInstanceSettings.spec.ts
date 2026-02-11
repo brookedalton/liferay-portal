@@ -34,7 +34,7 @@ test.beforeEach(async ({clickToChatInstanceSettingsPage}) => {
 
 test.use({
 	ignoreHTTPSErrors: true,
-	launchOptions: {args: ['--disable-web-security']},
+	headless: false,
 });
 
 const providers = [
