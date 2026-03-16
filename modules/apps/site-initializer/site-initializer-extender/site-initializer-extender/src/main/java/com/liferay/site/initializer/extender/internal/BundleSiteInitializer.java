@@ -147,7 +147,6 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
-import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.GroupModel;
@@ -1597,18 +1596,19 @@ public class BundleSiteInitializer implements SiteInitializer {
 							assetListEntryJSONObject.getString("className")),
 						assetListEntryJSONObject.getLong("classPK"));
 
-					if ((assetEntry != null) &&
-						(assetEntry.getGroupId() != CompanyConstants.SYSTEM)) {
-
-						assetEntryIds.add(assetEntry.getEntryId());
-						assetEntryClassNameIds.add(assetEntry.getClassNameId());
-
+					if (assetEntry != null) {
 						AssetRendererFactory<?> assetRendererFactory =
 							AssetRendererFactoryRegistryUtil.
 								getAssetRendererFactoryByClassNameId(
 									assetEntry.getClassNameId());
 
-						if (assetRendererFactory.isSupportsClassTypes()) {
+						if (assetRendererFactory.isSelectable() &&
+							assetRendererFactory.isSupportsClassTypes()) {
+
+							assetEntryIds.add(assetEntry.getEntryId());
+							assetEntryClassNameIds.add(
+								assetEntry.getClassNameId());
+
 							String manualAssetRendererFactoryName =
 								_getAssetRendererFactoryName(
 									assetRendererFactory.getClassName());
