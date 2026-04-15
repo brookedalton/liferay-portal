@@ -14,10 +14,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.service.GroupLocalService;
-import com.liferay.portal.kernel.service.UserLocalService;
-import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.site.initializer.SiteInitializer;
 import com.liferay.site.seo.studio.site.initializer.internal.util.SiteInitializerUtil;
 
@@ -43,40 +39,19 @@ public class SEOStudioFeatureFlagListener implements FeatureFlagListener {
 		}
 
 		if (enabled) {
-			_addOrActivateSEOStudioGroup(companyId);
+			_activateSEOStudioGroup(companyId);
 		}
 		else {
 			_deactivateSEOStudioGroup(companyId);
 		}
 	}
 
-	private void _addOrActivateSEOStudioGroup(long companyId) {
+	private void _activateSEOStudioGroup(long companyId) {
 		try (SafeCloseable safeCloseable =
 				CTCollectionThreadLocal.setProductionModeWithSafeCloseable()) {
 
-			Group group = _groupLocalService.fetchGroup(
+			Group group = _groupLocalService.getGroup(
 				companyId, GroupConstants.SEO_STUDIO);
-
-			if (group == null) {
-				String externalReferenceCode = TextFormatter.format(
-					GroupConstants.SEO_STUDIO, TextFormatter.A);
-
-				group = _groupLocalService.addGroup(
-					"L_" + externalReferenceCode,
-					_userLocalService.getGuestUserId(companyId),
-					GroupConstants.DEFAULT_PARENT_GROUP_ID, null, 0,
-					GroupConstants.DEFAULT_LIVE_GROUP_ID,
-					HashMapBuilder.put(
-						LocaleUtil.getDefault(), GroupConstants.SEO_STUDIO
-					).build(),
-					null, GroupConstants.TYPE_SITE_RESTRICTED, null, true,
-					GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION,
-					GroupConstants.SEO_STUDIO_FRIENDLY_URL, false, false, true,
-					null);
-
-				SiteInitializerUtil.initialize(
-					companyId, group, _siteInitializer);
-			}
 
 			if (!group.isActive()) {
 				_groupLocalService.updateGroup(
@@ -86,6 +61,8 @@ public class SEOStudioFeatureFlagListener implements FeatureFlagListener {
 					group.getMembershipRestriction(), group.getFriendlyURL(),
 					group.isInheritContent(), true, null);
 			}
+
+			SiteInitializerUtil.initialize(companyId, group, _siteInitializer);
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException);
@@ -93,11 +70,13 @@ public class SEOStudioFeatureFlagListener implements FeatureFlagListener {
 	}
 
 	private void _deactivateSEOStudioGroup(long companyId) {
-		try {
-			Group group = _groupLocalService.fetchGroup(
+		try (SafeCloseable safeCloseable =
+				CTCollectionThreadLocal.setProductionModeWithSafeCloseable()) {
+
+			Group group = _groupLocalService.getGroup(
 				companyId, GroupConstants.SEO_STUDIO);
 
-			if (group != null) {
+			if (group.isActive()) {
 				_groupLocalService.updateGroup(
 					group.getGroupId(), group.getParentGroupId(),
 					group.getNameMap(), group.getDescriptionMap(),
@@ -121,8 +100,5 @@ public class SEOStudioFeatureFlagListener implements FeatureFlagListener {
 		target = "(site.initializer.key=com.liferay.site.initializer.seo.studio)"
 	)
 	private SiteInitializer _siteInitializer;
-
-	@Reference
-	private UserLocalService _userLocalService;
 
 }

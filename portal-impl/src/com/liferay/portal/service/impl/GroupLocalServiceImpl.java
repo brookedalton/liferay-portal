@@ -875,6 +875,10 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 						GroupConstants.USER_PERSONAL_SITE_FRIENDLY_URL;
 					site = false;
 				}
+				else if (groupKey.equals(GroupConstants.SEO_STUDIO)) {
+					friendlyURL = GroupConstants.SEO_STUDIO_FRIENDLY_URL;
+					site = false;
+				}
 				else if (groupKey.equals(companyIdString)) {
 					className = Company.class.getName();
 					classPK = companyId;
