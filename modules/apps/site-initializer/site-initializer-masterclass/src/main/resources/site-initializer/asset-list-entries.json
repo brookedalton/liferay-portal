@@ -207,5 +207,47 @@
 				}
 			]
 		}
+	},
+	{
+		"assetListEntries": [
+			{
+				"className": "[$OBJECT_DEFINITION_CLASS_NAME:TestObjectDefinition$]",
+				"classPK": "[#TestObjectDefinition#TEST_OBJECT_ENTRY_1#]"
+			},
+			{
+				"className": "[$OBJECT_DEFINITION_CLASS_NAME:TestObjectDefinition$]",
+				"classPK": "[#TestObjectDefinition#TEST_OBJECT_ENTRY_4#]"
+			},
+			{
+				"className": "com.liferay.journal.model.JournalArticle",
+				"classPK": "[#JOURNAL_ARTICLE_ID:BLOG-01#]"
+			},
+			{
+				"className": "com.liferay.journal.model.JournalArticle",
+				"classPK": "[#JOURNAL_ARTICLE_ID:COURSE-01#]"
+			}
+		],
+		"title": "Featured Manual Asset Entries",
+		"type": "manual",
+		"unicodeProperties": {
+			"orderBy": [
+				{
+					"key": "orderByColumn1",
+					"value": "modifiedDate"
+				},
+				{
+					"key": "orderByColumn2",
+					"value": "title"
+				},
+				{
+					"key": "orderByType1",
+					"value": "DESC"
+				},
+				{
+					"key": "orderByType2",
+					"value": "ASC"
+				}
+			]
+		}
 	}
 ]
